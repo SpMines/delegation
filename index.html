@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>SP Task & Delegation System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070710; --txt:#eef0f7; --muted:#9aa0b4; --accent:#7c5cff; --accent2:#46b5ff;
+  --danger:#ff5d6c; --ok:#37d399; --card-brd:rgba(255,255,255,.09); --inp:rgba(255,255,255,.04);
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Jost',sans-serif;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:var(--bg);color:var(--txt);min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:16px}
+
+.blob{position:fixed;border-radius:50%;filter:blur(90px);opacity:.5;z-index:0;pointer-events:none}
+.b1{width:440px;height:440px;background:#6b46ff;top:-120px;left:-120px;animation:f1 14s ease-in-out infinite}
+.b2{width:400px;height:400px;background:#1f7bff;bottom:-140px;right:-100px;animation:f2 16s ease-in-out infinite}
+.b3{width:280px;height:280px;background:#ff4f9a;bottom:120px;left:30%;opacity:.28;animation:f1 18s ease-in-out infinite}
+@keyframes f1{50%{transform:translate(40px,30px) scale(1.1)}}
+@keyframes f2{50%{transform:translate(-40px,-25px) scale(1.08)}}
+
+.shell{
+  position:relative;z-index:2;width:min(960px,100%);display:flex;
+  background:rgba(13,13,24,.55);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);
+  border:1px solid var(--card-brd);border-radius:24px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.55);
+}
+.brand{
+  flex:1;padding:46px 40px;display:flex;flex-direction:column;justify-content:space-between;
+  background:linear-gradient(160deg,rgba(124,92,255,.22),rgba(70,181,255,.10));
+  border-right:1px solid var(--card-brd);
+}
+.logo{display:flex;align-items:center;gap:12px}
+.logo .dot{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;box-shadow:0 8px 22px rgba(124,92,255,.5)}
+.logo h1{font-size:18px;font-weight:600;letter-spacing:.3px}
+.brand .tag{font-size:12.5px;color:var(--muted);margin-top:2px}
+.hero{margin:30px 0}
+.hero h2{font-size:30px;line-height:1.25;font-weight:600}
+.hero h2 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);font-size:14px;margin-top:12px;max-width:330px;line-height:1.6}
+.feat{display:flex;flex-direction:column;gap:13px;margin-top:8px}
+.feat .row{display:flex;align-items:center;gap:12px;font-size:13.5px;color:#cfd3e3}
+.feat .ic{width:30px;height:30px;border-radius:9px;background:var(--inp);border:1px solid var(--card-brd);
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.credit{font-size:11.5px;color:var(--muted)}
+
+.panel{flex:1;padding:46px 42px;display:flex;flex-direction:column;justify-content:center}
+.panel h3{font-size:24px;font-weight:600}
+.panel .sub{color:var(--muted);font-size:13.5px;margin-top:6px;margin-bottom:22px;line-height:1.55}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:7px;font-weight:400}
+.field input{
+  width:100%;padding:13px 15px;border-radius:12px;background:var(--inp);
+  border:1px solid var(--card-brd);color:var(--txt);font-size:16px;outline:none;transition:.2s;
+}
+.field input::placeholder{color:#5d6379}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,255,.18);background:rgba(255,255,255,.06)}
+.btn{
+  width:100%;padding:14px;border:none;border-radius:13px;cursor:pointer;margin-top:8px;
+  font-family:'Jost';font-size:15px;font-weight:600;color:#fff;letter-spacing:.3px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));transition:.2s;
+  box-shadow:0 12px 30px rgba(124,92,255,.4);
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(124,92,255,.5)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.msg{margin-top:14px;padding:11px 14px;border-radius:11px;font-size:13.5px;display:none;line-height:1.4}
+.msg.err{display:block;background:rgba(255,93,108,.12);border:1px solid rgba(255,93,108,.35);color:#ff97a2}
+.msg.ok{display:block;background:rgba(55,211,153,.12);border:1px solid rgba(55,211,153,.35);color:#7fe9c0}
+
+.welcome{text-align:center}
+.welcome .av{width:72px;height:72px;border-radius:20px;margin:0 auto 16px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;
+  font-size:28px;font-weight:700;box-shadow:0 14px 34px rgba(124,92,255,.5)}
+.welcome h3{font-size:23px}
+.chip{display:inline-block;margin-top:10px;padding:6px 14px;border-radius:30px;font-size:12.5px;font-weight:500;
+  background:rgba(124,92,255,.18);border:1px solid rgba(124,92,255,.4);color:#c9bdff}
+.meta{margin:22px 0;text-align:left;background:var(--inp);border:1px solid var(--card-brd);border-radius:14px;padding:14px 18px}
+.meta .ln{display:flex;justify-content:space-between;gap:14px;font-size:13.5px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.meta .ln:last-child{border:none}
+.meta .ln b{color:var(--muted);font-weight:400;flex-shrink:0}
+.meta .ln span{text-align:right;word-break:break-word}
+.ghost{background:transparent;border:1px solid var(--card-brd);box-shadow:none;color:var(--txt)}
+.ghost:hover{background:var(--inp);box-shadow:none;transform:none}
+
+.spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:7px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+@media(max-width:760px){
+  body{padding:0}
+  .shell{flex-direction:column;border-radius:0;min-height:100dvh;box-shadow:none}
+  .brand{padding:30px 24px 26px;border-right:none;border-bottom:1px solid var(--card-brd)}
+  .logo .dot{width:34px;height:34px}
+  .hero{margin:18px 0 4px}
+  .hero h2{font-size:23px}
+  .hero p{font-size:13.5px;margin-top:9px}
+  .feat{margin-top:14px;gap:11px}
+  .credit{margin-top:16px}
+  .panel{padding:28px 24px 40px;justify-content:flex-start}
+  .panel h3{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+
+<div class="shell">
+  <div class="brand">
+    <div class="logo">
+      <div class="dot">SP</div>
+      <div><h1>SP Delegation</h1><div class="tag">Task &amp; Delegation System</div></div>
+    </div>
+    <div class="hero">
+      <h2>Assign. Track.<br><span>Get it done.</span></h2>
+      <p>Delegate tasks, set deadlines, and keep every update flowing automatically — all in one place.</p>
+      <div class="feat">
+        <div class="row"><div class="ic">🔐</div> Secure single-owner login</div>
+        <div class="row"><div class="ic">📧</div> Automated email on assign &amp; follow-up</div>
+        <div class="row"><div class="ic">📊</div> Live status, reports &amp; scoring</div>
+      </div>
+    </div>
+    <div class="credit">Built by Somnath Karmakar &middot; &copy; SP Group</div>
+  </div>
+
+  <div class="panel" id="panel">
+    <div style="text-align:center;color:var(--muted);font-size:14px"><span class="spin"></span>Loading…</div>
+  </div>
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbyH6Qa5GoVCt9Ywp5Sa2EArYIUlgIogJaFO-laojEC30N_BLMjcOfF278sGNbn1GnvfnA/exec";
+const DEVICE = (navigator.userAgent || "Unknown") + " | " + (navigator.platform || "");
+const panel = document.getElementById('panel');
+
+function api(payload){
+  return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+    .then(r=>r.json());
+}
+function tokenGet(){ try{return localStorage.getItem('sp_token')||''}catch(e){return ''} }
+function tokenSet(t){ try{localStorage.setItem('sp_token',t)}catch(e){} }
+function tokenClear(){ try{localStorage.removeItem('sp_token')}catch(e){} }
+function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+/* ---------- BOOT ---------- */
+(async function(){
+  const t = tokenGet();
+  if(t){
+    try{ const r = await api({action:'checkSession',token:t}); if(r.ok){ return showWelcome({name:r.user.name,role:r.user.role,email:r.user.email}); } }catch(e){}
+    tokenClear();
+  }
+  try{
+    const s = await api({action:'signupStatus'});
+    if(s.ok && s.open) renderSignup(); else renderLogin();
+  }catch(e){ renderLogin(); }
+})();
+
+/* ---------- SIGNUP (one-time) ---------- */
+function renderSignup(){
+  panel.innerHTML = `
+    <h3>Create Your Account</h3>
+    <div class="sub">This is a one-time setup. The first account becomes the system owner — no second account can ever be created.</div>
+    <div class="field"><label>Full Name</label><input id="s_name" placeholder="Somnath Karmakar"></div>
+    <div class="field"><label>Email Address</label><input id="s_email" type="email" placeholder="you@company.com"></div>
+    <div class="field"><label>PC / Device Label</label><input id="s_pc" placeholder="e.g. Reception PC"></div>
+    <div class="field"><label>Department</label><input id="s_dept" placeholder="Management" value="Management"></div>
+    <div class="field"><label>Password</label><input id="s_pass" type="password" placeholder="Minimum 6 characters"></div>
+    <button class="btn" id="s_btn" onclick="doSignup()">Create Account</button>
+    <div class="msg" id="s_msg"></div>
+  `;
+}
+async function doSignup(){
+  const btn=document.getElementById('s_btn'), msg=document.getElementById('s_msg');
+  const p={action:'signup',name:val('s_name'),email:val('s_email'),pcName:val('s_pc'),
+           department:val('s_dept'),password:val('s_pass'),device:DEVICE};
+  if(!p.name||!p.email||!p.password) return showMsg(msg,'err','Please fill in your name, email and password.');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Creating…';
+  try{
+    const r=await api(p);
+    if(r.ok){ tokenSet(r.token); showWelcome(r.user); }
+    else { showMsg(msg,'err',r.error||'Signup failed.'); btn.disabled=false; btn.textContent='Create Account'; }
+  }catch(e){ showMsg(msg,'err','Network error. Please check your connection.'); btn.disabled=false; btn.textContent='Create Account'; }
+}
+
+/* ---------- LOGIN ---------- */
+function renderLogin(){
+  panel.innerHTML = `
+    <h3>Welcome Back</h3>
+    <div class="sub">Sign in to access your dashboard.</div>
+    <div class="field"><label>Email Address</label><input id="l_email" type="email" placeholder="you@company.com"></div>
+    <div class="field"><label>Password</label><input id="l_pass" type="password" placeholder="Enter your password"></div>
+    <button class="btn" id="l_btn" onclick="doLogin()">Sign In</button>
+    <div class="msg" id="l_msg"></div>
+  `;
+  ['l_email','l_pass'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()}));
+}
+async function doLogin(){
+  const btn=document.getElementById('l_btn'), msg=document.getElementById('l_msg');
+  const p={action:'login',email:val('l_email'),password:val('l_pass'),device:DEVICE};
+  if(!p.email||!p.password) return showMsg(msg,'err','Please enter your email and password.');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Signing in…';
+  try{
+    const r=await api(p);
+    if(r.ok){ tokenSet(r.token); showWelcome(r.user); }
+    else { showMsg(msg,'err',r.error||'Login failed.'); btn.disabled=false; btn.textContent='Sign In'; }
+  }catch(e){ showMsg(msg,'err','Network error. Please check your connection.'); btn.disabled=false; btn.textContent='Sign In'; }
+}
+
+/* ---------- WELCOME (dashboard placeholder) ---------- */
+function showWelcome(u){
+  const initials=(u.name||'?').trim().split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase();
+  panel.innerHTML = `
+    <div class="welcome">
+      <div class="av">${esc(initials)}</div>
+      <h3>Hi, ${esc(u.name||'')}</h3>
+      <div class="chip">${esc(u.role||'Owner')}</div>
+      <div class="meta">
+        <div class="ln"><b>Account ID</b><span>${esc(u.empId||'-')}</span></div>
+        <div class="ln"><b>Email</b><span>${esc(u.email||'-')}</span></div>
+        <div class="ln"><b>Department</b><span>${esc(u.department||'-')}</span></div>
+        <div class="ln"><b>PC / Device</b><span>${esc(u.pcName||'-')}</span></div>
+      </div>
+      <div class="sub" style="margin-bottom:16px">Login successful. Your dashboard — Add Employee, Assign Task and Reports — is coming next.</div>
+      <button class="btn ghost" onclick="doLogout()">Sign Out</button>
+    </div>`;
+}
+async function doLogout(){
+  const t=tokenGet();
+  try{ await api({action:'logout',token:t}); }catch(e){}
+  tokenClear(); location.reload();
+}
+
+function val(id){return (document.getElementById(id).value||'').trim()}
+function showMsg(el,type,txt){el.className='msg '+type;el.textContent=txt}
+</script>
+</body>
+</html>
