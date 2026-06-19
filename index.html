@@ -122,6 +122,29 @@ table.rep tr:last-child td{border:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.ok{border-color:rgba(55,211,153,.4)} .toast.err{border-color:rgba(255,93,108,.4)}
 
+/* ===== Face ID style loader ===== */
+.faceLoader{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(7,7,16,.55);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+.faceLoader.show{display:flex;animation:flFade .2s ease}
+@keyframes flFade{from{opacity:0}to{opacity:1}}
+.fl-card{width:150px;height:150px;border-radius:34px;background:rgba(20,20,32,.72);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;box-shadow:0 22px 60px rgba(0,0,0,.55);animation:flPop .32s cubic-bezier(.2,.85,.3,1.25)}
+@keyframes flPop{from{transform:scale(.82);opacity:0}to{transform:scale(1);opacity:1}}
+.fl-svg{width:100px;height:100px}
+.fl-frame{stroke:rgba(255,255,255,.22)}
+.fl-face line,.fl-face path{stroke:url(#flg);stroke-width:2.5;stroke-linecap:round;fill:none}
+.fl-scan{filter:drop-shadow(0 0 5px var(--accent));animation:flScan 1.5s ease-in-out infinite}
+@keyframes flScan{0%,100%{transform:translateY(-11px);opacity:.25}50%{transform:translateY(11px);opacity:1}}
+
+/* ===== Modal popup ===== */
+.modal{position:fixed;inset:0;z-index:9998;display:none;align-items:center;justify-content:center;background:rgba(7,7,16,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:20px}
+.modal.show{display:flex;animation:flFade .2s ease}
+.modal-card{width:min(380px,100%);background:rgba(20,20,32,.94);border:1px solid var(--brd);border-radius:20px;padding:26px 24px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.6);animation:flPop .28s cubic-bezier(.2,.85,.3,1.25)}
+.modal-ic{font-size:34px;margin-bottom:10px}
+.modal-title{font-size:18px;font-weight:600;margin-bottom:8px}
+.modal-msg{font-size:13.5px;color:var(--muted);line-height:1.5;margin-bottom:22px}
+.modal-acts{display:flex;gap:10px}
+.modal-acts .btn{margin-top:0}
+.btn.danger{background:linear-gradient(135deg,#ff5d6c,#ff3b6b);box-shadow:0 12px 30px rgba(255,93,108,.4)}
+
 @media(max-width:760px){
   .authwrap{padding:0}
   .shell{flex-direction:column;border-radius:0;min-height:100dvh}
@@ -140,6 +163,34 @@ table.rep tr:last-child td{border:none}
 <div id="root"></div>
 <div class="toast" id="toast"></div>
 
+<!-- Face ID style loader -->
+<div class="faceLoader" id="faceLoader">
+  <div class="fl-card">
+    <svg class="fl-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="flg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#46b5ff"/></linearGradient></defs>
+      <circle class="fl-ring" cx="60" cy="60" r="52" fill="none" stroke="url(#flg)" stroke-width="3" stroke-dasharray="5 11" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="360 60 60" dur="2.2s" repeatCount="indefinite"/>
+      </circle>
+      <rect class="fl-frame" x="36" y="36" width="48" height="48" rx="15" fill="none" stroke-width="2"/>
+      <g class="fl-face">
+        <line x1="50" y1="53" x2="50" y2="58"/><line x1="70" y1="53" x2="70" y2="58"/>
+        <path d="M60 55 L60 63 Q60 66 57 66"/><path d="M51 71 Q60 77 69 71"/>
+      </g>
+      <line class="fl-scan" x1="38" y1="60" x2="82" y2="60" stroke="url(#flg)" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+</div>
+
+<!-- Modal popup -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-card">
+    <div class="modal-ic" id="modalIc">⚠️</div>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-msg" id="modalMsg"></div>
+    <div class="modal-acts" id="modalActs"></div>
+  </div>
+</div>
+
 <script>
 const API = "https://script.google.com/macros/s/AKfycby6T_3tLs-UzraTiIKblaqe1JBhV_MOQ-3-yY71kP5s5IOp1hRGy6vAPsCyrm6CQ_m_cw/exec";
 const DEVICE = (navigator.userAgent||"Unknown")+" | "+(navigator.platform||"");
@@ -147,8 +198,29 @@ const root = document.getElementById('root');
 let STATE = { token:'', me:null, employees:[], tasks:[], view:'dashboard',
               filters:{date:'all',status:'all',emp:'all'} };
 
-/* ---- api ---- */
-function api(p){ return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)}).then(r=>r.json()); }
+/* ---- api (with Face ID loader on every server action) ---- */
+let _busy=0;
+function showLoader(){ _busy++; const l=document.getElementById('faceLoader'); if(l) l.classList.add('show'); }
+function hideLoader(){ _busy=Math.max(0,_busy-1); if(_busy===0){ const l=document.getElementById('faceLoader'); if(l) l.classList.remove('show'); } }
+function api(p){
+  showLoader();
+  return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)})
+    .then(r=>r.json()).then(d=>{hideLoader();return d;}).catch(e=>{hideLoader();throw e;});
+}
+/* ---- modern popup (replaces alert/confirm) ---- */
+function modalConfirm(o){
+  document.getElementById('modalIc').textContent=o.icon||'⚠️';
+  document.getElementById('modalTitle').textContent=o.title||'Are you sure?';
+  document.getElementById('modalMsg').textContent=o.message||'';
+  const acts=document.getElementById('modalActs'); acts.innerHTML='';
+  const cancel=document.createElement('button'); cancel.className='btn ghost'; cancel.textContent=o.cancelText||'Cancel'; cancel.onclick=closeModal;
+  const ok=document.createElement('button'); ok.className='btn'+(o.danger?' danger':''); ok.textContent=o.confirmText||'Confirm';
+  ok.onclick=function(){ closeModal(); if(o.onConfirm) o.onConfirm(); };
+  if(o.onConfirm){ acts.appendChild(cancel); acts.appendChild(ok); } else { acts.appendChild(ok); }
+  document.getElementById('modal').classList.add('show');
+}
+function modalAlert(message,title,icon){ modalConfirm({title:title||'Notice',message:message,icon:icon||'ℹ️',confirmText:'OK'}); }
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
 function tGet(){try{return localStorage.getItem('sp_token')||''}catch(e){return ''}}
 function tSet(t){try{localStorage.setItem('sp_token',t)}catch(e){}}
 function tClr(){try{localStorage.removeItem('sp_token')}catch(e){}}
@@ -467,10 +539,12 @@ async function followup(id){
   const r=await api({action:'followupTask',token:STATE.token,taskId:id});
   toast(r.ok?r.message:(r.error||'Email failed.'),r.ok?'ok':'err');
 }
-async function delTask(id){
-  if(!confirm('Delete this task? This cannot be undone.')) return;
-  const r=await api({action:'deleteTask',token:STATE.token,taskId:id});
-  r.ok?(toast('Task deleted.','ok'),refresh()):toast(r.error||'Failed.','err');
+function delTask(id){
+  modalConfirm({title:'Delete Task',message:'This task will be permanently deleted. This action cannot be undone.',
+    icon:'🗑️',confirmText:'Delete',danger:true,onConfirm:async function(){
+      const r=await api({action:'deleteTask',token:STATE.token,taskId:id});
+      r.ok?(toast('Task deleted.','ok'),refresh()):toast(r.error||'Failed.','err');
+    }});
 }
 
 /* ---- REPORTS ---- */
