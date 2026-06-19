@@ -3,239 +3,502 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Sp_Mines - Delegation WebApp</title>
+<title>Sp_Mines - Delegation App</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#070710; --txt:#eef0f7; --muted:#9aa0b4; --accent:#7c5cff; --accent2:#46b5ff;
-  --danger:#ff5d6c; --ok:#37d399; --card-brd:rgba(255,255,255,.09); --inp:rgba(255,255,255,.04);
+  --danger:#ff5d6c; --ok:#37d399; --warn:#ffb547; --info:#46b5ff;
+  --card:rgba(255,255,255,.045); --brd:rgba(255,255,255,.09); --inp:rgba(255,255,255,.04);
 }
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Jost',sans-serif;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{background:var(--bg);color:var(--txt);min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:16px}
-
-.blob{position:fixed;border-radius:50%;filter:blur(90px);opacity:.5;z-index:0;pointer-events:none}
-.b1{width:440px;height:440px;background:#6b46ff;top:-120px;left:-120px;animation:f1 14s ease-in-out infinite}
-.b2{width:400px;height:400px;background:#1f7bff;bottom:-140px;right:-100px;animation:f2 16s ease-in-out infinite}
-.b3{width:280px;height:280px;background:#ff4f9a;bottom:120px;left:30%;opacity:.28;animation:f1 18s ease-in-out infinite}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--txt);min-height:100dvh}
+.blob{position:fixed;border-radius:50%;filter:blur(95px);opacity:.4;z-index:0;pointer-events:none}
+.b1{width:440px;height:440px;background:#6b46ff;top:-130px;left:-120px}
+.b2{width:400px;height:400px;background:#1f7bff;bottom:-150px;right:-110px}
 @keyframes f1{50%{transform:translate(40px,30px) scale(1.1)}}
-@keyframes f2{50%{transform:translate(-40px,-25px) scale(1.08)}}
 
-.shell{
-  position:relative;z-index:2;width:min(960px,100%);display:flex;
-  background:rgba(13,13,24,.55);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);
-  border:1px solid var(--card-brd);border-radius:24px;overflow:hidden;
-  box-shadow:0 30px 80px rgba(0,0,0,.55);
-}
-.brand{
-  flex:1;padding:46px 40px;display:flex;flex-direction:column;justify-content:space-between;
-  background:linear-gradient(160deg,rgba(124,92,255,.22),rgba(70,181,255,.10));
-  border-right:1px solid var(--card-brd);
-}
+/* ============ AUTH (centered) ============ */
+.authwrap{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:16px;position:relative;z-index:2}
+.shell{width:min(960px,100%);display:flex;background:rgba(13,13,24,.55);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);border:1px solid var(--brd);border-radius:24px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.brand{flex:1;padding:44px 38px;display:flex;flex-direction:column;justify-content:space-between;background:linear-gradient(160deg,rgba(124,92,255,.22),rgba(70,181,255,.10));border-right:1px solid var(--brd)}
 .logo{display:flex;align-items:center;gap:12px}
-.logo .dot{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;box-shadow:0 8px 22px rgba(124,92,255,.5)}
-.logo h1{font-size:18px;font-weight:600;letter-spacing:.3px}
+.logo .dot{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;box-shadow:0 8px 22px rgba(124,92,255,.5)}
+.logo h1{font-size:18px;font-weight:600}
 .brand .tag{font-size:12.5px;color:var(--muted);margin-top:2px}
-.hero{margin:30px 0}
-.hero h2{font-size:30px;line-height:1.25;font-weight:600}
+.hero{margin:28px 0}
+.hero h2{font-size:29px;line-height:1.25;font-weight:600}
 .hero h2 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
-.hero p{color:var(--muted);font-size:14px;margin-top:12px;max-width:330px;line-height:1.6}
-.feat{display:flex;flex-direction:column;gap:13px;margin-top:8px}
-.feat .row{display:flex;align-items:center;gap:12px;font-size:13.5px;color:#cfd3e3}
-.feat .ic{width:30px;height:30px;border-radius:9px;background:var(--inp);border:1px solid var(--card-brd);
-  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.hero p{color:var(--muted);font-size:14px;margin-top:11px;max-width:330px;line-height:1.6}
+.feat{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.feat .row{display:flex;align-items:center;gap:11px;font-size:13.5px;color:#cfd3e3}
+.feat .ic{width:30px;height:30px;border-radius:9px;background:var(--inp);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .credit{font-size:11.5px;color:var(--muted)}
+.panel{flex:1;padding:44px 40px;display:flex;flex-direction:column;justify-content:center}
+.panel h3{font-size:23px;font-weight:600}
+.panel .sub{color:var(--muted);font-size:13.5px;margin-top:6px;margin-bottom:20px;line-height:1.55}
 
-.panel{flex:1;padding:46px 42px;display:flex;flex-direction:column;justify-content:center}
-.panel h3{font-size:24px;font-weight:600}
-.panel .sub{color:var(--muted);font-size:13.5px;margin-top:6px;margin-bottom:22px;line-height:1.55}
 .field{margin-bottom:14px}
-.field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:7px;font-weight:400}
-.field input{
-  width:100%;padding:13px 15px;border-radius:12px;background:var(--inp);
-  border:1px solid var(--card-brd);color:var(--txt);font-size:16px;outline:none;transition:.2s;
-}
-.field input::placeholder{color:#5d6379}
-.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,255,.18);background:rgba(255,255,255,.06)}
-.btn{
-  width:100%;padding:14px;border:none;border-radius:13px;cursor:pointer;margin-top:8px;
-  font-family:'Jost';font-size:15px;font-weight:600;color:#fff;letter-spacing:.3px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));transition:.2s;
-  box-shadow:0 12px 30px rgba(124,92,255,.4);
-}
+.field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:7px}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;border-radius:12px;background:var(--inp);border:1px solid var(--brd);color:var(--txt);font-size:16px;outline:none;transition:.2s;font-family:'Jost'}
+.field textarea{resize:vertical;min-height:78px}
+.field input::placeholder,.field textarea::placeholder{color:#5d6379}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,255,.18);background:rgba(255,255,255,.06)}
+.field select option{background:#13131c}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{width:100%;padding:13px;border:none;border-radius:12px;cursor:pointer;font-family:'Jost';font-size:15px;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));transition:.2s;box-shadow:0 12px 30px rgba(124,92,255,.4)}
 .btn:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(124,92,255,.5)}
-.btn:active{transform:translateY(0)}
-.btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn:active{transform:translateY(0)} .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn.ghost{background:transparent;border:1px solid var(--brd);box-shadow:none;color:var(--txt)}
+.btn.ghost:hover{background:var(--inp);box-shadow:none;transform:none}
+.btn.sm{width:auto;padding:8px 14px;font-size:13px;border-radius:9px;box-shadow:none}
 .msg{margin-top:14px;padding:11px 14px;border-radius:11px;font-size:13.5px;display:none;line-height:1.4}
 .msg.err{display:block;background:rgba(255,93,108,.12);border:1px solid rgba(255,93,108,.35);color:#ff97a2}
 .msg.ok{display:block;background:rgba(55,211,153,.12);border:1px solid rgba(55,211,153,.35);color:#7fe9c0}
-
-.welcome{text-align:center}
-.welcome .av{width:72px;height:72px;border-radius:20px;margin:0 auto 16px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;
-  font-size:28px;font-weight:700;box-shadow:0 14px 34px rgba(124,92,255,.5)}
-.welcome h3{font-size:23px}
-.chip{display:inline-block;margin-top:10px;padding:6px 14px;border-radius:30px;font-size:12.5px;font-weight:500;
-  background:rgba(124,92,255,.18);border:1px solid rgba(124,92,255,.4);color:#c9bdff}
-.meta{margin:22px 0;text-align:left;background:var(--inp);border:1px solid var(--card-brd);border-radius:14px;padding:14px 18px}
-.meta .ln{display:flex;justify-content:space-between;gap:14px;font-size:13.5px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
-.meta .ln:last-child{border:none}
-.meta .ln b{color:var(--muted);font-weight:400;flex-shrink:0}
-.meta .ln span{text-align:right;word-break:break-word}
-.ghost{background:transparent;border:1px solid var(--card-brd);box-shadow:none;color:var(--txt)}
-.ghost:hover{background:var(--inp);box-shadow:none;transform:none}
-
 .spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px;margin-right:7px}
 @keyframes sp{to{transform:rotate(360deg)}}
 
+/* ============ APP ============ */
+.app{position:relative;z-index:2;min-height:100dvh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--brd);background:rgba(13,13,24,.55);backdrop-filter:blur(20px);position:sticky;top:0;z-index:10}
+.userchip{display:flex;align-items:center;gap:10px}
+.userchip .av{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.userchip .nm{font-size:14px;font-weight:500;line-height:1.1}
+.userchip .rl{font-size:11px;color:var(--muted)}
+.nav{display:flex;gap:8px;padding:12px 18px;overflow-x:auto;border-bottom:1px solid var(--brd);background:rgba(10,10,18,.4)}
+.nav::-webkit-scrollbar{display:none}
+.nav button{flex-shrink:0;padding:9px 16px;border-radius:30px;border:1px solid var(--brd);background:var(--inp);color:var(--muted);font-family:'Jost';font-size:13.5px;font-weight:500;cursor:pointer;transition:.2s;white-space:nowrap}
+.nav button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:0 8px 20px rgba(124,92,255,.35)}
+.content{flex:1;padding:22px 22px 60px;max-width:1100px;width:100%;margin:0 auto}
+.h{font-size:21px;font-weight:600;margin-bottom:4px}
+.hs{font-size:13px;color:var(--muted);margin-bottom:20px}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:26px}
+.stat{background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:18px}
+.stat .n{font-size:30px;font-weight:700}
+.stat .l{font-size:12.5px;color:var(--muted);margin-top:3px}
+.stat .bar{height:3px;border-radius:3px;margin-top:12px;background:var(--accent)}
+
+.box{background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:20px;margin-bottom:18px}
+.box h4{font-size:15px;font-weight:600;margin-bottom:14px}
+
+.tcard{background:var(--card);border:1px solid var(--brd);border-radius:14px;padding:15px 16px;margin-bottom:11px}
+.tcard .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.tcard .tt{font-size:15px;font-weight:600;line-height:1.3}
+.tcard .ds{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.45}
+.tcard .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:12px;color:var(--muted)}
+.tcard .meta b{color:#cfd3e3;font-weight:500}
+.tcard .acts{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
+.badge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.bg-Pending{background:rgba(154,160,180,.18);color:#c2c7d6;border:1px solid rgba(154,160,180,.35)}
+.bg-Progress{background:rgba(70,181,255,.16);color:#8fd0ff;border:1px solid rgba(70,181,255,.4)}
+.bg-Done{background:rgba(55,211,153,.16);color:#7fe9c0;border:1px solid rgba(55,211,153,.4)}
+.bg-Verified{background:rgba(124,92,255,.18);color:#c9bdff;border:1px solid rgba(124,92,255,.4)}
+.bg-Overdue{background:rgba(255,93,108,.16);color:#ff97a2;border:1px solid rgba(255,93,108,.4)}
+.pri-High{color:#ff97a2} .pri-Medium{color:#ffc875} .pri-Low{color:#8fd0ff}
+
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.fchip{padding:7px 13px;border-radius:20px;border:1px solid var(--brd);background:var(--inp);color:var(--muted);font-size:12.5px;cursor:pointer;font-family:'Jost'}
+.fchip.active{background:rgba(124,92,255,.2);border-color:rgba(124,92,255,.5);color:#c9bdff}
+.frow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.frow select{padding:9px 12px;border-radius:10px;background:var(--inp);border:1px solid var(--brd);color:var(--txt);font-size:13px;font-family:'Jost';outline:none}
+.frow select option{background:#13131c}
+
+table.rep{width:100%;border-collapse:collapse;font-size:13.5px}
+table.rep th{text-align:left;color:var(--muted);font-weight:500;font-size:12px;padding:10px 8px;border-bottom:1px solid var(--brd)}
+table.rep td{padding:11px 8px;border-bottom:1px solid rgba(255,255,255,.05)}
+table.rep tr:last-child td{border:none}
+.pct{display:inline-block;min-width:42px;text-align:center;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:600}
+
+.emprow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.emprow:last-child{border:none}
+.emprow .info{font-size:14px} .emprow .info small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.empty{text-align:center;color:var(--muted);font-size:13.5px;padding:30px 10px}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:#16161f;border:1px solid var(--brd);padding:13px 20px;border-radius:12px;font-size:13.5px;z-index:100;opacity:0;transition:.3s;box-shadow:0 12px 30px rgba(0,0,0,.5);max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:rgba(55,211,153,.4)} .toast.err{border-color:rgba(255,93,108,.4)}
+
 @media(max-width:760px){
-  body{padding:0}
-  .shell{flex-direction:column;border-radius:0;min-height:100dvh;box-shadow:none}
-  .brand{padding:30px 24px 26px;border-right:none;border-bottom:1px solid var(--card-brd)}
-  .logo .dot{width:34px;height:34px}
-  .hero{margin:18px 0 4px}
-  .hero h2{font-size:23px}
-  .hero p{font-size:13.5px;margin-top:9px}
-  .feat{margin-top:14px;gap:11px}
-  .credit{margin-top:16px}
-  .panel{padding:28px 24px 40px;justify-content:flex-start}
-  .panel h3{font-size:22px}
+  .authwrap{padding:0}
+  .shell{flex-direction:column;border-radius:0;min-height:100dvh}
+  .brand{padding:28px 22px 24px;border-right:none;border-bottom:1px solid var(--brd)}
+  .hero{margin:16px 0 4px}.hero h2{font-size:23px}.hero p{font-size:13.5px}
+  .feat{margin-top:13px;gap:10px}.credit{margin-top:14px}
+  .panel{padding:26px 22px 38px;justify-content:flex-start}
+  .topbar{padding:12px 16px}.content{padding:18px 16px 60px}
+  .row2{grid-template-columns:1fr}
+  .stat .n{font-size:26px}
 }
 </style>
 </head>
 <body>
-<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
-
-<div class="shell">
-  <div class="brand">
-    <div class="logo">
-      <div class="dot">SP</div>
-      <div><h1>SP Delegation</h1><div class="tag">Task &amp; Delegation System</div></div>
-    </div>
-    <div class="hero">
-      <h2>Assign. Track.<br><span>Get it done.</span></h2>
-      <p>Delegate tasks, set deadlines, and keep every update flowing automatically — all in one place.</p>
-      <div class="feat">
-        <div class="row"><div class="ic">🔐</div> Secure single-owner login</div>
-        <div class="row"><div class="ic">📧</div> Automated email on assign &amp; follow-up</div>
-        <div class="row"><div class="ic">📊</div> Live status, reports &amp; scoring</div>
-      </div>
-    </div>
-    <div class="credit">Built by Somnath Karmakar &middot; &copy; SP Group</div>
-  </div>
-
-  <div class="panel" id="panel">
-    <div style="text-align:center;color:var(--muted);font-size:14px"><span class="spin"></span>Loading…</div>
-  </div>
-</div>
+<div class="blob b1"></div><div class="blob b2"></div>
+<div id="root"></div>
+<div class="toast" id="toast"></div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbyH6Qa5GoVCt9Ywp5Sa2EArYIUlgIogJaFO-laojEC30N_BLMjcOfF278sGNbn1GnvfnA/exec";
-const DEVICE = (navigator.userAgent || "Unknown") + " | " + (navigator.platform || "");
-const panel = document.getElementById('panel');
+const API = "https://script.google.com/macros/s/AKfycby6T_3tLs-UzraTiIKblaqe1JBhV_MOQ-3-yY71kP5s5IOp1hRGy6vAPsCyrm6CQ_m_cw/exec";
+const DEVICE = (navigator.userAgent||"Unknown")+" | "+(navigator.platform||"");
+const root = document.getElementById('root');
+let STATE = { token:'', me:null, employees:[], tasks:[], view:'dashboard',
+              filters:{date:'all',status:'all',emp:'all'} };
 
-function api(payload){
-  return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
-    .then(r=>r.json());
-}
-function tokenGet(){ try{return localStorage.getItem('sp_token')||''}catch(e){return ''} }
-function tokenSet(t){ try{localStorage.setItem('sp_token',t)}catch(e){} }
-function tokenClear(){ try{localStorage.removeItem('sp_token')}catch(e){} }
-function esc(s){return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+/* ---- api ---- */
+function api(p){ return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)}).then(r=>r.json()); }
+function tGet(){try{return localStorage.getItem('sp_token')||''}catch(e){return ''}}
+function tSet(t){try{localStorage.setItem('sp_token',t)}catch(e){}}
+function tClr(){try{localStorage.removeItem('sp_token')}catch(e){}}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function toast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+(type||'');setTimeout(()=>t.className='toast '+(type||''),3200);}
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function addDays(s,n){const d=new Date(s+'T00:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+function isDone(t){return t.status==='Done'||t.status==='Verified';}
+function isOverdue(t){return t.dueDate && t.dueDate<todayStr() && !isDone(t);}
+function initials(n){return (n||'?').trim().split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase();}
 
-/* ---------- BOOT ---------- */
+/* ===================== BOOT ===================== */
 (async function(){
-  const t = tokenGet();
-  if(t){
-    try{ const r = await api({action:'checkSession',token:t}); if(r.ok){ return showWelcome({name:r.user.name,role:r.user.role,email:r.user.email}); } }catch(e){}
-    tokenClear();
+  const t=tGet();
+  if(t){ STATE.token=t;
+    try{ const r=await api({action:'checkSession',token:t}); if(r.ok) return loadApp(); }catch(e){}
+    tClr(); STATE.token='';
   }
-  try{
-    const s = await api({action:'signupStatus'});
-    if(s.ok && s.open) renderSignup(); else renderLogin();
-  }catch(e){ renderLogin(); }
+  try{ const s=await api({action:'signupStatus'}); (s.ok&&s.open)?renderSignup():renderLogin(); }
+  catch(e){ renderLogin(); }
 })();
 
-/* ---------- SIGNUP (one-time) ---------- */
+/* ===================== AUTH SHELL ===================== */
+function authShell(inner){
+  return `<div class="authwrap"><div class="shell">
+    <div class="brand">
+      <div class="logo"><div class="dot">SP</div><div><h1>SP Delegation</h1><div class="tag">Task &amp; Delegation System</div></div></div>
+      <div class="hero"><h2>Assign. Track.<br><span>Get it done.</span></h2>
+        <p>Delegate tasks, set deadlines, and keep every update flowing automatically — all in one place.</p>
+        <div class="feat">
+          <div class="row"><div class="ic">🔐</div> Secure single-owner login</div>
+          <div class="row"><div class="ic">📧</div> Automated email on assign &amp; follow-up</div>
+          <div class="row"><div class="ic">📊</div> Live status, reports &amp; scoring</div>
+        </div></div>
+      <div class="credit">Built by Somnath Karmakar &middot; &copy; SP Group</div>
+    </div>
+    <div class="panel">${inner}</div></div></div>`;
+}
 function renderSignup(){
-  panel.innerHTML = `
+  root.innerHTML=authShell(`
     <h3>Create Your Account</h3>
-    <div class="sub">This is a one-time setup. The first account becomes the system owner — no second account can ever be created.</div>
+    <div class="sub">One-time setup. The first account becomes the system owner — no second account can ever be created.</div>
     <div class="field"><label>Full Name</label><input id="s_name" placeholder="Somnath Karmakar"></div>
     <div class="field"><label>Email Address</label><input id="s_email" type="email" placeholder="you@company.com"></div>
     <div class="field"><label>PC / Device Label</label><input id="s_pc" placeholder="e.g. Reception PC"></div>
     <div class="field"><label>Department</label><input id="s_dept" placeholder="Management" value="Management"></div>
     <div class="field"><label>Password</label><input id="s_pass" type="password" placeholder="Minimum 6 characters"></div>
     <button class="btn" id="s_btn" onclick="doSignup()">Create Account</button>
-    <div class="msg" id="s_msg"></div>
-  `;
+    <div class="msg" id="s_msg"></div>`);
 }
 async function doSignup(){
-  const btn=document.getElementById('s_btn'), msg=document.getElementById('s_msg');
-  const p={action:'signup',name:val('s_name'),email:val('s_email'),pcName:val('s_pc'),
-           department:val('s_dept'),password:val('s_pass'),device:DEVICE};
-  if(!p.name||!p.email||!p.password) return showMsg(msg,'err','Please fill in your name, email and password.');
-  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Creating…';
-  try{
-    const r=await api(p);
-    if(r.ok){ tokenSet(r.token); showWelcome(r.user); }
-    else { showMsg(msg,'err',r.error||'Signup failed.'); btn.disabled=false; btn.textContent='Create Account'; }
-  }catch(e){ showMsg(msg,'err','Network error. Please check your connection.'); btn.disabled=false; btn.textContent='Create Account'; }
+  const b=document.getElementById('s_btn'),m=document.getElementById('s_msg');
+  const p={action:'signup',name:v('s_name'),email:v('s_email'),pcName:v('s_pc'),department:v('s_dept'),password:v('s_pass'),device:DEVICE};
+  if(!p.name||!p.email||!p.password) return showMsg(m,'err','Please fill in your name, email and password.');
+  b.disabled=true;b.innerHTML='<span class="spin"></span>Creating…';
+  try{const r=await api(p); if(r.ok){tSet(r.token);STATE.token=r.token;loadApp();} else{showMsg(m,'err',r.error);reset(b,'Create Account');}}
+  catch(e){showMsg(m,'err','Network error. Check your connection.');reset(b,'Create Account');}
 }
-
-/* ---------- LOGIN ---------- */
 function renderLogin(){
-  panel.innerHTML = `
+  root.innerHTML=authShell(`
     <h3>Welcome Back</h3>
     <div class="sub">Sign in to access your dashboard.</div>
     <div class="field"><label>Email Address</label><input id="l_email" type="email" placeholder="you@company.com"></div>
     <div class="field"><label>Password</label><input id="l_pass" type="password" placeholder="Enter your password"></div>
     <button class="btn" id="l_btn" onclick="doLogin()">Sign In</button>
-    <div class="msg" id="l_msg"></div>
-  `;
+    <div style="text-align:center;margin-top:14px"><a onclick="renderForgot()" style="color:var(--accent2);cursor:pointer;font-size:13px">Forgot password?</a></div>
+    <div class="msg" id="l_msg"></div>`);
   ['l_email','l_pass'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()}));
 }
 async function doLogin(){
-  const btn=document.getElementById('l_btn'), msg=document.getElementById('l_msg');
-  const p={action:'login',email:val('l_email'),password:val('l_pass'),device:DEVICE};
-  if(!p.email||!p.password) return showMsg(msg,'err','Please enter your email and password.');
-  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Signing in…';
-  try{
-    const r=await api(p);
-    if(r.ok){ tokenSet(r.token); showWelcome(r.user); }
-    else { showMsg(msg,'err',r.error||'Login failed.'); btn.disabled=false; btn.textContent='Sign In'; }
-  }catch(e){ showMsg(msg,'err','Network error. Please check your connection.'); btn.disabled=false; btn.textContent='Sign In'; }
+  const b=document.getElementById('l_btn'),m=document.getElementById('l_msg');
+  const p={action:'login',email:v('l_email'),password:v('l_pass'),device:DEVICE};
+  if(!p.email||!p.password) return showMsg(m,'err','Please enter your email and password.');
+  b.disabled=true;b.innerHTML='<span class="spin"></span>Signing in…';
+  try{const r=await api(p); if(r.ok){tSet(r.token);STATE.token=r.token;loadApp();} else{showMsg(m,'err',r.error);reset(b,'Sign In');}}
+  catch(e){showMsg(m,'err','Network error. Check your connection.');reset(b,'Sign In');}
 }
 
-/* ---------- WELCOME (dashboard placeholder) ---------- */
-function showWelcome(u){
-  const initials=(u.name||'?').trim().split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase();
-  panel.innerHTML = `
-    <div class="welcome">
-      <div class="av">${esc(initials)}</div>
-      <h3>Hi, ${esc(u.name||'')}</h3>
-      <div class="chip">${esc(u.role||'Owner')}</div>
-      <div class="meta">
-        <div class="ln"><b>Account ID</b><span>${esc(u.empId||'-')}</span></div>
-        <div class="ln"><b>Email</b><span>${esc(u.email||'-')}</span></div>
-        <div class="ln"><b>Department</b><span>${esc(u.department||'-')}</span></div>
-        <div class="ln"><b>PC / Device</b><span>${esc(u.pcName||'-')}</span></div>
+/* ---- FORGOT / RESET PASSWORD ---- */
+function renderForgot(){
+  root.innerHTML=authShell(`
+    <h3>Reset Password</h3>
+    <div class="sub">Enter your registered email. We'll send you a verification code.</div>
+    <div class="field"><label>Email Address</label><input id="f_email" type="email" placeholder="you@company.com"></div>
+    <button class="btn" id="f_btn" onclick="doForgot()">Send Code</button>
+    <div style="text-align:center;margin-top:14px"><a onclick="renderLogin()" style="color:var(--accent2);cursor:pointer;font-size:13px">Back to login</a></div>
+    <div class="msg" id="f_msg"></div>`);
+  document.getElementById('f_email').addEventListener('keydown',e=>{if(e.key==='Enter')doForgot()});
+}
+async function doForgot(){
+  const b=document.getElementById('f_btn'),m=document.getElementById('f_msg');
+  const email=v('f_email');
+  if(!email) return showMsg(m,'err','Please enter your email.');
+  b.disabled=true;b.innerHTML='<span class="spin"></span>Sending…';
+  try{const r=await api({action:'forgotPassword',email:email});
+    if(r.ok) renderReset(email); else{showMsg(m,'err',r.error);reset(b,'Send Code');}
+  }catch(e){showMsg(m,'err','Network error. Check your connection.');reset(b,'Send Code');}
+}
+function renderReset(email){
+  root.innerHTML=authShell(`
+    <h3>Enter Code</h3>
+    <div class="sub">If <b>${esc(email)}</b> is registered, a 6-digit code has been emailed. It expires in 10 minutes.</div>
+    <div class="field"><label>Verification Code</label><input id="r_otp" inputmode="numeric" placeholder="6-digit code"></div>
+    <div class="field"><label>New Password</label><input id="r_pass" type="password" placeholder="Minimum 6 characters"></div>
+    <button class="btn" id="r_btn" onclick="doReset('${esc(email)}')">Reset Password</button>
+    <div style="text-align:center;margin-top:14px"><a onclick="renderForgot()" style="color:var(--accent2);cursor:pointer;font-size:13px">Resend / change email</a></div>
+    <div class="msg" id="r_msg"></div>`);
+}
+async function doReset(email){
+  const b=document.getElementById('r_btn'),m=document.getElementById('r_msg');
+  const otp=v('r_otp'),pass=v('r_pass');
+  if(!otp||!pass) return showMsg(m,'err','Please enter the code and a new password.');
+  b.disabled=true;b.innerHTML='<span class="spin"></span>Resetting…';
+  try{const r=await api({action:'resetPassword',email:email,otp:otp,newPassword:pass});
+    if(r.ok){ renderLogin(); setTimeout(()=>{const lm=document.getElementById('l_msg'); if(lm) showMsg(lm,'ok',r.message);},60); }
+    else{ showMsg(m,'err',r.error); reset(b,'Reset Password'); }
+  }catch(e){showMsg(m,'err','Network error. Check your connection.');reset(b,'Reset Password');}
+}
+
+/* ===================== APP ===================== */
+async function loadApp(){
+  root.innerHTML=`<div class="authwrap"><div style="color:var(--muted);font-size:14px"><span class="spin"></span>Loading your workspace…</div></div>`;
+  await refresh(true);
+}
+async function refresh(first){
+  try{
+    const r=await api({action:'listAll',token:STATE.token});
+    if(!r.ok){ tClr(); STATE.token=''; return renderLogin(); }
+    STATE.me=r.me; STATE.employees=r.employees||[]; STATE.tasks=r.tasks||[];
+    if(first) renderShell();
+    renderView();
+  }catch(e){ toast('Network error while loading.','err'); }
+}
+function renderShell(){
+  root.innerHTML=`
+    <div class="app">
+      <div class="topbar">
+        <div class="logo"><div class="dot">SP</div><div><h1 style="font-size:16px">SP Delegation</h1><div class="tag" style="font-size:11px">Task &amp; Delegation System</div></div></div>
+        <div class="userchip">
+          <div style="text-align:right" class="hideSm"><div class="nm">${esc(STATE.me.name)}</div><div class="rl">${esc(STATE.me.role)}</div></div>
+          <div class="av">${esc(initials(STATE.me.name))}</div>
+          <button class="btn ghost sm" onclick="doLogout()">Sign Out</button>
+        </div>
       </div>
-      <div class="sub" style="margin-bottom:16px">Login successful. Your dashboard — Add Employee, Assign Task and Reports — is coming next.</div>
-      <button class="btn ghost" onclick="doLogout()">Sign Out</button>
+      <div class="nav" id="nav">
+        ${navBtn('dashboard','Dashboard')}${navBtn('employees','Employees')}${navBtn('assign','Assign Task')}${navBtn('tasks','Tasks')}${navBtn('reports','Reports')}
+      </div>
+      <div class="content" id="content"></div>
     </div>`;
 }
-async function doLogout(){
-  const t=tokenGet();
-  try{ await api({action:'logout',token:t}); }catch(e){}
-  tokenClear(); location.reload();
+function navBtn(id,label){return `<button data-v="${id}" class="${STATE.view===id?'active':''}" onclick="go('${id}')">${label}</button>`;}
+function go(v){STATE.view=v;document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.v===v));renderView();}
+
+function renderView(){
+  const c=document.getElementById('content'); if(!c) return;
+  if(STATE.view==='dashboard') c.innerHTML=viewDashboard();
+  else if(STATE.view==='employees') c.innerHTML=viewEmployees();
+  else if(STATE.view==='assign') c.innerHTML=viewAssign();
+  else if(STATE.view==='tasks') c.innerHTML=viewTasks();
+  else if(STATE.view==='reports') c.innerHTML=viewReports();
+  window.scrollTo(0,0);
 }
 
-function val(id){return (document.getElementById(id).value||'').trim()}
-function showMsg(el,type,txt){el.className='msg '+type;el.textContent=txt}
+/* ---- DASHBOARD ---- */
+function viewDashboard(){
+  const t=STATE.tasks;
+  const total=t.length, pend=t.filter(x=>x.status==='Pending').length,
+        prog=t.filter(x=>x.status==='In Progress').length,
+        done=t.filter(isDone).length, over=t.filter(isOverdue).length;
+  const recent=t.slice().reverse().slice(0,5);
+  return `<div class="h">Dashboard</div><div class="hs">Overview of all delegated tasks.</div>
+    <div class="cards">
+      ${stat(total,'Total Tasks','var(--accent)')}
+      ${stat(pend,'Pending','#9aa0b4')}
+      ${stat(prog,'In Progress','var(--info)')}
+      ${stat(done,'Completed','var(--ok)')}
+      ${stat(over,'Overdue','var(--danger)')}
+    </div>
+    <div class="box"><h4>Recent Tasks</h4>
+      ${recent.length?recent.map(taskCard).join(''):'<div class="empty">No tasks yet. Go to “Assign Task” to create your first one.</div>'}
+    </div>`;
+}
+function stat(n,l,c){return `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div><div class="bar" style="background:${c}"></div></div>`;}
+
+/* ---- EMPLOYEES ---- */
+function viewEmployees(){
+  const list=STATE.employees.filter(e=>e.role!=='Super Admin');
+  return `<div class="h">Employees</div><div class="hs">Add team members you delegate to. They receive task emails (no separate login).</div>
+    <div class="box"><h4>Add Employee</h4>
+      <div class="row2">
+        <div class="field"><label>Full Name</label><input id="e_name" placeholder="Employee name"></div>
+        <div class="field"><label>Email Address</label><input id="e_email" type="email" placeholder="employee@company.com"></div>
+      </div>
+      <div class="field"><label>Department</label><input id="e_dept" placeholder="e.g. Sales / Production"></div>
+      <button class="btn sm" onclick="addEmp()" id="e_btn">+ Add Employee</button>
+    </div>
+    <div class="box"><h4>Team (${list.length})</h4>
+      ${list.length?list.map(empRow).join(''):'<div class="empty">No employees added yet.</div>'}
+    </div>`;
+}
+function empRow(e){
+  const active=String(e.status).toLowerCase()!=='inactive';
+  return `<div class="emprow">
+    <div class="info">${esc(e.name)} <small>${esc(e.email)}${e.department?' · '+esc(e.department):''}</small></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="badge ${active?'bg-Done':'bg-Overdue'}">${active?'Active':'Inactive'}</span>
+      <button class="btn ghost sm" onclick="toggleEmp('${esc(e.empId)}','${active?'Inactive':'Active'}')">${active?'Disable':'Enable'}</button>
+    </div></div>`;
+}
+async function addEmp(){
+  const b=document.getElementById('e_btn');
+  const p={action:'addEmployee',token:STATE.token,name:v('e_name'),email:v('e_email'),department:v('e_dept')};
+  if(!p.name||!p.email) return toast('Name and email are required.','err');
+  b.disabled=true;b.innerHTML='<span class="spin"></span>Adding…';
+  const r=await api(p);
+  if(r.ok){toast('Employee added.','ok');await refresh();} else{toast(r.error||'Failed.','err');b.disabled=false;b.textContent='+ Add Employee';}
+}
+async function toggleEmp(id,status){
+  const r=await api({action:'setEmployeeStatus',token:STATE.token,empId:id,status:status});
+  r.ok?(toast('Updated.','ok'),refresh()):toast(r.error||'Failed.','err');
+}
+
+/* ---- ASSIGN TASK ---- */
+function viewAssign(){
+  const opts=STATE.employees.filter(e=>String(e.status).toLowerCase()!=='inactive')
+    .map(e=>`<option value="${esc(e.email)}">${esc(e.name)} (${esc(e.email)})</option>`).join('');
+  return `<div class="h">Assign Task</div><div class="hs">Create a task and notify the employee by email automatically.</div>
+    <div class="box">
+      <div class="field"><label>Assign To</label>
+        <select id="t_emp">${opts?('<option value="">Select an employee…</option>'+opts):'<option value="">No employees — add one first</option>'}</select>
+      </div>
+      <div class="field"><label>Task Title</label><input id="t_title" placeholder="What needs to be done?"></div>
+      <div class="field"><label>Description</label><textarea id="t_desc" placeholder="Add any details or instructions…"></textarea></div>
+      <div class="row2">
+        <div class="field"><label>Priority</label><select id="t_pri"><option>Medium</option><option>High</option><option>Low</option></select></div>
+        <div class="field"><label>Due Date</label><input id="t_due" type="date"></div>
+      </div>
+      <button class="btn" onclick="createTask()" id="t_btn">Assign &amp; Send Email</button>
+    </div>`;
+}
+async function createTask(){
+  const b=document.getElementById('t_btn');
+  const p={action:'createTask',token:STATE.token,assignedTo:v('t_emp'),title:v('t_title'),
+           description:v('t_desc'),priority:v('t_pri'),dueDate:v('t_due')};
+  if(!p.assignedTo) return toast('Please select an employee.','err');
+  if(!p.title) return toast('Please enter a task title.','err');
+  b.disabled=true;b.innerHTML='<span class="spin"></span>Assigning…';
+  const r=await api(p);
+  if(r.ok){toast(r.message||'Task assigned.','ok');await refresh();go('tasks');}
+  else{toast(r.error||'Failed.','err');b.disabled=false;b.innerHTML='Assign &amp; Send Email';}
+}
+
+/* ---- TASKS + FILTERS ---- */
+function viewTasks(){
+  const f=STATE.filters;
+  const empOpts=STATE.employees.map(e=>`<option value="${esc(e.email)}" ${f.emp===e.email?'selected':''}>${esc(e.name)}</option>`).join('');
+  const dateChips=[['all','All'],['today','Today'],['tomorrow','Tomorrow'],['future','Future'],['previous','Previous']]
+    .map(d=>`<div class="fchip ${f.date===d[0]?'active':''}" onclick="setF('date','${d[0]}')">${d[1]}</div>`).join('');
+  const filtered=applyFilters();
+  return `<div class="h">Tasks</div><div class="hs">Filter, track and update every delegated task.</div>
+    <div class="filters">${dateChips}</div>
+    <div class="frow">
+      <select onchange="setF('status',this.value)">
+        ${['all','Pending','In Progress','Done','Verified','Overdue'].map(s=>`<option value="${s}" ${f.status===s?'selected':''}>${s==='all'?'All status':s}</option>`).join('')}
+      </select>
+      <select onchange="setF('emp',this.value)">
+        <option value="all" ${f.emp==='all'?'selected':''}>All employees</option>${empOpts}
+      </select>
+    </div>
+    ${filtered.length?filtered.map(taskCard).join(''):'<div class="empty">No tasks match these filters.</div>'}`;
+}
+function setF(k,val){STATE.filters[k]=val;renderView();}
+function applyFilters(){
+  const f=STATE.filters,today=todayStr(),tmr=addDays(today,1);
+  return STATE.tasks.slice().reverse().filter(t=>{
+    if(f.emp!=='all' && t.assignedTo!==f.emp) return false;
+    if(f.status==='Overdue'){ if(!isOverdue(t)) return false; }
+    else if(f.status!=='all' && t.status!==f.status) return false;
+    if(f.date==='today'){ if(t.dueDate!==today) return false; }
+    else if(f.date==='tomorrow'){ if(t.dueDate!==tmr) return false; }
+    else if(f.date==='future'){ if(!(t.dueDate && t.dueDate>tmr)) return false; }
+    else if(f.date==='previous'){ if(!(t.dueDate && t.dueDate<today)) return false; }
+    return true;
+  });
+}
+function taskCard(t){
+  const emp=STATE.employees.find(e=>e.email===t.assignedTo);
+  const nm=emp?emp.name:t.assignedTo;
+  const stt=isOverdue(t)?'Overdue':t.status;
+  const cls={'Pending':'bg-Pending','In Progress':'bg-Progress','Done':'bg-Done','Verified':'bg-Verified','Overdue':'bg-Overdue'}[stt]||'bg-Pending';
+  return `<div class="tcard">
+    <div class="top">
+      <div><div class="tt">${esc(t.title)}</div>${t.description?`<div class="ds">${esc(t.description)}</div>`:''}</div>
+      <span class="badge ${cls}">${stt}</span>
+    </div>
+    <div class="meta">
+      <span>👤 <b>${esc(nm)}</b></span>
+      <span>🚩 <b class="pri-${esc(t.priority)}">${esc(t.priority||'—')}</b></span>
+      <span>📅 Due <b>${esc(t.dueDate||'—')}</b></span>
+      <span>🆔 ${esc(t.taskId)}</span>
+    </div>
+    <div class="acts">
+      ${t.status!=='In Progress'&&!isDone(t)?`<button class="btn ghost sm" onclick="setStatus('${t.taskId}','In Progress')">Start</button>`:''}
+      ${!isDone(t)?`<button class="btn ghost sm" onclick="setStatus('${t.taskId}','Done')">Mark Done</button>`:''}
+      ${t.status==='Done'?`<button class="btn ghost sm" onclick="setStatus('${t.taskId}','Verified')">Verify ✓</button>`:''}
+      ${!isDone(t)?`<button class="btn ghost sm" onclick="followup('${t.taskId}')">📧 Follow-up</button>`:''}
+      <button class="btn ghost sm" onclick="delTask('${t.taskId}')" style="color:#ff97a2">Delete</button>
+    </div></div>`;
+}
+async function setStatus(id,st){
+  const r=await api({action:'updateTaskStatus',token:STATE.token,taskId:id,status:st});
+  r.ok?(toast(r.message,'ok'),refresh()):toast(r.error||'Failed.','err');
+}
+async function followup(id){
+  toast('Sending follow-up…');
+  const r=await api({action:'followupTask',token:STATE.token,taskId:id});
+  toast(r.ok?r.message:(r.error||'Email failed.'),r.ok?'ok':'err');
+}
+async function delTask(id){
+  if(!confirm('Delete this task? This cannot be undone.')) return;
+  const r=await api({action:'deleteTask',token:STATE.token,taskId:id});
+  r.ok?(toast('Task deleted.','ok'),refresh()):toast(r.error||'Failed.','err');
+}
+
+/* ---- REPORTS ---- */
+function viewReports(){
+  const emps=STATE.employees.filter(e=>e.role!=='Super Admin');
+  const rows=emps.map(e=>{
+    const ts=STATE.tasks.filter(t=>t.assignedTo===e.email);
+    const total=ts.length, done=ts.filter(isDone).length, over=ts.filter(isOverdue).length;
+    const pct=total?Math.round(done/total*100):0;
+    const col=pct>=75?'var(--ok)':pct>=40?'var(--warn)':'var(--danger)';
+    return `<tr>
+      <td><b>${esc(e.name)}</b><br><small style="color:var(--muted)">${esc(e.department||'')}</small></td>
+      <td>${total}</td><td>${done}</td><td>${total-done}</td>
+      <td style="color:${over?'var(--danger)':'inherit'}">${over}</td>
+      <td><span class="pct" style="background:${col}22;color:${col};border:1px solid ${col}66">${pct}%</span></td>
+    </tr>`;
+  }).join('');
+  return `<div class="h">Reports</div><div class="hs">Per-employee performance &amp; completion rate.</div>
+    <div class="box">
+      ${emps.length?`<table class="rep"><thead><tr><th>Employee</th><th>Total</th><th>Done</th><th>Pending</th><th>Overdue</th><th>On-time</th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="empty">Add employees and assign tasks to see reports.</div>'}
+    </div>`;
+}
+
+/* ---- common ---- */
+async function doLogout(){ try{await api({action:'logout',token:STATE.token});}catch(e){} tClr(); STATE.token=''; location.reload(); }
+function v(id){return (document.getElementById(id).value||'').trim();}
+function showMsg(el,type,txt){el.className='msg '+type;el.textContent=txt||'Something went wrong.';}
+function reset(b,txt){b.disabled=false;b.textContent=txt;}
 </script>
 </body>
 </html>
