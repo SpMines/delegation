@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Sp_Mines - Delegation App</title>
+<title>Sp_Mines - Delegation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -126,12 +126,9 @@ table.rep tr:last-child td{border:none}
 .faceLoader{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(7,7,16,.55);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
 .faceLoader.show{display:flex;animation:flFade .2s ease}
 @keyframes flFade{from{opacity:0}to{opacity:1}}
-.fl-card{width:150px;height:150px;border-radius:34px;background:rgba(20,20,32,.72);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;box-shadow:0 22px 60px rgba(0,0,0,.55);animation:flPop .32s cubic-bezier(.2,.85,.3,1.25)}
 @keyframes flPop{from{transform:scale(.82);opacity:0}to{transform:scale(1);opacity:1}}
-.fl-svg{width:100px;height:100px}
-.fl-face line,.fl-face path{stroke:url(#flg);stroke-width:2.5;stroke-linecap:round;fill:none}
-.fl-arc{filter:drop-shadow(0 0 5px var(--accent))}
-.fl-tick{stroke:rgba(255,255,255,.16);stroke-width:1.6;stroke-linecap:round}
+.loading-text{font-family:'Jost',sans-serif;font-size:30px;font-weight:700;letter-spacing:4px;text-transform:uppercase;background:linear-gradient(90deg,rgba(255,255,255,.12) 0%,#fff 50%,rgba(255,255,255,.12) 100%);background-size:200% auto;color:transparent;-webkit-background-clip:text;background-clip:text;animation:shimmer 1.8s linear infinite}
+@keyframes shimmer{to{background-position:200% center}}
 
 /* ===== Modal popup ===== */
 .modal{position:fixed;inset:0;z-index:9998;display:none;align-items:center;justify-content:center;background:rgba(7,7,16,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:20px}
@@ -162,22 +159,9 @@ table.rep tr:last-child td{border:none}
 <div id="root"></div>
 <div class="toast" id="toast"></div>
 
-<!-- Face ID style loader -->
+<!-- Loading overlay -->
 <div class="faceLoader" id="faceLoader">
-  <div class="fl-card">
-    <svg class="fl-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-      <defs><linearGradient id="flg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#46b5ff"/></linearGradient></defs>
-      <circle class="fl-ring" cx="60" cy="60" r="52" fill="none" stroke="url(#flg)" stroke-width="3" stroke-dasharray="5 11" stroke-linecap="round">
-        <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="360 60 60" dur="2.2s" repeatCount="indefinite"/>
-      </circle>
-      <rect class="fl-frame" x="36" y="36" width="48" height="48" rx="15" fill="none" stroke-width="2"/>
-      <g class="fl-face">
-        <line x1="50" y1="53" x2="50" y2="58"/><line x1="70" y1="53" x2="70" y2="58"/>
-        <path d="M60 55 L60 63 Q60 66 57 66"/><path d="M51 71 Q60 77 69 71"/>
-      </g>
-      <line class="fl-scan" x1="38" y1="60" x2="82" y2="60" stroke="url(#flg)" stroke-width="2.5" stroke-linecap="round"/>
-    </svg>
-  </div>
+  <div class="loading-text">Delegation</div>
 </div>
 
 <!-- Modal popup -->
