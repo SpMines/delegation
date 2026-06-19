@@ -118,7 +118,7 @@ table.rep tr:last-child td{border:none}
 .emprow .info{font-size:14px} .emprow .info small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
 .empty{text-align:center;color:var(--muted);font-size:13.5px;padding:30px 10px}
 
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:#16161f;border:1px solid var(--brd);padding:13px 20px;border-radius:12px;font-size:13.5px;z-index:100;opacity:0;transition:.3s;box-shadow:0 12px 30px rgba(0,0,0,.5);max-width:90vw}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:#16161f;border:1px solid var(--brd);padding:13px 20px;border-radius:12px;font-size:13.5px;z-index:10001;opacity:0;transition:.3s;box-shadow:0 12px 30px rgba(0,0,0,.5);max-width:90vw}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.ok{border-color:rgba(55,211,153,.4)} .toast.err{border-color:rgba(255,93,108,.4)}
 
@@ -129,10 +129,9 @@ table.rep tr:last-child td{border:none}
 .fl-card{width:150px;height:150px;border-radius:34px;background:rgba(20,20,32,.72);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;box-shadow:0 22px 60px rgba(0,0,0,.55);animation:flPop .32s cubic-bezier(.2,.85,.3,1.25)}
 @keyframes flPop{from{transform:scale(.82);opacity:0}to{transform:scale(1);opacity:1}}
 .fl-svg{width:100px;height:100px}
-.fl-frame{stroke:rgba(255,255,255,.22)}
 .fl-face line,.fl-face path{stroke:url(#flg);stroke-width:2.5;stroke-linecap:round;fill:none}
-.fl-scan{filter:drop-shadow(0 0 5px var(--accent));animation:flScan 1.5s ease-in-out infinite}
-@keyframes flScan{0%,100%{transform:translateY(-11px);opacity:.25}50%{transform:translateY(11px);opacity:1}}
+.fl-arc{filter:drop-shadow(0 0 5px var(--accent))}
+.fl-tick{stroke:rgba(255,255,255,.16);stroke-width:1.6;stroke-linecap:round}
 
 /* ===== Modal popup ===== */
 .modal{position:fixed;inset:0;z-index:9998;display:none;align-items:center;justify-content:center;background:rgba(7,7,16,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:20px}
