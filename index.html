@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Sp_Mines - Delegation</title>
+<title>SP Task & Delegation System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -141,6 +141,40 @@ table.rep tr:last-child td{border:none}
 .modal-acts .btn{margin-top:0}
 .btn.danger{background:linear-gradient(135deg,#ff5d6c,#ff3b6b);box-shadow:0 12px 30px rgba(255,93,108,.4)}
 
+/* ===== charts + report ===== */
+.bars{display:flex;flex-direction:column;gap:12px}
+.barrow{display:grid;grid-template-columns:120px 1fr 54px;align-items:center;gap:12px;font-size:13px}
+.barrow .nm{color:#cfd3e3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bartrack{height:22px;border-radius:7px;background:var(--inp);border:1px solid var(--brd);overflow:hidden;display:flex}
+.barseg{height:100%;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.barval{text-align:right;font-weight:600;font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+.repcard{background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:18px;margin-bottom:14px}
+.rephead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.repname{font-size:16px;font-weight:600}
+.repname small{display:block;color:var(--muted);font-size:12px;font-weight:400;margin-top:2px}
+.ring{width:64px;height:64px;flex-shrink:0}
+.repgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:10px;margin-bottom:12px}
+.repbox{background:var(--inp);border:1px solid var(--brd);border-radius:11px;padding:9px 6px;text-align:center}
+.repbox .n{font-size:18px;font-weight:700}
+.repbox .l{font-size:10.5px;color:var(--muted);margin-top:2px}
+.rank{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:8px;background:var(--inp);border:1px solid var(--brd);font-size:12px;font-weight:600;margin-right:8px}
+.rank.g1{background:rgba(255,199,117,.2);border-color:rgba(255,199,117,.5);color:#ffc875}
+.rank.g2{background:rgba(200,206,222,.16);border-color:rgba(200,206,222,.4);color:#c8cede}
+.rank.g3{background:rgba(205,127,80,.18);border-color:rgba(205,127,80,.45);color:#e0a075}
+
+/* ===== autocomplete ===== */
+.ac{position:relative}
+.aclist{position:absolute;top:100%;left:0;right:0;z-index:20;background:#14141f;border:1px solid var(--brd);border-radius:12px;margin-top:5px;max-height:190px;overflow-y:auto;display:none;box-shadow:0 14px 34px rgba(0,0,0,.5)}
+.aclist.show{display:block}
+.acitem{padding:11px 14px;font-size:14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05)}
+.acitem:last-child{border:none}
+.acitem:hover,.acitem.on{background:rgba(124,92,255,.16)}
+.acitem small{display:block;color:var(--muted);font-size:11.5px;margin-top:1px}
+.acnew{color:#7fe9c0}
+
 @media(max-width:760px){
   .authwrap{padding:0}
   .shell{flex-direction:column;border-radius:0;min-height:100dvh}
@@ -175,10 +209,10 @@ table.rep tr:last-child td{border:none}
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycby6T_3tLs-UzraTiIKblaqe1JBhV_MOQ-3-yY71kP5s5IOp1hRGy6vAPsCyrm6CQ_m_cw/exec";
+const API = "https://script.google.com/macros/s/AKfycbzoAsKD6L8Y2vrTlyiLVWy1C-wVkxPgiiu7OJQH4evdML54PrfXmRBvbcb6sR-4StFSAA/exec";
 const DEVICE = (navigator.userAgent||"Unknown")+" | "+(navigator.platform||"");
 const root = document.getElementById('root');
-let STATE = { token:'', me:null, employees:[], tasks:[], view:'dashboard',
+let STATE = { token:'', me:null, users:[], employees:[], tasks:[], report:[], totals:null, cc:'91', view:'dashboard',
               filters:{date:'all',status:'all',emp:'all'} };
 
 /* ---- api (with Face ID loader on every server action) ---- */
@@ -203,6 +237,20 @@ function modalConfirm(o){
   document.getElementById('modal').classList.add('show');
 }
 function modalAlert(message,title,icon){ modalConfirm({title:title||'Notice',message:message,icon:icon||'ℹ️',confirmText:'OK'}); }
+function modalPrompt(o){
+  document.getElementById('modalIc').textContent=o.icon||'✏️';
+  document.getElementById('modalTitle').textContent=o.title||'Enter value';
+  const msg=document.getElementById('modalMsg');
+  msg.innerHTML=(o.message?'<div style="margin-bottom:12px">'+esc(o.message)+'</div>':'')+
+    '<input id="modalInput" type="'+(o.password?'password':'text')+'" placeholder="'+esc(o.placeholder||'')+'" style="width:100%;padding:12px 14px;border-radius:12px;background:var(--inp);border:1px solid var(--brd);color:var(--txt);font-size:16px;outline:none;font-family:Jost">';
+  const acts=document.getElementById('modalActs'); acts.innerHTML='';
+  const cancel=document.createElement('button'); cancel.className='btn ghost'; cancel.textContent='Cancel'; cancel.onclick=closeModal;
+  const ok=document.createElement('button'); ok.className='btn'; ok.textContent=o.confirmText||'Save';
+  ok.onclick=function(){ const val=(document.getElementById('modalInput').value||'').trim(); closeModal(); if(o.onConfirm) o.onConfirm(val); };
+  acts.appendChild(cancel); acts.appendChild(ok);
+  document.getElementById('modal').classList.add('show');
+  setTimeout(()=>{const i=document.getElementById('modalInput'); if(i){i.focus(); i.addEventListener('keydown',e=>{if(e.key==='Enter')ok.click();});}},60);
+}
 function closeModal(){ document.getElementById('modal').classList.remove('show'); }
 function tGet(){try{return localStorage.getItem('sp_token')||''}catch(e){return ''}}
 function tSet(t){try{localStorage.setItem('sp_token',t)}catch(e){}}
@@ -248,6 +296,7 @@ function renderSignup(){
     <div class="sub">One-time setup. The first account becomes the system owner — no second account can ever be created.</div>
     <div class="field"><label>Full Name</label><input id="s_name" placeholder="Somnath Karmakar"></div>
     <div class="field"><label>Email Address</label><input id="s_email" type="email" placeholder="you@company.com"></div>
+    <div class="field"><label>Phone / WhatsApp <span style="color:#5d6379">(optional)</span></label><input id="s_phone" inputmode="numeric" placeholder="10-digit number"></div>
     <div class="field"><label>PC / Device Label</label><input id="s_pc" placeholder="e.g. Reception PC"></div>
     <div class="field"><label>Department</label><input id="s_dept" placeholder="Management" value="Management"></div>
     <div class="field"><label>Password</label><input id="s_pass" type="password" placeholder="Minimum 6 characters"></div>
@@ -256,7 +305,7 @@ function renderSignup(){
 }
 async function doSignup(){
   const b=document.getElementById('s_btn'),m=document.getElementById('s_msg');
-  const p={action:'signup',name:v('s_name'),email:v('s_email'),pcName:v('s_pc'),department:v('s_dept'),password:v('s_pass'),device:DEVICE};
+  const p={action:'signup',name:v('s_name'),email:v('s_email'),phone:v('s_phone'),pcName:v('s_pc'),department:v('s_dept'),password:v('s_pass'),device:DEVICE};
   if(!p.name||!p.email||!p.password) return showMsg(m,'err','Please fill in your name, email and password.');
   b.disabled=true;b.innerHTML='<span class="spin"></span>Creating…';
   try{const r=await api(p); if(r.ok){tSet(r.token);STATE.token=r.token;loadApp();} else{showMsg(m,'err',r.error);reset(b,'Create Account');}}
@@ -332,7 +381,10 @@ async function refresh(first){
   try{
     const r=await api({action:'listAll',token:STATE.token});
     if(!r.ok){ tClr(); STATE.token=''; return renderLogin(); }
-    STATE.me=r.me; STATE.employees=r.employees||[]; STATE.tasks=r.tasks||[];
+    STATE.me=r.me; STATE.users=r.users||[]; STATE.tasks=r.tasks||[]; STATE.cc=r.countryCode||'91';
+    STATE.employees=STATE.users.filter(u=>u.role==='Employee');
+    const rep=await api({action:'getReport',token:STATE.token});
+    if(rep.ok){ STATE.report=rep.report||[]; STATE.totals=rep.totals||null; }
     if(first) renderShell();
     renderView();
   }catch(e){ toast('Network error while loading.','err'); }
@@ -349,7 +401,7 @@ function renderShell(){
         </div>
       </div>
       <div class="nav" id="nav">
-        ${navBtn('dashboard','Dashboard')}${navBtn('employees','Employees')}${navBtn('assign','Assign Task')}${navBtn('tasks','Tasks')}${navBtn('reports','Reports')}
+        ${navBtn('dashboard','Dashboard')}${navBtn('users','Users')}${navBtn('assign','Assign Task')}${navBtn('tasks','Tasks')}${navBtn('reports','Reports')}
       </div>
       <div class="content" id="content"></div>
     </div>`;
@@ -360,7 +412,7 @@ function go(v){STATE.view=v;document.querySelectorAll('#nav button').forEach(b=>
 function renderView(){
   const c=document.getElementById('content'); if(!c) return;
   if(STATE.view==='dashboard') c.innerHTML=viewDashboard();
-  else if(STATE.view==='employees') c.innerHTML=viewEmployees();
+  else if(STATE.view==='users') c.innerHTML=viewUsers();
   else if(STATE.view==='assign') c.innerHTML=viewAssign();
   else if(STATE.view==='tasks') c.innerHTML=viewTasks();
   else if(STATE.view==='reports') c.innerHTML=viewReports();
@@ -374,6 +426,15 @@ function viewDashboard(){
         prog=t.filter(x=>x.status==='In Progress').length,
         done=t.filter(isDone).length, over=t.filter(isOverdue).length;
   const recent=t.slice().reverse().slice(0,5);
+  const top=(STATE.report||[]).filter(r=>r.total>0).slice(0,5);
+  const topBars=top.map((r,i)=>{
+    const c=r.score>=75?'#37d399':r.score>=45?'#ffb547':'#ff5d6c';
+    return `<div class="barrow">
+      <div class="nm"><span class="rank ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i+1}</span>${esc(r.name)}</div>
+      <div class="bartrack"><div class="barseg" style="width:${r.score}%;background:${c}"></div></div>
+      <div class="barval" style="color:${c}">${r.score}</div>
+    </div>`;
+  }).join('');
   return `<div class="h">Dashboard</div><div class="hs">Overview of all delegated tasks.</div>
     <div class="cards">
       ${stat(total,'Total Tasks','var(--accent)')}
@@ -382,84 +443,162 @@ function viewDashboard(){
       ${stat(done,'Completed','var(--ok)')}
       ${stat(over,'Overdue','var(--danger)')}
     </div>
+    ${top.length?`<div class="box"><h4>Top Performers</h4><div class="bars">${topBars}</div>
+      <div class="legend"><span>Open Reports for full breakdown &amp; CSV export.</span></div></div>`:''}
     <div class="box"><h4>Recent Tasks</h4>
       ${recent.length?recent.map(taskCard).join(''):'<div class="empty">No tasks yet. Go to “Assign Task” to create your first one.</div>'}
     </div>`;
 }
 function stat(n,l,c){return `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div><div class="bar" style="background:${c}"></div></div>`;}
 
-/* ---- EMPLOYEES ---- */
-function viewEmployees(){
-  const list=STATE.employees.filter(e=>e.role!=='Super Admin');
-  return `<div class="h">Employees</div><div class="hs">Add team members you delegate to. They receive task emails (no separate login).</div>
-    <div class="box"><h4>Add Employee</h4>
-      <div class="row2">
-        <div class="field"><label>Full Name</label><input id="e_name" placeholder="Employee name"></div>
-        <div class="field"><label>Email Address</label><input id="e_email" type="email" placeholder="employee@company.com"></div>
+/* ---- USERS (Coordinators + Employees) ---- */
+function viewUsers(){
+  const isOwner=STATE.me.role==='Super Admin';
+  const coords=STATE.users.filter(u=>u.role==='Coordinator');
+  const emps=STATE.users.filter(u=>u.role==='Employee');
+  const addBox = isOwner ? `
+    <div class="box"><h4>Add User</h4>
+      <div class="field"><label>Role</label>
+        <select id="u_role" onchange="onRoleChange()">
+          <option value="Employee">Employee — record only, no login</option>
+          <option value="Coordinator">Coordinator — can log in, full task access</option>
+        </select>
       </div>
-      <div class="field"><label>Department</label><input id="e_dept" placeholder="e.g. Sales / Production"></div>
-      <button class="btn sm" onclick="addEmp()" id="e_btn">+ Add Employee</button>
+      <div class="row2">
+        <div class="field"><label>Full Name</label><input id="u_name" placeholder="Full name"></div>
+        <div class="field"><label>Department</label><input id="u_dept" placeholder="e.g. Sales / Production"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Email <span id="u_emlbl" style="color:#5d6379">(optional)</span></label><input id="u_email" type="email" placeholder="name@company.com"></div>
+        <div class="field"><label>Phone / WhatsApp <span style="color:#5d6379">(optional)</span></label><input id="u_phone" inputmode="numeric" placeholder="10-digit number"></div>
+      </div>
+      <div class="field" id="u_passwrap" style="display:none"><label>Login Password</label><input id="u_pass" type="password" placeholder="Minimum 6 characters"></div>
+      <button class="btn sm" id="u_btn" onclick="addUser()">+ Add User</button>
+      <div class="hs" style="margin:12px 0 0">Employees don't log in. Give them an email or a phone number (at least one) so you can notify them.</div>
+    </div>` : '';
+  return `<div class="h">Users</div><div class="hs">${isOwner?'Add coordinators (with login) and employees (records only).':'Team directory. Only the owner can add or edit users.'}</div>
+    ${addBox}
+    <div class="box"><h4>Coordinators (${coords.length})</h4>
+      ${coords.length?coords.map(u=>userRow(u,isOwner)).join(''):'<div class="empty">No coordinators yet.</div>'}
     </div>
-    <div class="box"><h4>Team (${list.length})</h4>
-      ${list.length?list.map(empRow).join(''):'<div class="empty">No employees added yet.</div>'}
+    <div class="box"><h4>Employees (${emps.length})</h4>
+      ${emps.length?emps.map(u=>userRow(u,isOwner)).join(''):'<div class="empty">No employees yet.</div>'}
     </div>`;
 }
-function empRow(e){
-  const active=String(e.status).toLowerCase()!=='inactive';
+function onRoleChange(){
+  const coord=document.getElementById('u_role').value==='Coordinator';
+  document.getElementById('u_passwrap').style.display=coord?'block':'none';
+  document.getElementById('u_emlbl').textContent=coord?'(required for login)':'(optional)';
+}
+function userRow(u,isOwner){
+  const active=String(u.status).toLowerCase()!=='inactive';
+  const contact=[u.email,u.phone].filter(Boolean).join(' · ')||'No contact details';
   return `<div class="emprow">
-    <div class="info">${esc(e.name)} <small>${esc(e.email)}${e.department?' · '+esc(e.department):''}</small></div>
-    <div style="display:flex;align-items:center;gap:10px">
+    <div class="info">${esc(u.name)} <small>${esc(contact)}${u.department?' · '+esc(u.department):''}</small></div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+      ${u.phone?`<a class="btn ghost sm" style="text-decoration:none" target="_blank" href="${waLink(u.phone,'Hello '+u.name+', this is a message from '+STATE.me.name+'.')}">WhatsApp</a>`:''}
       <span class="badge ${active?'bg-Done':'bg-Overdue'}">${active?'Active':'Inactive'}</span>
-      <button class="btn ghost sm" onclick="toggleEmp('${esc(e.empId)}','${active?'Inactive':'Active'}')">${active?'Disable':'Enable'}</button>
+      ${isOwner&&u.role!=='Super Admin'?`<button class="btn ghost sm" onclick="toggleUser('${esc(u.empId)}','${active?'Inactive':'Active'}')">${active?'Disable':'Enable'}</button>`:''}
+      ${isOwner&&u.role==='Coordinator'?`<button class="btn ghost sm" onclick="askResetPw('${esc(u.empId)}','${esc(u.name)}')">Reset PW</button>`:''}
     </div></div>`;
 }
-async function addEmp(){
-  const b=document.getElementById('e_btn');
-  const p={action:'addEmployee',token:STATE.token,name:v('e_name'),email:v('e_email'),department:v('e_dept')};
-  if(!p.name||!p.email) return toast('Name and email are required.','err');
+async function addUser(){
+  const b=document.getElementById('u_btn');
+  const p={action:'addUser',token:STATE.token,role:v('u_role'),name:v('u_name'),department:v('u_dept'),
+           email:v('u_email'),phone:v('u_phone'),password:document.getElementById('u_pass')?v('u_pass'):''};
+  if(!p.name) return toast('Name is required.','err');
+  if(!p.email&&!p.phone) return toast('Provide at least an email or a phone number.','err');
   b.disabled=true;b.innerHTML='<span class="spin"></span>Adding…';
   const r=await api(p);
-  if(r.ok){toast('Employee added.','ok');await refresh();} else{toast(r.error||'Failed.','err');b.disabled=false;b.textContent='+ Add Employee';}
+  if(r.ok){toast(r.message,'ok');await refresh();}
+  else{toast(r.error||'Failed.','err');b.disabled=false;b.textContent='+ Add User';}
 }
-async function toggleEmp(id,status){
-  const r=await api({action:'setEmployeeStatus',token:STATE.token,empId:id,status:status});
-  r.ok?(toast('Updated.','ok'),refresh()):toast(r.error||'Failed.','err');
+async function toggleUser(id,status){
+  const r=await api({action:'setUserStatus',token:STATE.token,empId:id,status:status});
+  r.ok?(toast(r.message,'ok'),refresh()):toast(r.error||'Failed.','err');
+}
+function askResetPw(id,name){
+  modalPrompt({title:'Reset Password',message:'Set a new login password for '+name+'. Share it with them directly.',
+    icon:'🔑',placeholder:'Minimum 6 characters',password:true,confirmText:'Reset',
+    onConfirm:async function(val){
+      if(!val||val.length<6) return toast('Password must be at least 6 characters.','err');
+      const r=await api({action:'resetUserPassword',token:STATE.token,empId:id,newPassword:val});
+      toast(r.ok?r.message:(r.error||'Failed.'),r.ok?'ok':'err');
+    }});
+}
+/* WhatsApp link builder */
+function waLink(phone,text){
+  let p=String(phone||'').replace(/\D/g,'');
+  if(p.length===10) p=STATE.cc+p;
+  return 'https://wa.me/'+p+'?text='+encodeURIComponent(text||'');
 }
 
-/* ---- ASSIGN TASK ---- */
+/* ---- ASSIGN TASK (free entry + autocomplete) ---- */
 function viewAssign(){
-  const opts=STATE.employees.filter(e=>String(e.status).toLowerCase()!=='inactive')
-    .map(e=>`<option value="${esc(e.email)}">${esc(e.name)} (${esc(e.email)})</option>`).join('');
-  return `<div class="h">Assign Task</div><div class="hs">Create a task and notify the employee by email automatically.</div>
+  return `<div class="h">Assign Task</div><div class="hs">Type any name, or pick a saved employee. Nothing else is mandatory — call them yourself and log the update here.</div>
     <div class="box">
-      <div class="field"><label>Assign To</label>
-        <select id="t_emp">${opts?('<option value="">Select an employee…</option>'+opts):'<option value="">No employees — add one first</option>'}</select>
+      <div class="field ac"><label>Assign To</label>
+        <input id="t_name" placeholder="Type a name…" autocomplete="off" oninput="acSearch()" onfocus="acSearch()">
+        <input type="hidden" id="t_empid" value="">
+        <div class="aclist" id="t_ac"></div>
+        <div class="hs" id="t_hint" style="margin:7px 0 0"></div>
       </div>
       <div class="field"><label>Task Title</label><input id="t_title" placeholder="What needs to be done?"></div>
-      <div class="field"><label>Description</label><textarea id="t_desc" placeholder="Add any details or instructions…"></textarea></div>
+      <div class="field"><label>Description <span style="color:#5d6379">(optional)</span></label><textarea id="t_desc" placeholder="Add any details or instructions…"></textarea></div>
       <div class="row2">
         <div class="field"><label>Priority</label><select id="t_pri"><option>Medium</option><option>High</option><option>Low</option></select></div>
-        <div class="field"><label>Due Date</label><input id="t_due" type="date"></div>
+        <div class="field"><label>Due Date <span style="color:#5d6379">(optional)</span></label><input id="t_due" type="date"></div>
       </div>
-      <button class="btn" onclick="createTask()" id="t_btn">Assign &amp; Send Email</button>
+      <button class="btn" onclick="createTask()" id="t_btn">Assign Task</button>
     </div>`;
 }
+function acSearch(){
+  const q=(document.getElementById('t_name').value||'').trim().toLowerCase();
+  const box=document.getElementById('t_ac'), hint=document.getElementById('t_hint');
+  document.getElementById('t_empid').value='';
+  hint.textContent='';
+  const pool=STATE.employees.filter(e=>String(e.status).toLowerCase()!=='inactive');
+  const hits=q?pool.filter(e=>e.name.toLowerCase().indexOf(q)>=0):pool;
+  if(!hits.length){
+    box.classList.remove('show');
+    if(q) hint.innerHTML='<span class="acnew">New name — this task will be logged under “'+esc(q)+'”.</span>';
+    return;
+  }
+  box.innerHTML=hits.slice(0,8).map(e=>{
+    const c=[e.department,e.phone,e.email].filter(Boolean).join(' · ')||'No contact details';
+    return `<div class="acitem" onclick="acPick('${esc(e.empId)}','${esc(e.name).replace(/'/g,"\\'")}')">${esc(e.name)}<small>${esc(c)}</small></div>`;
+  }).join('');
+  box.classList.add('show');
+}
+function acPick(id,name){
+  document.getElementById('t_name').value=name;
+  document.getElementById('t_empid').value=id;
+  document.getElementById('t_ac').classList.remove('show');
+  const e=STATE.users.find(u=>u.empId===id)||{};
+  document.getElementById('t_hint').textContent=e.email?('Saved employee — an email will be sent to '+e.email+'.'):'Saved employee — no email on file, use call or WhatsApp.';
+}
+document.addEventListener('click',function(ev){
+  const box=document.getElementById('t_ac');
+  if(box && !ev.target.closest('.ac')) box.classList.remove('show');
+});
 async function createTask(){
   const b=document.getElementById('t_btn');
-  const p={action:'createTask',token:STATE.token,assignedTo:v('t_emp'),title:v('t_title'),
-           description:v('t_desc'),priority:v('t_pri'),dueDate:v('t_due')};
-  if(!p.assignedTo) return toast('Please select an employee.','err');
+  const p={action:'createTask',token:STATE.token,
+           assignedTo:v('t_empid'),assigneeName:v('t_name'),
+           title:v('t_title'),description:v('t_desc'),priority:v('t_pri'),dueDate:v('t_due')};
+  if(!p.assigneeName) return toast('Enter or select who this task is for.','err');
   if(!p.title) return toast('Please enter a task title.','err');
   b.disabled=true;b.innerHTML='<span class="spin"></span>Assigning…';
   const r=await api(p);
-  if(r.ok){toast(r.message||'Task assigned.','ok');await refresh();go('tasks');}
-  else{toast(r.error||'Failed.','err');b.disabled=false;b.innerHTML='Assign &amp; Send Email';}
+  if(r.ok){toast(r.message,'ok');await refresh();go('tasks');}
+  else{toast(r.error||'Failed.','err');b.disabled=false;b.textContent='Assign Task';}
 }
 
 /* ---- TASKS + FILTERS ---- */
 function viewTasks(){
   const f=STATE.filters;
-  const empOpts=STATE.employees.map(e=>`<option value="${esc(e.email)}" ${f.emp===e.email?'selected':''}>${esc(e.name)}</option>`).join('');
+  const names=[...new Set(STATE.tasks.map(t=>t.assigneeName).filter(Boolean))].sort();
+  const empOpts=names.map(n=>`<option value="${esc(n)}" ${f.emp===n?'selected':''}>${esc(n)}</option>`).join('');
   const dateChips=[['all','All'],['today','Today'],['tomorrow','Tomorrow'],['future','Future'],['previous','Previous']]
     .map(d=>`<div class="fchip ${f.date===d[0]?'active':''}" onclick="setF('date','${d[0]}')">${d[1]}</div>`).join('');
   const filtered=applyFilters();
@@ -467,10 +606,10 @@ function viewTasks(){
     <div class="filters">${dateChips}</div>
     <div class="frow">
       <select onchange="setF('status',this.value)">
-        ${['all','Pending','In Progress','Done','Verified','Overdue'].map(s=>`<option value="${s}" ${f.status===s?'selected':''}>${s==='all'?'All status':s}</option>`).join('')}
+        ${['all','Pending','In Progress','Done','Verified','Overdue'].map(x=>`<option value="${x}" ${f.status===x?'selected':''}>${x==='all'?'All status':x}</option>`).join('')}
       </select>
       <select onchange="setF('emp',this.value)">
-        <option value="all" ${f.emp==='all'?'selected':''}>All employees</option>${empOpts}
+        <option value="all" ${f.emp==='all'?'selected':''}>All people</option>${empOpts}
       </select>
     </div>
     ${filtered.length?filtered.map(taskCard).join(''):'<div class="empty">No tasks match these filters.</div>'}`;
@@ -479,7 +618,7 @@ function setF(k,val){STATE.filters[k]=val;renderView();}
 function applyFilters(){
   const f=STATE.filters,today=todayStr(),tmr=addDays(today,1);
   return STATE.tasks.slice().reverse().filter(t=>{
-    if(f.emp!=='all' && t.assignedTo!==f.emp) return false;
+    if(f.emp!=='all' && t.assigneeName!==f.emp) return false;
     if(f.status==='Overdue'){ if(!isOverdue(t)) return false; }
     else if(f.status!=='all' && t.status!==f.status) return false;
     if(f.date==='today'){ if(t.dueDate!==today) return false; }
@@ -490,35 +629,49 @@ function applyFilters(){
   });
 }
 function taskCard(t){
-  const emp=STATE.employees.find(e=>e.email===t.assignedTo);
-  const nm=emp?emp.name:t.assignedTo;
+  const emp=t.assignedTo?STATE.users.find(u=>u.empId===t.assignedTo):null;
+  const nm=t.assigneeName||(emp?emp.name:'—');
+  const phone=emp?emp.phone:'';
+  const email=emp?emp.email:'';
   const stt=isOverdue(t)?'Overdue':t.status;
   const cls={'Pending':'bg-Pending','In Progress':'bg-Progress','Done':'bg-Done','Verified':'bg-Verified','Overdue':'bg-Overdue'}[stt]||'bg-Pending';
+  const waText=`Hello ${nm}, regarding your task: "${t.title}"`+(t.dueDate?` (due ${t.dueDate})`:'')+`. Please share an update. — ${STATE.me.name}`;
   return `<div class="tcard">
     <div class="top">
       <div><div class="tt">${esc(t.title)}</div>${t.description?`<div class="ds">${esc(t.description)}</div>`:''}</div>
       <span class="badge ${cls}">${stt}</span>
     </div>
     <div class="meta">
-      <span>👤 <b>${esc(nm)}</b></span>
+      <span>👤 <b>${esc(nm)}</b>${!t.assignedTo?' <span style="color:#5d6379">(free entry)</span>':''}</span>
       <span>🚩 <b class="pri-${esc(t.priority)}">${esc(t.priority||'—')}</b></span>
       <span>📅 Due <b>${esc(t.dueDate||'—')}</b></span>
       <span>🆔 ${esc(t.taskId)}</span>
     </div>
+    ${t.remarks?`<div class="ds" style="margin-top:9px;padding:9px 12px;background:var(--inp);border-radius:9px;border-left:2px solid var(--accent)">📝 ${esc(t.remarks)}</div>`:''}
     <div class="acts">
-      ${t.status!=='In Progress'&&!isDone(t)?`<button class="btn ghost sm" onclick="setStatus('${t.taskId}','In Progress')">Start</button>`:''}
-      ${!isDone(t)?`<button class="btn ghost sm" onclick="setStatus('${t.taskId}','Done')">Mark Done</button>`:''}
-      ${t.status==='Done'?`<button class="btn ghost sm" onclick="setStatus('${t.taskId}','Verified')">Verify ✓</button>`:''}
-      ${!isDone(t)?`<button class="btn ghost sm" onclick="followup('${t.taskId}')">📧 Follow-up</button>`:''}
+      ${!isDone(t)?`<button class="btn ghost sm" onclick="askUpdate('${t.taskId}')">📞 Call Update</button>`:''}
+      ${!isDone(t)?`<button class="btn ghost sm" onclick="askDone('${t.taskId}')">✓ Mark Done</button>`:''}
+      ${t.status==='Done'?`<button class="btn ghost sm" onclick="setStatus('${t.taskId}','Verified')">Verify</button>`:''}
+      ${phone?`<a class="btn ghost sm" style="text-decoration:none" target="_blank" href="${waLink(phone,waText)}">💬 WhatsApp</a>`:''}
+      ${email&&!isDone(t)?`<button class="btn ghost sm" onclick="followup('${t.taskId}')">📧 Email</button>`:''}
       <button class="btn ghost sm" onclick="delTask('${t.taskId}')" style="color:#ff97a2">Delete</button>
     </div></div>`;
 }
-async function setStatus(id,st){
-  const r=await api({action:'updateTaskStatus',token:STATE.token,taskId:id,status:st});
+async function setStatus(id,st,remarks){
+  const r=await api({action:'updateTaskStatus',token:STATE.token,taskId:id,status:st,remarks:remarks||''});
   r.ok?(toast(r.message,'ok'),refresh()):toast(r.error||'Failed.','err');
 }
+function askUpdate(id){
+  modalPrompt({title:'Call Update',message:'Record what they said on the call.',icon:'📞',
+    placeholder:'e.g. 60% done, will finish tomorrow',confirmText:'Save Update',
+    onConfirm:function(val){ if(!val) return toast('Please enter an update.','err'); setStatus(id,'In Progress',val); }});
+}
+function askDone(id){
+  modalPrompt({title:'Mark as Done',message:'Add a closing remark (optional).',icon:'✅',
+    placeholder:'e.g. Confirmed complete over call',confirmText:'Mark Done',
+    onConfirm:function(val){ setStatus(id,'Done',val); }});
+}
 async function followup(id){
-  toast('Sending follow-up…');
   const r=await api({action:'followupTask',token:STATE.token,taskId:id});
   toast(r.ok?r.message:(r.error||'Email failed.'),r.ok?'ok':'err');
 }
@@ -530,25 +683,107 @@ function delTask(id){
     }});
 }
 
-/* ---- REPORTS ---- */
+/* ---- REPORTS (graphs + per-employee) ---- */
 function viewReports(){
-  const emps=STATE.employees.filter(e=>e.role!=='Super Admin');
-  const rows=emps.map(e=>{
-    const ts=STATE.tasks.filter(t=>t.assignedTo===e.email);
-    const total=ts.length, done=ts.filter(isDone).length, over=ts.filter(isOverdue).length;
-    const pct=total?Math.round(done/total*100):0;
-    const col=pct>=75?'var(--ok)':pct>=40?'var(--warn)':'var(--danger)';
-    return `<tr>
-      <td><b>${esc(e.name)}</b><br><small style="color:var(--muted)">${esc(e.department||'')}</small></td>
-      <td>${total}</td><td>${done}</td><td>${total-done}</td>
-      <td style="color:${over?'var(--danger)':'inherit'}">${over}</td>
-      <td><span class="pct" style="background:${col}22;color:${col};border:1px solid ${col}66">${pct}%</span></td>
-    </tr>`;
-  }).join('');
-  return `<div class="h">Reports</div><div class="hs">Per-employee performance &amp; completion rate.</div>
-    <div class="box">
-      ${emps.length?`<table class="rep"><thead><tr><th>Employee</th><th>Total</th><th>Done</th><th>Pending</th><th>Overdue</th><th>On-time</th></tr></thead><tbody>${rows}</tbody></table>`:'<div class="empty">Add employees and assign tasks to see reports.</div>'}
+  const rep=STATE.report||[];
+  if(!rep.length) return `<div class="h">Reports</div><div class="hs">Per-person performance, charts and scoring.</div>
+    <div class="box"><div class="empty">No data yet. Assign some tasks to see reports.</div></div>`;
+  const t=STATE.totals||{tasks:0,completed:0,overdue:0,people:rep.length};
+  const maxT=Math.max.apply(null,rep.map(r=>r.total).concat([1]));
+
+  /* stacked workload bars */
+  const bars=rep.map(r=>{
+    const w=x=>((x/maxT)*100).toFixed(1)+'%';
+    return `<div class="barrow">
+      <div class="nm" title="${esc(r.name)}">${esc(r.name)}</div>
+      <div class="bartrack">
+        <div class="barseg" style="width:${w(r.verified)};background:#7c5cff"></div>
+        <div class="barseg" style="width:${w(r.done)};background:#37d399"></div>
+        <div class="barseg" style="width:${w(r.progress)};background:#46b5ff"></div>
+        <div class="barseg" style="width:${w(r.pending)};background:#6b7185"></div>
+      </div>
+      <div class="barval">${r.total}</div>
     </div>`;
+  }).join('');
+
+  /* score leaderboard bars */
+  const scores=rep.map((r,i)=>{
+    const c=r.score>=75?'#37d399':r.score>=45?'#ffb547':'#ff5d6c';
+    return `<div class="barrow">
+      <div class="nm"><span class="rank ${i===0?'g1':i===1?'g2':i===2?'g3':''}">${i+1}</span>${esc(r.name)}</div>
+      <div class="bartrack"><div class="barseg" style="width:${r.score}%;background:${c}"></div></div>
+      <div class="barval" style="color:${c}">${r.score}</div>
+    </div>`;
+  }).join('');
+
+  const cards=rep.map(r=>{
+    const c=r.completionRate>=75?'#37d399':r.completionRate>=45?'#ffb547':'#ff5d6c';
+    return `<div class="repcard">
+      <div class="rephead">
+        <div class="repname">${esc(r.name)}
+          <small>${r.saved?esc(r.department||'Saved employee'):'Free entry'} · Score ${r.score}/100</small></div>
+        ${ring(r.completionRate,c)}
+      </div>
+      <div class="repgrid">
+        ${rb(r.total,'Total')}${rb(r.completed,'Done','#37d399')}${rb(r.pending+r.progress,'Open')}
+        ${rb(r.overdue,'Overdue',r.overdue?'#ff5d6c':'')}${rb(r.onTimeRate+'%','On-time')}${rb(r.avgDays||'—','Avg Days')}
+      </div>
+      <div class="barrow" style="grid-template-columns:66px 1fr 40px;font-size:12px">
+        <div class="nm">Priority</div>
+        <div class="bartrack" style="height:14px">
+          <div class="barseg" style="width:${pc(r.high,r.total)}%;background:#ff5d6c"></div>
+          <div class="barseg" style="width:${pc(r.medium,r.total)}%;background:#ffb547"></div>
+          <div class="barseg" style="width:${pc(r.low,r.total)}%;background:#46b5ff"></div>
+        </div>
+        <div class="barval" style="font-size:11px;color:var(--muted)">H${r.high}·M${r.medium}·L${r.low}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="h">Reports</div><div class="hs">Per-person performance, charts and scoring — use this for incentives.</div>
+    <div class="cards">
+      ${stat(t.tasks,'Total Tasks','var(--accent)')}
+      ${stat(t.completed,'Completed','var(--ok)')}
+      ${stat(t.overdue,'Overdue','var(--danger)')}
+      ${stat(t.people,'People','var(--info)')}
+    </div>
+    <div class="box"><h4>Performance Score (incentive ranking)</h4>
+      <div class="bars">${scores}</div>
+      <div class="legend"><span>Score = 60% completion + 40% punctuality − 5 per overdue task</span></div>
+    </div>
+    <div class="box"><h4>Workload by Person</h4>
+      <div class="bars">${bars}</div>
+      <div class="legend">
+        <span><i style="background:#7c5cff"></i>Verified</span>
+        <span><i style="background:#37d399"></i>Done</span>
+        <span><i style="background:#46b5ff"></i>In Progress</span>
+        <span><i style="background:#6b7185"></i>Pending</span>
+      </div>
+    </div>
+    <div class="h" style="font-size:17px;margin:24px 0 4px">Individual Reports</div>
+    <div class="hs">Completion ring, task mix and punctuality for each person.</div>
+    ${cards}
+    <button class="btn ghost" style="margin-top:6px" onclick="exportReport()">⬇ Download CSV</button>`;
+}
+function rb(n,l,col){ return `<div class="repbox"><div class="n" ${col?`style="color:${col}"`:''}>${n}</div><div class="l">${l}</div></div>`; }
+function pc(a,b){ return b?((a/b)*100).toFixed(1):0; }
+function ring(pct,col){
+  const R=26,C=2*Math.PI*R,off=C-(pct/100)*C;
+  return `<svg class="ring" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="${R}" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"/>
+    <circle cx="32" cy="32" r="${R}" fill="none" stroke="${col}" stroke-width="6" stroke-linecap="round"
+      stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 32 32)"/>
+    <text x="32" y="36" text-anchor="middle" font-size="14" font-weight="700" fill="#eef0f7" font-family="Jost">${pct}%</text>
+  </svg>`;
+}
+function exportReport(){
+  const rows=[['Name','Department','Total','Completed','Pending','In Progress','Overdue','Completion %','On-time %','Avg Days','Score']];
+  (STATE.report||[]).forEach(r=>rows.push([r.name,r.department||'',r.total,r.completed,r.pending,r.progress,r.overdue,r.completionRate,r.onTimeRate,r.avgDays,r.score]));
+  const csv=rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='delegation-report-'+todayStr()+'.csv'; a.click();
+  toast('Report downloaded.','ok');
 }
 
 /* ---- common ---- */
