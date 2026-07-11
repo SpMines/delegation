@@ -209,7 +209,7 @@ table.rep tr:last-child td{border:none}
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbzvRCxuRapISgniey9IA9g8Hs0tne6Mbav6u1uhAZBiANEHXPOXNxLMh4bpgFweRPmWTA/exec";
+const API = "https://script.google.com/macros/s/AKfycbxhfLEzfohduN9LwnbuS4OdClL9ezchcDNcPC3raevnRtWl3ukX6NuId4UST78zY_aLEQ/exec";
 const DEVICE = (navigator.userAgent||"Unknown")+" | "+(navigator.platform||"");
 const root = document.getElementById('root');
 let STATE = { token:'', me:null, users:[], employees:[], tasks:[], report:[], totals:null, cc:'91', view:'dashboard',
@@ -721,11 +721,13 @@ function taskCard(t){
   const waText=`Hello ${nm}, regarding your task: "${t.title}"`+(t.dueDate?` (due ${t.dueDate})`:'')+`. Please share an update. — ${STATE.me.name}`;
   return `<div class="tcard">
     <div class="top">
-      <div><div class="tt">${esc(t.title)}</div>${t.description?`<div class="ds">${esc(t.description)}</div>`:''}</div>
+      <div>
+        <div style="font-size:13px;font-weight:600;color:#c9bdff;margin-bottom:3px">👤 ${esc(nm).toUpperCase()}${!t.assignedTo?' <span style="color:#5d6379;font-weight:400;text-transform:none">(free entry)</span>':''}</div>
+        <div class="tt">${esc(t.title)}</div>${t.description?`<div class="ds">${esc(t.description)}</div>`:''}
+      </div>
       <span class="badge ${cls}">${stt}</span>
     </div>
     <div class="meta">
-      <span>👤 <b>${esc(nm)}</b>${!t.assignedTo?' <span style="color:#5d6379">(free entry)</span>':''}</span>
       <span>🚩 <b class="pri-${esc(t.priority)}">${esc(t.priority||'—')}</b></span>
       <span>📅 Due <b>${esc(t.dueDate||'—')}</b></span>
       <span>🆔 ${esc(t.taskId)}</span>
