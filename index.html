@@ -209,7 +209,7 @@ table.rep tr:last-child td{border:none}
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycby4yxDcFXJtLw6k3km0FJdW41F6m5bgf7YlZ2a8d5D8dmJfMOoS1k4q3VJyenvoo3y52A/exec";
+const API = "https://script.google.com/macros/s/AKfycbzvRCxuRapISgniey9IA9g8Hs0tne6Mbav6u1uhAZBiANEHXPOXNxLMh4bpgFweRPmWTA/exec";
 const DEVICE = (navigator.userAgent||"Unknown")+" | "+(navigator.platform||"");
 const root = document.getElementById('root');
 let STATE = { token:'', me:null, users:[], employees:[], tasks:[], report:[], totals:null, cc:'91', view:'dashboard',
@@ -453,16 +453,22 @@ function stat(n,l,c){return `<div class="stat"><div class="n">${n}</div><div cla
 
 /* ---- USERS (search + filters + edit + delete) ---- */
 let UF={q:'',role:'all',status:'all',sort:'name'};
+let TQ='';
 function viewUsers(){
   const isOwner=STATE.me.role==='Super Admin';
-  const addBox = isOwner ? `
-    <div class="box"><h4>Add User</h4>
+  const canAdd=isOwner||STATE.me.role==='Coordinator';
+  const roleField=isOwner?`
       <div class="field"><label>Role</label>
         <select id="u_role" onchange="onRoleChange()">
           <option value="Employee">Employee — record only, no login</option>
           <option value="Coordinator">Coordinator — can log in, full task access</option>
         </select>
-      </div>
+      </div>`:`
+      <input type="hidden" id="u_role" value="Employee">
+      <div class="hs" style="margin:0 0 12px">You can add employees (records only). Only the owner can add coordinators.</div>`;
+  const addBox = canAdd ? `
+    <div class="box"><h4>Add ${isOwner?'User':'Employee'}</h4>
+      ${roleField}
       <div class="row2">
         <div class="field"><label>Full Name</label><input id="u_name" placeholder="Full name"></div>
         <div class="field"><label>Department</label><input id="u_dept" placeholder="e.g. Sales / Production"></div>
@@ -475,7 +481,7 @@ function viewUsers(){
       <button class="btn sm" id="u_btn" onclick="addUser()">+ Add User</button>
       <div class="hs" style="margin:12px 0 0">Employees don't log in. Contact details are optional — you can still assign tasks by name.</div>
     </div>` : '';
-  return `<div class="h">Users</div><div class="hs">${isOwner?'Add, edit, disable or delete team members.':'Team directory. Only the owner can manage users.'}</div>
+  return `<div class="h">Users</div><div class="hs">${isOwner?'Add, edit, disable or delete team members.':'Add employees and view the team. Only the owner can edit, disable or delete.'}</div>
     ${addBox}
     <div class="box">
       <h4>Team Directory</h4>
@@ -532,9 +538,10 @@ function userRow(u,isOwner){
     </div></div>`;
 }
 function onRoleChange(){
-  const coord=document.getElementById('u_role').value==='Coordinator';
-  document.getElementById('u_passwrap').style.display=coord?'block':'none';
-  document.getElementById('u_emlbl').textContent=coord?'(required for login)':'(optional)';
+  const el=document.getElementById('u_role'); if(!el) return;
+  const coord=el.value==='Coordinator';
+  const pw=document.getElementById('u_passwrap'); if(pw) pw.style.display=coord?'block':'none';
+  const lb=document.getElementById('u_emlbl'); if(lb) lb.textContent=coord?'(required for login)':'(optional)';
 }
 async function addUser(){
   const b=document.getElementById('u_btn');
@@ -662,7 +669,10 @@ async function createTask(){
 /* ---- TASKS + FILTERS ---- */
 function viewTasks(){
   const f=STATE.filters;
-  const names=[...new Set(STATE.tasks.map(t=>t.assigneeName).filter(Boolean))].sort();
+  const names=[...new Set(
+    STATE.employees.map(e=>e.name)
+    .concat(STATE.tasks.map(t=>t.assigneeName))
+    .filter(Boolean))].sort();
   const empOpts=names.map(n=>`<option value="${esc(n)}" ${f.emp===n?'selected':''}>${esc(n)}</option>`).join('');
   const dateChips=[['all','All'],['today','Today'],['tomorrow','Tomorrow'],['future','Future'],['previous','Previous']]
     .map(d=>`<div class="fchip ${f.date===d[0]?'active':''}" onclick="setF('date','${d[0]}')">${d[1]}</div>`).join('');
@@ -670,6 +680,8 @@ function viewTasks(){
   return `<div class="h">Tasks</div><div class="hs">Filter, track and update every delegated task.</div>
     <div class="filters">${dateChips}</div>
     <div class="frow">
+      <input id="tq" placeholder="🔍 Search task, name, remark…" value="${esc(TQ)}" oninput="tqSet(this.value)"
+        style="flex:1;min-width:200px;padding:9px 12px;border-radius:10px;background:var(--inp);border:1px solid var(--brd);color:var(--txt);font-size:16px;font-family:'Jost';outline:none">
       <select onchange="setF('status',this.value)">
         ${['all','Pending','In Progress','Done','Verified','Overdue'].map(x=>`<option value="${x}" ${f.status===x?'selected':''}>${x==='all'?'All status':x}</option>`).join('')}
       </select>
@@ -677,12 +689,18 @@ function viewTasks(){
         <option value="all" ${f.emp==='all'?'selected':''}>All people</option>${empOpts}
       </select>
     </div>
-    ${filtered.length?filtered.map(taskCard).join(''):'<div class="empty">No tasks match these filters.</div>'}`;
+    <div id="tlist">${filtered.length?filtered.map(taskCard).join(''):'<div class="empty">No tasks match these filters.</div>'}</div>`;
 }
 function setF(k,val){STATE.filters[k]=val;renderView();}
+function tqSet(val){
+  TQ=val;
+  const list=document.getElementById('tlist');
+  if(list){const ft=applyFilters();list.innerHTML=ft.length?ft.map(taskCard).join(''):'<div class="empty">No tasks match these filters.</div>';}
+}
 function applyFilters(){
-  const f=STATE.filters,today=todayStr(),tmr=addDays(today,1);
+  const f=STATE.filters,today=todayStr(),tmr=addDays(today,1),q=TQ.trim().toLowerCase();
   return STATE.tasks.slice().reverse().filter(t=>{
+    if(q && [t.title,t.description,t.assigneeName,t.remarks,t.taskId].join(' ').toLowerCase().indexOf(q)<0) return false;
     if(f.emp!=='all' && t.assigneeName!==f.emp) return false;
     if(f.status==='Overdue'){ if(!isOverdue(t)) return false; }
     else if(f.status!=='all' && t.status!==f.status) return false;
