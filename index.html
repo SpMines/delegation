@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>SP Task - Delegation System</title>
+<title>SP Task & Delegation System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -72,7 +72,7 @@ body{background:var(--bg);color:var(--txt);min-height:100dvh}
 .nav::-webkit-scrollbar{display:none}
 .nav button{flex-shrink:0;padding:9px 16px;border-radius:30px;border:1px solid var(--brd);background:var(--inp);color:var(--muted);font-family:'Jost';font-size:13.5px;font-weight:500;cursor:pointer;transition:.2s;white-space:nowrap}
 .nav button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:0 8px 20px rgba(124,92,255,.35)}
-.content{flex:1;padding:22px 22px 60px;max-width:1100px;width:100%;margin:0 auto}
+.content{flex:1;padding:22px 22px 60px;max-width:90%;width:100%;margin:0 auto}
 .h{font-size:21px;font-weight:600;margin-bottom:4px}
 .hs{font-size:13px;color:var(--muted);margin-bottom:20px}
 
@@ -209,7 +209,7 @@ table.rep tr:last-child td{border:none}
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbzoAsKD6L8Y2vrTlyiLVWy1C-wVkxPgiiu7OJQH4evdML54PrfXmRBvbcb6sR-4StFSAA/exec";
+const API = "https://script.google.com/macros/s/AKfycby4yxDcFXJtLw6k3km0FJdW41F6m5bgf7YlZ2a8d5D8dmJfMOoS1k4q3VJyenvoo3y52A/exec";
 const DEVICE = (navigator.userAgent||"Unknown")+" | "+(navigator.platform||"");
 const root = document.getElementById('root');
 let STATE = { token:'', me:null, users:[], employees:[], tasks:[], report:[], totals:null, cc:'91', view:'dashboard',
@@ -451,11 +451,10 @@ function viewDashboard(){
 }
 function stat(n,l,c){return `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div><div class="bar" style="background:${c}"></div></div>`;}
 
-/* ---- USERS (Coordinators + Employees) ---- */
+/* ---- USERS (search + filters + edit + delete) ---- */
+let UF={q:'',role:'all',status:'all',sort:'name'};
 function viewUsers(){
   const isOwner=STATE.me.role==='Super Admin';
-  const coords=STATE.users.filter(u=>u.role==='Coordinator');
-  const emps=STATE.users.filter(u=>u.role==='Employee');
   const addBox = isOwner ? `
     <div class="box"><h4>Add User</h4>
       <div class="field"><label>Role</label>
@@ -470,52 +469,118 @@ function viewUsers(){
       </div>
       <div class="row2">
         <div class="field"><label>Email <span id="u_emlbl" style="color:#5d6379">(optional)</span></label><input id="u_email" type="email" placeholder="name@company.com"></div>
-        <div class="field"><label>Phone / WhatsApp <span style="color:#5d6379">(optional)</span></label><input id="u_phone" inputmode="numeric" placeholder="10-digit number"></div>
+        <div class="field"><label>Phone / WhatsApp <span style="color:#5d6379">(optional, digits only)</span></label><input id="u_phone" inputmode="numeric" placeholder="10-digit number"></div>
       </div>
       <div class="field" id="u_passwrap" style="display:none"><label>Login Password</label><input id="u_pass" type="password" placeholder="Minimum 6 characters"></div>
       <button class="btn sm" id="u_btn" onclick="addUser()">+ Add User</button>
-      <div class="hs" style="margin:12px 0 0">Employees don't log in. Give them an email or a phone number (at least one) so you can notify them.</div>
+      <div class="hs" style="margin:12px 0 0">Employees don't log in. Contact details are optional — you can still assign tasks by name.</div>
     </div>` : '';
-  return `<div class="h">Users</div><div class="hs">${isOwner?'Add coordinators (with login) and employees (records only).':'Team directory. Only the owner can add or edit users.'}</div>
+  return `<div class="h">Users</div><div class="hs">${isOwner?'Add, edit, disable or delete team members.':'Team directory. Only the owner can manage users.'}</div>
     ${addBox}
-    <div class="box"><h4>Coordinators (${coords.length})</h4>
-      ${coords.length?coords.map(u=>userRow(u,isOwner)).join(''):'<div class="empty">No coordinators yet.</div>'}
-    </div>
-    <div class="box"><h4>Employees (${emps.length})</h4>
-      ${emps.length?emps.map(u=>userRow(u,isOwner)).join(''):'<div class="empty">No employees yet.</div>'}
+    <div class="box">
+      <h4>Team Directory</h4>
+      <div class="frow" style="margin-bottom:12px">
+        <input id="uf_q" placeholder="🔍 Search name, email, phone, dept…" value="${esc(UF.q)}" oninput="ufSet('q',this.value)"
+          style="flex:1;min-width:200px;padding:9px 12px;border-radius:10px;background:var(--inp);border:1px solid var(--brd);color:var(--txt);font-size:16px;font-family:'Jost';outline:none">
+        <select onchange="ufSet('role',this.value)">
+          <option value="all" ${UF.role==='all'?'selected':''}>All roles</option>
+          <option value="Coordinator" ${UF.role==='Coordinator'?'selected':''}>Coordinators</option>
+          <option value="Employee" ${UF.role==='Employee'?'selected':''}>Employees</option>
+        </select>
+        <select onchange="ufSet('status',this.value)">
+          <option value="all" ${UF.status==='all'?'selected':''}>All status</option>
+          <option value="Active" ${UF.status==='Active'?'selected':''}>Active</option>
+          <option value="Inactive" ${UF.status==='Inactive'?'selected':''}>Inactive</option>
+        </select>
+        <select onchange="ufSet('sort',this.value)">
+          <option value="name" ${UF.sort==='name'?'selected':''}>Sort: Name</option>
+          <option value="dept" ${UF.sort==='dept'?'selected':''}>Sort: Department</option>
+          <option value="tasks" ${UF.sort==='tasks'?'selected':''}>Sort: Most tasks</option>
+        </select>
+      </div>
+      <div id="uf_list">${userList(isOwner)}</div>
     </div>`;
+}
+function ufSet(k,v2){UF[k]=v2;const el=document.getElementById('uf_list');if(el)el.innerHTML=userList(STATE.me.role==='Super Admin');}
+function taskCount(u){return STATE.tasks.filter(t=>t.assignedTo===u.empId||(t.assigneeName&&t.assigneeName===u.name)).length;}
+function userList(isOwner){
+  const q=UF.q.toLowerCase();
+  let list=STATE.users.filter(u=>u.role!=='Super Admin');
+  if(UF.role!=='all') list=list.filter(u=>u.role===UF.role);
+  if(UF.status!=='all') list=list.filter(u=>String(u.status)===UF.status);
+  if(q) list=list.filter(u=>[u.name,u.email,u.phone,u.department].join(' ').toLowerCase().indexOf(q)>=0);
+  if(UF.sort==='name') list.sort((a,b)=>a.name.localeCompare(b.name));
+  if(UF.sort==='dept') list.sort((a,b)=>String(a.department||'').localeCompare(String(b.department||'')));
+  if(UF.sort==='tasks') list.sort((a,b)=>taskCount(b)-taskCount(a));
+  if(!list.length) return '<div class="empty">No users match.</div>';
+  return list.map(u=>userRow(u,isOwner)).join('');
+}
+function userRow(u,isOwner){
+  const active=String(u.status).toLowerCase()!=='inactive';
+  const contact=[u.email,u.phone].filter(Boolean).join(' · ')||'No contact details';
+  const tc=taskCount(u);
+  return `<div class="emprow">
+    <div class="info">${esc(u.name)} <span class="badge ${u.role==='Coordinator'?'bg-Verified':'bg-Pending'}" style="margin-left:6px">${esc(u.role)}</span>
+      <small>${esc(contact)}${u.department?' · '+esc(u.department):''} · ${tc} task${tc===1?'':'s'}</small></div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+      ${u.phone?`<a class="btn ghost sm" style="text-decoration:none" target="_blank" href="${waLink(u.phone,'Hello '+u.name+', this is a message from '+STATE.me.name+'.')}">💬</a>`:''}
+      <span class="badge ${active?'bg-Done':'bg-Overdue'}">${active?'Active':'Inactive'}</span>
+      ${isOwner?`<button class="btn ghost sm" onclick="editUser('${esc(u.empId)}')">Edit</button>`:''}
+      ${isOwner?`<button class="btn ghost sm" onclick="toggleUser('${esc(u.empId)}','${active?'Inactive':'Active'}')">${active?'Disable':'Enable'}</button>`:''}
+      ${isOwner&&u.role==='Coordinator'?`<button class="btn ghost sm" onclick="askResetPw('${esc(u.empId)}','${esc(u.name)}')">Reset PW</button>`:''}
+      ${isOwner?`<button class="btn ghost sm" style="color:#ff97a2" onclick="askDeleteUser('${esc(u.empId)}','${esc(u.name)}')">Delete</button>`:''}
+    </div></div>`;
 }
 function onRoleChange(){
   const coord=document.getElementById('u_role').value==='Coordinator';
   document.getElementById('u_passwrap').style.display=coord?'block':'none';
   document.getElementById('u_emlbl').textContent=coord?'(required for login)':'(optional)';
 }
-function userRow(u,isOwner){
-  const active=String(u.status).toLowerCase()!=='inactive';
-  const contact=[u.email,u.phone].filter(Boolean).join(' · ')||'No contact details';
-  return `<div class="emprow">
-    <div class="info">${esc(u.name)} <small>${esc(contact)}${u.department?' · '+esc(u.department):''}</small></div>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
-      ${u.phone?`<a class="btn ghost sm" style="text-decoration:none" target="_blank" href="${waLink(u.phone,'Hello '+u.name+', this is a message from '+STATE.me.name+'.')}">WhatsApp</a>`:''}
-      <span class="badge ${active?'bg-Done':'bg-Overdue'}">${active?'Active':'Inactive'}</span>
-      ${isOwner&&u.role!=='Super Admin'?`<button class="btn ghost sm" onclick="toggleUser('${esc(u.empId)}','${active?'Inactive':'Active'}')">${active?'Disable':'Enable'}</button>`:''}
-      ${isOwner&&u.role==='Coordinator'?`<button class="btn ghost sm" onclick="askResetPw('${esc(u.empId)}','${esc(u.name)}')">Reset PW</button>`:''}
-    </div></div>`;
-}
 async function addUser(){
   const b=document.getElementById('u_btn');
   const p={action:'addUser',token:STATE.token,role:v('u_role'),name:v('u_name'),department:v('u_dept'),
            email:v('u_email'),phone:v('u_phone'),password:document.getElementById('u_pass')?v('u_pass'):''};
   if(!p.name) return toast('Name is required.','err');
-  if(!p.email&&!p.phone) return toast('Provide at least an email or a phone number.','err');
   b.disabled=true;b.innerHTML='<span class="spin"></span>Adding…';
   const r=await api(p);
   if(r.ok){toast(r.message,'ok');await refresh();}
   else{toast(r.error||'Failed.','err');b.disabled=false;b.textContent='+ Add User';}
 }
+function editUser(id){
+  const u=STATE.users.find(x=>x.empId===id); if(!u) return;
+  document.getElementById('modalIc').textContent='✏️';
+  document.getElementById('modalTitle').textContent='Edit User';
+  const inp=(i,l,val,ph)=>`<div style="text-align:left;margin-bottom:10px"><label style="display:block;font-size:12px;color:var(--muted);margin-bottom:5px">${l}</label><input id="${i}" value="${esc(val||'')}" placeholder="${ph||''}" style="width:100%;padding:11px 13px;border-radius:11px;background:var(--inp);border:1px solid var(--brd);color:var(--txt);font-size:16px;font-family:'Jost';outline:none"></div>`;
+  document.getElementById('modalMsg').innerHTML=
+    inp('eu_name','Full Name',u.name)+inp('eu_email','Email',u.email,'name@company.com')+
+    inp('eu_phone','Phone / WhatsApp',u.phone,'10-digit number')+inp('eu_dept','Department',u.department);
+  const acts=document.getElementById('modalActs'); acts.innerHTML='';
+  const cancel=document.createElement('button'); cancel.className='btn ghost'; cancel.textContent='Cancel'; cancel.onclick=closeModal;
+  const ok=document.createElement('button'); ok.className='btn'; ok.textContent='Save Changes';
+  ok.onclick=async function(){
+    const p={action:'updateUser',token:STATE.token,empId:id,
+             name:(document.getElementById('eu_name').value||'').trim(),
+             email:(document.getElementById('eu_email').value||'').trim(),
+             phone:(document.getElementById('eu_phone').value||'').trim(),
+             department:(document.getElementById('eu_dept').value||'').trim()};
+    if(!p.name) return toast('Name is required.','err');
+    closeModal();
+    const r=await api(p);
+    r.ok?(toast(r.message,'ok'),refresh()):toast(r.error||'Failed.','err');
+  };
+  acts.appendChild(cancel); acts.appendChild(ok);
+  document.getElementById('modal').classList.add('show');
+}
 async function toggleUser(id,status){
   const r=await api({action:'setUserStatus',token:STATE.token,empId:id,status:status});
   r.ok?(toast(r.message,'ok'),refresh()):toast(r.error||'Failed.','err');
+}
+function askDeleteUser(id,name){
+  modalConfirm({title:'Delete User',message:name+' will be permanently removed. Their past tasks and report history stay intact.',
+    icon:'🗑️',confirmText:'Delete',danger:true,onConfirm:async function(){
+      const r=await api({action:'deleteUser',token:STATE.token,empId:id});
+      r.ok?(toast(r.message,'ok'),refresh()):toast(r.error||'Failed.','err');
+    }});
 }
 function askResetPw(id,name){
   modalPrompt({title:'Reset Password',message:'Set a new login password for '+name+'. Share it with them directly.',
