@@ -192,6 +192,139 @@
       .grid.view-grid{ grid-template-columns:repeat(auto-fill,minmax(136px,1fr)); }
       .grid.view-card{ grid-template-columns:1fr; }
     }
+
+    /* =====================================================
+       MODERN UI PASS — additive overrides + animations
+       (upar wali koi rule delete nahi ki, sirf neeche override)
+       ===================================================== */
+    @property --p{ syntax:'<number>'; inherits:false; initial-value:0; }
+    @keyframes ccUp{ from{ opacity:0; transform:translateY(16px) scale(.97); } to{ opacity:1; transform:none; } }
+    @keyframes ccPop{ from{ opacity:0; transform:translateY(14px) scale(.96); } to{ opacity:1; transform:none; } }
+    @keyframes ccShine{ 0%,100%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } }
+    @keyframes fabPing{ 0%{ transform:scale(1); opacity:.7; } 80%,100%{ transform:scale(1.6); opacity:0; } }
+    @keyframes dlIn{ from{ opacity:0; transform:translateX(34px) scale(.96); } to{ opacity:1; transform:none; } }
+    @keyframes dlItemIn{ from{ opacity:0; transform:translateX(20px); } to{ opacity:1; transform:none; } }
+    @keyframes ringPing{ 0%{ box-shadow:0 0 0 0 rgba(255,93,108,.55); } 70%,100%{ box-shadow:0 0 0 9px rgba(255,93,108,0); } }
+
+    /* header + title */
+    header{ animation:ccUp .7s cubic-bezier(.16,1,.3,1) backwards; }
+    h1{
+      background:linear-gradient(110deg,#8a8a8a 0%,#fff 35%,#8a8a8a 55%,#fff 80%,#8a8a8a 100%);
+      background-size:220% 100%; -webkit-background-clip:text; background-clip:text;
+      animation:ccShine 7s ease-in-out infinite;
+    }
+
+    /* grid / card / list entrance (JS sirf first load + view switch pe .enter lagata hai) */
+    .grid.enter > .card, .grid.enter > .row-item{
+      animation:ccUp .55s cubic-bezier(.16,1,.3,1) backwards;
+      animation-delay:calc(var(--i,0) * 45ms);
+    }
+    .card:hover{ box-shadow:0 18px 40px rgba(0,0,0,.45); }
+    .icon-btn:active{ transform:scale(.88); }
+
+    /* modern list view */
+    .grid.view-list{ gap:12px; }
+    .row-item{
+      position:relative; overflow:hidden; gap:14px; padding:12px 16px 12px 14px; border-radius:18px;
+      background:linear-gradient(135deg, rgba(255,255,255,.085), rgba(255,255,255,.028));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:0 8px 24px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.06);
+      transition:transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s, border-color .2s, background .2s;
+    }
+    .row-item::before{
+      content:''; position:absolute; left:0; top:14%; bottom:14%; width:3px; border-radius:0 3px 3px 0;
+      background:linear-gradient(180deg,#fff,#6d6d6d); opacity:0; transform:scaleY(.3);
+      transition:opacity .25s, transform .3s cubic-bezier(.16,1,.3,1);
+    }
+    .row-item::after{
+      content:''; position:absolute; inset:0; pointer-events:none;
+      background:linear-gradient(105deg, transparent 35%, rgba(255,255,255,.09) 50%, transparent 65%);
+      transform:translateX(-120%); transition:transform .7s cubic-bezier(.16,1,.3,1);
+    }
+    .row-item:hover{
+      transform:translateX(5px); border-color:rgba(255,255,255,.28);
+      background:linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.05));
+      box-shadow:0 14px 34px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.10);
+    }
+    .row-item:hover::before{ opacity:1; transform:scaleY(1); }
+    .row-item:hover::after{ transform:translateX(120%); }
+    .row-item .emoji{
+      width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:22px;
+      border-radius:13px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.10);
+      transition:transform .3s cubic-bezier(.16,1,.3,1);
+    }
+    .row-item:hover .emoji{ transform:scale(1.08) rotate(-4deg); }
+    .row-item .name{ font-size:15px; letter-spacing:.1px; }
+    .row-item .actions{ opacity:.55; transition:opacity .2s; }
+    .row-item:hover .actions{ opacity:1; }
+
+    /* FAB + modal motion */
+    .fab{ transition:transform .35s cubic-bezier(.16,1,.3,1); }
+    .fab:hover{ transform:scale(1.08) rotate(90deg); }
+    .fab::after{
+      content:''; position:absolute; inset:0; border-radius:50%; pointer-events:none;
+      border:2px solid rgba(255,255,255,.55); animation:fabPing 2.8s ease-out infinite;
+    }
+    .modal-wrap.show .modal{ animation:ccPop .32s cubic-bezier(.16,1,.3,1); }
+
+    /* ---------- Deadlines corner panel ---------- */
+    .dl-panel{
+      position:fixed; top:16px; right:16px; z-index:60; width:min(340px, calc(100vw - 32px));
+      display:none; flex-direction:column; overflow:hidden; border-radius:22px;
+      background:rgba(16,16,16,.74); backdrop-filter:blur(18px) saturate(140%); -webkit-backdrop-filter:blur(18px) saturate(140%);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 26px 60px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.07);
+    }
+    .dl-panel.has{ display:flex; animation:dlIn .65s cubic-bezier(.16,1,.3,1) both; }
+    .dl-head{ display:flex; align-items:center; gap:10px; padding:13px 16px; cursor:pointer; user-select:none; }
+    .dl-ico{ font-size:16px; }
+    .dl-title{ font-weight:600; font-size:14.5px; letter-spacing:.2px; }
+    .dl-count{
+      min-width:22px; height:22px; padding:0 7px; border-radius:999px; background:rgba(255,255,255,.14);
+      font-size:12px; font-weight:600; display:grid; place-items:center;
+    }
+    .dl-next{ margin-left:auto; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .dl-panel[data-tone="warn"] .dl-next{ color:var(--gold); }
+    .dl-panel[data-tone="late"] .dl-next{ color:var(--err); }
+    .dl-chev{ font-size:14px; color:var(--muted); transition:transform .4s cubic-bezier(.16,1,.3,1); }
+    .dl-panel.open .dl-chev{ transform:rotate(180deg); }
+    .dl-body{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .45s cubic-bezier(.16,1,.3,1); }
+    .dl-panel.open .dl-body{ grid-template-rows:1fr; }
+    .dl-inner{ overflow:hidden; min-height:0; }
+    .dl-list{
+      max-height:min(56vh, 420px); overflow-y:auto; padding:2px 8px 10px;
+      scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.2) transparent;
+    }
+    .dl-item{
+      --tone:var(--ok); display:flex; align-items:center; gap:12px; padding:9px 10px; border-radius:14px; cursor:pointer;
+      transition:background .2s, transform .3s cubic-bezier(.16,1,.3,1);
+      animation:dlItemIn .55s cubic-bezier(.16,1,.3,1) backwards;
+      animation-delay:calc(var(--i,0) * 70ms + 200ms);
+    }
+    .dl-item.warn{ --tone:var(--gold); }
+    .dl-item.late{ --tone:var(--err); }
+    .dl-item:hover{ background:rgba(255,255,255,.07); transform:translateX(-3px); }
+    .dl-ring{
+      --p:0; flex:none; width:44px; height:44px; border-radius:50%; display:grid; place-items:center;
+      background:conic-gradient(var(--tone) calc(var(--p) * 1%), rgba(255,255,255,.12) 0);
+      transition:--p 1.2s cubic-bezier(.16,1,.3,1);
+    }
+    .dl-item.late .dl-ring{ animation:ringPing 1.8s ease-out infinite; }
+    .dl-ring span{ width:35px; height:35px; border-radius:50%; background:#121212; display:grid; place-items:center; font-size:17px; }
+    .dl-info{ flex:1; min-width:0; }
+    .dl-name{ font-size:14px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .dl-when{ margin-top:2px; font-size:11.5px; color:var(--muted2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .dl-time{ text-align:right; flex:none; }
+    .dl-time b{ display:block; font-size:13px; font-weight:600; color:var(--tone); font-variant-numeric:tabular-nums; }
+    .dl-time small{ font-size:10.5px; color:var(--muted2); text-transform:uppercase; letter-spacing:.8px; }
+
+    @media (max-width:1100px){
+      /* chhoti screen: bottom-left (FAB ke opposite), body upar ki taraf khulti hai */
+      .dl-panel{ top:auto; bottom:22px; left:14px; right:auto; width:min(340px, calc(100vw - 110px)); flex-direction:column-reverse; }
+    }
+    @media (prefers-reduced-motion: reduce){
+      *, *::before, *::after{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+    }
   </style>
 </head>
 <body>
@@ -218,6 +351,18 @@
   </div>
 
   <button class="fab" id="fabAdd" title="Add project">+</button>
+
+  <!-- Deadlines corner panel (countdown wale projects) -->
+  <div class="dl-panel" id="dlPanel">
+    <div class="dl-head" id="dlHead" title="Deadlines — tap to open/close">
+      <span class="dl-ico">⏳</span>
+      <span class="dl-title">Deadlines</span>
+      <span class="dl-count" id="dlCount">0</span>
+      <span class="dl-next" id="dlNext"></span>
+      <span class="dl-chev">▾</span>
+    </div>
+    <div class="dl-body"><div class="dl-inner"><div class="dl-list" id="dlList"></div></div></div>
+  </div>
 
   <!-- Add / Edit modal -->
   <div class="modal-wrap" id="formWrap">
@@ -632,6 +777,105 @@
     document.querySelectorAll('#viewToggle button').forEach(function(b){
       b.classList.toggle('active', b.dataset.view === currentView);
     });
+
+    // ---------- Deadlines corner panel (countdown wale projects) ----------
+    var DL_WINDOW = 7 * 86400000;   // ring 7 din ke window me "bacha hua time" dikhata hai
+    var dlSig = '';
+    function dlItems(){
+      return projects.map(function(p){ return { p: p, dl: normDeadline(p.deadline) }; })
+        .filter(function(x){ return x.dl; })
+        .sort(function(a, b){ return a.dl - b.dl; });          // overdue / sabse nazdeek pehle
+    }
+    function dlTone(diff){ return diff <= 0 ? 'late' : (diff <= 172800000 ? 'warn' : 'ok'); }
+    function dlPct(diff){ return diff <= 0 ? 100 : Math.max(4, Math.min(100, diff / DL_WINDOW * 100)); }
+    function dlWhen(dl){
+      return new Date(dl).toLocaleString([], { weekday:'short', day:'numeric', month:'short', hour:'numeric', minute:'2-digit' });
+    }
+    function dlItemHTML(x, i){
+      var diff = x.dl - Date.now();
+      return '<div class="dl-item ' + dlTone(diff) + '" data-id="' + esc(x.p.id) + '" data-dl="' + x.dl + '" style="--i:' + i + '"' +
+               ' title="' + esc(x.p.name) + ' — click: open · double-click: edit">' +
+          '<div class="dl-ring" data-pct="' + dlPct(diff).toFixed(1) + '"><span>' + esc(x.p.emoji || '🧩') + '</span></div>' +
+          '<div class="dl-info"><div class="dl-name">' + esc(x.p.name) + '</div><div class="dl-when">' + esc(dlWhen(x.dl)) + '</div></div>' +
+          '<div class="dl-time"><b>' + fmtSpan(Math.abs(diff)) + '</b><small>' + (diff <= 0 ? 'overdue' : 'left') + '</small></div>' +
+        '</div>';
+    }
+    function renderDeadlines(){
+      var items = dlItems();
+      var sig = items.map(function(x){ return [x.p.id, x.dl, x.p.name, x.p.emoji].join('|'); }).join('~');
+      if (sig === dlSig) return;                 // kuch nahi badla → re-render/animation skip
+      dlSig = sig;
+      document.getElementById('dlPanel').classList.toggle('has', items.length > 0);
+      document.getElementById('dlCount').textContent = items.length;
+      document.getElementById('dlList').innerHTML = items.map(dlItemHTML).join('');
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){   // 0 → value ring animation
+        document.querySelectorAll('#dlList .dl-ring').forEach(function(r){
+          r.style.setProperty('--p', r.dataset.pct);
+          r.parentNode.dataset.p = r.dataset.pct;
+        });
+      }); });
+      tickDeadlines();
+    }
+    function tickDeadlines(){
+      var now = Date.now(), first = null;
+      document.querySelectorAll('#dlList .dl-item').forEach(function(el){
+        var diff = Number(el.dataset.dl) - now, tone = dlTone(diff), cls = 'dl-item ' + tone;
+        if (el.className !== cls) el.className = cls;
+        var b = el.querySelector('.dl-time b'), sm = el.querySelector('.dl-time small');
+        var t = fmtSpan(Math.abs(diff)), w = diff <= 0 ? 'overdue' : 'left';
+        if (b.textContent !== t) b.textContent = t;
+        if (sm.textContent !== w) sm.textContent = w;
+        var pct = dlPct(diff), old = Number(el.dataset.p);
+        if (!isNaN(old) && Math.abs(pct - old) >= 0.1){
+          el.querySelector('.dl-ring').style.setProperty('--p', pct.toFixed(1));
+          el.dataset.p = pct;
+        }
+        if (!first) first = { diff: diff, tone: tone };
+      });
+      var panel = document.getElementById('dlPanel'), nx = document.getElementById('dlNext');
+      if (first){
+        var nt = (first.diff <= 0 ? '⚠️ ' : '⏳ ') + fmtSpan(Math.abs(first.diff));
+        if (nx.textContent !== nt) nx.textContent = nt;
+        panel.dataset.tone = first.tone;
+      } else { nx.textContent = ''; }
+    }
+    setInterval(tickDeadlines, 1000);
+
+    var dlOpenPref = localStorage.getItem('cc_dl_open');
+    function setDlOpen(v){
+      document.getElementById('dlPanel').classList.toggle('open', v);
+      localStorage.setItem('cc_dl_open', v ? '1' : '0');
+    }
+    setDlOpen(dlOpenPref === null ? window.innerWidth >= 1700 : dlOpenPref === '1');   // 1700+ pe hi default open (warna cards ke upar aata hai)
+    document.getElementById('dlHead').onclick = function(){
+      setDlOpen(!document.getElementById('dlPanel').classList.contains('open'));
+    };
+    document.getElementById('dlList').addEventListener('click', function(e){
+      var it = e.target.closest('.dl-item'); if (!it) return;
+      var p = projects.find(function(x){ return x.id === it.dataset.id; });
+      if (p) openProject(p);
+    });
+    document.getElementById('dlList').addEventListener('dblclick', function(e){
+      var it = e.target.closest('.dl-item'); if (!it) return;
+      var p = projects.find(function(x){ return x.id === it.dataset.id; });
+      if (p) openForm(p);
+    });
+
+    // ---------- animation hooks: render()/setView() ko wrap (purana code untouched) ----------
+    var __ccAnim = true;                      // first load + view switch pe hi card entrance animation
+    var _renderBase = render;
+    render = function(list){
+      _renderBase(list);
+      var grid = document.getElementById('grid');
+      Array.prototype.forEach.call(grid.children, function(c, i){ c.style.setProperty('--i', Math.min(i, 14)); });
+      if (__ccAnim && projects.length){
+        grid.classList.add('enter'); __ccAnim = false;
+        setTimeout(function(){ grid.classList.remove('enter'); }, 1400);
+      }
+      renderDeadlines();
+    };
+    var _setViewBase = setView;
+    setView = function(v){ __ccAnim = true; _setViewBase(v); };
 
     loadProjects();
   </script>
