@@ -249,6 +249,20 @@
     var pendingDeleteId = null;
     var currentView = localStorage.getItem('cc_view') || 'grid';
 
+    // Hardcoded GAS web-app URL overrides — matched by project name (case-insensitive).
+    // Matching project ka card-click + edit form yahi URL use karega (Sheet ke GasURL se upar).
+    var GAS_URL_OVERRIDES = [
+      { match: /meko/i, url: 'https://script.google.com/macros/s/AKfycbwPkq2qpHRMe06IQwjMsMGZ-NUT4hbsG_9nthUoIWD-94JSMF9PcLHYxBgYtmuQoCSI/exec' }
+    ];
+    function applyGasOverrides(list){
+      list.forEach(function(p){
+        for (var i = 0; i < GAS_URL_OVERRIDES.length; i++){
+          if (GAS_URL_OVERRIDES[i].match.test(p.name || '')){ p.gasUrl = GAS_URL_OVERRIDES[i].url; break; }
+        }
+      });
+      return list;
+    }
+
     function esc(s){
       return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
         return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
@@ -349,7 +363,7 @@
     function loadProjects(){
       google.script.run.withSuccessHandler(function(res){
         if (!res.ok){ toast(res.error || 'Could not load', 'err'); return; }
-        projects = res.projects || [];
+        projects = applyGasOverrides(res.projects || []);
         applyFilter();
       }).withFailureHandler(function(err){
         toast('Load failed: ' + (err && err.message || err), 'err');
@@ -396,8 +410,18 @@
         emoji: document.getElementById('fEmoji').value.trim()
       };
       var btn = document.getElementById('formSave');
+      // guard: google.script.run sirf GAS web app URL pe milta hai (local file / other host pe nahi)
+      if (typeof google === 'undefined' || !google.script || !google.script.run){
+        toast('Ye page GAS web app URL se kholo — yahan save nahi hoga', 'err'); return;
+      }
       btn.disabled = true; btn.textContent = 'Saving…';
+      // watchdog: 30s me reply nahi aaya to button unlock + error dikha
+      var saveWatchdog = setTimeout(function(){
+        btn.disabled = false; btn.textContent = 'Save Project 💾';
+        toast('30s+ ho gaye, server reply nahi aaya. Reload karke check kar', 'err');
+      }, 30000);
       var done = function(res){
+        clearTimeout(saveWatchdog);
         btn.disabled = false; btn.textContent = 'Save Project 💾';
         if (!res.ok){ toast(res.error || 'Save failed', 'err'); return; }
         closeForm();
@@ -405,6 +429,7 @@
         loadProjects();
       };
       var fail = function(err){
+        clearTimeout(saveWatchdog);
         btn.disabled = false; btn.textContent = 'Save Project 💾';
         toast('Save failed: ' + (err && err.message || err), 'err');
       };
