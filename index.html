@@ -252,7 +252,8 @@
     // Hardcoded GAS web-app URL overrides — matched by project name (case-insensitive).
     // Matching project ka card-click + edit form yahi URL use karega (Sheet ke GasURL se upar).
     var GAS_URL_OVERRIDES = [
-      { match: /meko/i, url: 'https://script.google.com/macros/s/AKfycbwPkq2qpHRMe06IQwjMsMGZ-NUT4hbsG_9nthUoIWD-94JSMF9PcLHYxBgYtmuQoCSI/exec' }
+      // DISABLED: ye URL Command Center ka backend (Code.gs) hai, Meko project ka link nahi. Neeche GAS_API_URL dekh.
+      // { match: /meko/i, url: 'https://script.google.com/macros/s/AKfycbwPkq2qpHRMe06IQwjMsMGZ-NUT4hbsG_9nthUoIWD-94JSMF9PcLHYxBgYtmuQoCSI/exec' }
     ];
     function applyGasOverrides(list){
       list.forEach(function(p){
@@ -262,6 +263,37 @@
       });
       return list;
     }
+
+    // ---------- GAS backend link (GitHub Pages / non-GAS host ke liye) ----------
+    // Code.gs web app ka /exec URL. Real GAS iframe me google.script.run khud milta hai → shim skip.
+    var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbymqsff0cDmZOmgPtPSw3EqRXsI9TJxhj9QUIdH28p4kFUCWggxNzoUj8s_zkph4_Jf/exec';
+    (function(){
+      if (typeof google !== 'undefined' && google.script && google.script.run) return; // real GAS: kuch mat chhedo
+      function makeRunner(ok, ko){
+        return new Proxy({}, { get: function(_, prop){
+          if (prop === 'withSuccessHandler') return function(fn){ return makeRunner(fn, ko); };
+          if (prop === 'withFailureHandler') return function(fn){ return makeRunner(ok, fn); };
+          if (typeof prop !== 'string') return undefined;
+          return function(){
+            var args = Array.prototype.slice.call(arguments);
+            var url = GAS_API_URL + (GAS_API_URL.indexOf('?') > -1 ? '&' : '?') +
+              'api=call&fn=' + encodeURIComponent(prop) +
+              '&args=' + encodeURIComponent(JSON.stringify(args)) +
+              '&_=' + Date.now();
+            fetch(url).then(function(r){ return r.text(); }).then(function(t){
+              var j;
+              try { j = JSON.parse(t); }
+              catch (e){ throw new Error('Backend ne JSON nahi diya — deploy access "Anyone" hai? naya version deploy kiya?'); }
+              if (j && j.__error) throw new Error(j.__error);
+              if (ok) ok(j);
+            }).catch(function(err){ if (ko) ko(err); else console.error(err); });
+          };
+        }});
+      }
+      window.google = window.google || {};
+      window.google.script = window.google.script || {};
+      window.google.script.run = makeRunner(null, null);
+    })();
 
     function esc(s){
       return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
