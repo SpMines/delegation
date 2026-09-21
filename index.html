@@ -102,6 +102,26 @@
     .icon-btn.pin-btn.active{ color:#fff; background:rgba(255,255,255,.18); border-color:var(--brd-hi); }
     .icon-btn.del:hover{ color:var(--err); border-color:var(--err); }
 
+    /* ---------- Finish-by countdown badge ---------- */
+    .cd{
+      display:inline-flex; align-items:center; gap:5px; margin-top:9px; padding:4px 10px;
+      border-radius:999px; font-size:11.5px; font-weight:500; letter-spacing:.2px;
+      background:rgba(255,255,255,.07); border:1px solid var(--brd); color:var(--muted);
+      font-variant-numeric:tabular-nums; white-space:nowrap;
+    }
+    .cd.warn{ color:var(--gold); border-color:rgba(255,209,102,.45); background:rgba(255,209,102,.1); }
+    .cd.late{ color:var(--err); border-color:rgba(255,93,108,.5); background:rgba(255,93,108,.12); animation:cdPulse 1.6s ease-in-out infinite; }
+    @keyframes cdPulse{ 0%,100%{ opacity:1; } 50%{ opacity:.6; } }
+    .row-item .cd{ margin-top:0; flex:none; }
+    .field input[type=datetime-local]{ color-scheme:dark; }
+    .deadline-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .chip{
+      background:rgba(255,255,255,.05); border:1px solid var(--brd); color:var(--muted);
+      border-radius:999px; padding:5px 12px; font-family:'Jost',sans-serif; font-size:12px; cursor:pointer;
+      transition:all .15s;
+    }
+    .chip:hover{ color:#fff; border-color:var(--brd-hi); }
+
     .empty{
       grid-column:1/-1; text-align:center; color:var(--muted); padding:60px 20px;
       border:1px dashed var(--brd); border-radius:18px; font-size:15px; width:100%;
@@ -216,6 +236,16 @@
         <input id="fGas" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off">
       </div>
       <div class="field">
+        <label>⏳ Finish by (deadline) — optional</label>
+        <input id="fDeadline" type="datetime-local">
+        <div class="deadline-row" id="deadlineChips">
+          <button type="button" class="chip" data-days="1">+1 din</button>
+          <button type="button" class="chip" data-days="3">+3 din</button>
+          <button type="button" class="chip" data-days="7">+7 din</button>
+          <button type="button" class="chip" data-days="0">Clear</button>
+        </div>
+      </div>
+      <div class="field">
         <label>Emoji</label>
         <div class="emoji-row">
           <input id="fEmoji" maxlength="4" placeholder="🧩">
@@ -266,7 +296,7 @@
 
     // ---------- GAS backend link (GitHub Pages / non-GAS host ke liye) ----------
     // Code.gs web app ka /exec URL. Real GAS iframe me google.script.run khud milta hai → shim skip.
-    var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbymqsff0cDmZOmgPtPSw3EqRXsI9TJxhj9QUIdH28p4kFUCWggxNzoUj8s_zkph4_Jf/exec';
+    var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxwIIc9W5ioPnqsoHAcLumsl7r3vKjgVFwiZD_6vO969pSRCOei3Ty5ElJYVM1VyMbI/exec';
     (function(){
       if (typeof google !== 'undefined' && google.script && google.script.run) return; // real GAS: kuch mat chhedo
       function makeRunner(ok, ko){
@@ -334,6 +364,53 @@
       return arr;
     }
 
+    // ---------- Finish-by countdown ----------
+    function normDeadline(v){
+      if (v == null || v === '') return 0;
+      if (typeof v === 'number') return v > 0 ? v : 0;
+      var n = Number(v);
+      if (!isNaN(n) && n > 0) return n;
+      var t = Date.parse(v);
+      return isNaN(t) ? 0 : t;
+    }
+    function toLocalInput(ms){
+      var d = new Date(ms), z = function(n){ return (n < 10 ? '0' : '') + n; };
+      return d.getFullYear() + '-' + z(d.getMonth()+1) + '-' + z(d.getDate()) + 'T' + z(d.getHours()) + ':' + z(d.getMinutes());
+    }
+    function readDeadline(){
+      var v = document.getElementById('fDeadline').value;
+      if (!v) return '';
+      var t = new Date(v).getTime();
+      return isNaN(t) ? '' : t;
+    }
+    function fmtSpan(ms){
+      var s = Math.floor(ms / 1000), d = Math.floor(s / 86400); s -= d * 86400;
+      var h = Math.floor(s / 3600); s -= h * 3600;
+      var m = Math.floor(s / 60); s -= m * 60;
+      if (d > 0) return d + 'd ' + h + 'h ' + m + 'm';
+      if (h > 0) return h + 'h ' + m + 'm ' + s + 's';
+      return m + 'm ' + s + 's';
+    }
+    function cdState(dl){
+      var diff = dl - Date.now();
+      if (diff <= 0) return { cls: 'cd late', text: '⚠️ Overdue ' + fmtSpan(-diff) };
+      return { cls: 'cd' + (diff <= 172800000 ? ' warn' : ''), text: '⏳ ' + fmtSpan(diff) + ' left' };
+    }
+    function cdHTML(p){
+      var dl = normDeadline(p.deadline);
+      if (!dl) return '';
+      var st = cdState(dl);
+      return '<div class="' + st.cls + '" data-dl="' + dl + '" title="Finish by: ' + esc(new Date(dl).toLocaleString()) + '">' + st.text + '</div>';
+    }
+    function tickCountdowns(){
+      document.querySelectorAll('.cd[data-dl]').forEach(function(el){
+        var st = cdState(Number(el.dataset.dl));
+        if (el.className !== st.cls) el.className = st.cls;
+        if (el.textContent !== st.text) el.textContent = st.text;
+      });
+    }
+    setInterval(tickCountdowns, 1000);
+
     function actionIcons(p){
       return '' +
         '<div class="icon-btn star-btn' + (p.starred?' active':'') + '" data-act="star" data-id="'+esc(p.id)+'" title="Star">' + (p.starred?'⭐':'☆') + '</div>' +
@@ -349,6 +426,7 @@
           '<div class="emoji">'+esc(p.emoji||'🧩')+'</div>' +
           '<div class="name">'+esc(p.name)+'</div>' +
           (modern ? '<div class="meta">'+linkMeta+'</div>' : '') +
+          cdHTML(p) +
           '<div class="actions">' + actionIcons(p) + '</div>' +
         '</div>';
     }
@@ -358,6 +436,7 @@
         '<div class="row-item" data-id="'+esc(p.id)+'">' +
           '<div class="emoji">'+esc(p.emoji||'🧩')+'</div>' +
           '<div class="name">'+esc(p.name)+ (p.pinned?' 📌':'') +'</div>' +
+          cdHTML(p) +
           '<div class="actions">' + actionIcons(p) + '</div>' +
         '</div>';
     }
@@ -418,6 +497,7 @@
       document.getElementById('fGas').value = p ? (p.gasUrl || '') : '';
       document.getElementById('fEmoji').value = p ? (p.emoji || '') : '';
       document.getElementById('fEmoji').dataset.touched = p ? '1' : '';
+      document.getElementById('fDeadline').value = (p && normDeadline(p.deadline)) ? toLocalInput(normDeadline(p.deadline)) : '';
       formWrap.classList.add('show');
       setTimeout(function(){ document.getElementById('fName').focus(); }, 50);
     }
@@ -430,6 +510,12 @@
       if (!e.dataset.touched) e.value = guessEmoji(this.value);
     });
     document.getElementById('fEmoji').addEventListener('input', function(){ this.dataset.touched = '1'; });
+    document.getElementById('deadlineChips').addEventListener('click', function(e){
+      var b = e.target.closest('.chip');
+      if (!b) return;
+      var days = Number(b.dataset.days);
+      document.getElementById('fDeadline').value = days ? toLocalInput(Date.now() + days * 86400000) : '';
+    });
 
     document.getElementById('formSave').onclick = function(){
       var name = document.getElementById('fName').value.trim();
@@ -441,6 +527,7 @@
         gasUrl: document.getElementById('fGas').value.trim(),
         emoji: document.getElementById('fEmoji').value.trim()
       };
+      payload.deadline = readDeadline(); // '' = no deadline (edit me clear bhi isi se hota hai)
       var btn = document.getElementById('formSave');
       // guard: google.script.run sirf GAS web app URL pe milta hai (local file / other host pe nahi)
       if (typeof google === 'undefined' || !google.script || !google.script.run){
