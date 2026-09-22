@@ -102,26 +102,6 @@
     .icon-btn.pin-btn.active{ color:#fff; background:rgba(255,255,255,.18); border-color:var(--brd-hi); }
     .icon-btn.del:hover{ color:var(--err); border-color:var(--err); }
 
-    /* ---------- Finish-by countdown badge ---------- */
-    .cd{
-      display:inline-flex; align-items:center; gap:5px; margin-top:9px; padding:4px 10px;
-      border-radius:999px; font-size:11.5px; font-weight:500; letter-spacing:.2px;
-      background:rgba(255,255,255,.07); border:1px solid var(--brd); color:var(--muted);
-      font-variant-numeric:tabular-nums; white-space:nowrap;
-    }
-    .cd.warn{ color:var(--gold); border-color:rgba(255,209,102,.45); background:rgba(255,209,102,.1); }
-    .cd.late{ color:var(--err); border-color:rgba(255,93,108,.5); background:rgba(255,93,108,.12); animation:cdPulse 1.6s ease-in-out infinite; }
-    @keyframes cdPulse{ 0%,100%{ opacity:1; } 50%{ opacity:.6; } }
-    .row-item .cd{ margin-top:0; flex:none; }
-    .field input[type=datetime-local]{ color-scheme:dark; }
-    .deadline-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-    .chip{
-      background:rgba(255,255,255,.05); border:1px solid var(--brd); color:var(--muted);
-      border-radius:999px; padding:5px 12px; font-family:'Jost',sans-serif; font-size:12px; cursor:pointer;
-      transition:all .15s;
-    }
-    .chip:hover{ color:#fff; border-color:var(--brd-hi); }
-
     .empty{
       grid-column:1/-1; text-align:center; color:var(--muted); padding:60px 20px;
       border:1px dashed var(--brd); border-radius:18px; font-size:15px; width:100%;
@@ -187,143 +167,18 @@
 
     footer{ margin-top:44px; color:var(--muted2); font-size:12px; text-align:center; }
 
+    .conn-banner{
+      display:none; align-items:center; gap:8px; position:fixed; top:14px; left:50%;
+      transform:translateX(-50%); z-index:9999; background:rgba(255,93,108,.14);
+      border:1px solid rgba(255,93,108,.4); color:var(--err); font-size:12.5px;
+      padding:8px 14px; border-radius:999px;
+    }
+    .conn-banner a{ color:#fff; text-decoration:underline; cursor:pointer; }
+
     @media (max-width:520px){
       body{ padding:34px 14px 110px; }
       .grid.view-grid{ grid-template-columns:repeat(auto-fill,minmax(136px,1fr)); }
       .grid.view-card{ grid-template-columns:1fr; }
-    }
-
-    /* =====================================================
-       MODERN UI PASS — additive overrides + animations
-       (upar wali koi rule delete nahi ki, sirf neeche override)
-       ===================================================== */
-    @property --p{ syntax:'<number>'; inherits:false; initial-value:0; }
-    @keyframes ccUp{ from{ opacity:0; transform:translateY(16px) scale(.97); } to{ opacity:1; transform:none; } }
-    @keyframes ccPop{ from{ opacity:0; transform:translateY(14px) scale(.96); } to{ opacity:1; transform:none; } }
-    @keyframes ccShine{ 0%,100%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } }
-    @keyframes fabPing{ 0%{ transform:scale(1); opacity:.7; } 80%,100%{ transform:scale(1.6); opacity:0; } }
-    @keyframes dlIn{ from{ opacity:0; transform:translateX(34px) scale(.96); } to{ opacity:1; transform:none; } }
-    @keyframes dlItemIn{ from{ opacity:0; transform:translateX(20px); } to{ opacity:1; transform:none; } }
-    @keyframes ringPing{ 0%{ box-shadow:0 0 0 0 rgba(255,93,108,.55); } 70%,100%{ box-shadow:0 0 0 9px rgba(255,93,108,0); } }
-
-    /* header + title */
-    header{ animation:ccUp .7s cubic-bezier(.16,1,.3,1) backwards; }
-    h1{
-      background:linear-gradient(110deg,#8a8a8a 0%,#fff 35%,#8a8a8a 55%,#fff 80%,#8a8a8a 100%);
-      background-size:220% 100%; -webkit-background-clip:text; background-clip:text;
-      animation:ccShine 7s ease-in-out infinite;
-    }
-
-    /* grid / card / list entrance (JS sirf first load + view switch pe .enter lagata hai) */
-    .grid.enter > .card, .grid.enter > .row-item{
-      animation:ccUp .55s cubic-bezier(.16,1,.3,1) backwards;
-      animation-delay:calc(var(--i,0) * 45ms);
-    }
-    .card:hover{ box-shadow:0 18px 40px rgba(0,0,0,.45); }
-    .icon-btn:active{ transform:scale(.88); }
-
-    /* modern list view */
-    .grid.view-list{ gap:12px; }
-    .row-item{
-      position:relative; overflow:hidden; gap:14px; padding:12px 16px 12px 14px; border-radius:18px;
-      background:linear-gradient(135deg, rgba(255,255,255,.085), rgba(255,255,255,.028));
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow:0 8px 24px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.06);
-      transition:transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s, border-color .2s, background .2s;
-    }
-    .row-item::before{
-      content:''; position:absolute; left:0; top:14%; bottom:14%; width:3px; border-radius:0 3px 3px 0;
-      background:linear-gradient(180deg,#fff,#6d6d6d); opacity:0; transform:scaleY(.3);
-      transition:opacity .25s, transform .3s cubic-bezier(.16,1,.3,1);
-    }
-    .row-item::after{
-      content:''; position:absolute; inset:0; pointer-events:none;
-      background:linear-gradient(105deg, transparent 35%, rgba(255,255,255,.09) 50%, transparent 65%);
-      transform:translateX(-120%); transition:transform .7s cubic-bezier(.16,1,.3,1);
-    }
-    .row-item:hover{
-      transform:translateX(5px); border-color:rgba(255,255,255,.28);
-      background:linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.05));
-      box-shadow:0 14px 34px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.10);
-    }
-    .row-item:hover::before{ opacity:1; transform:scaleY(1); }
-    .row-item:hover::after{ transform:translateX(120%); }
-    .row-item .emoji{
-      width:44px; height:44px; display:flex; align-items:center; justify-content:center; font-size:22px;
-      border-radius:13px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.10);
-      transition:transform .3s cubic-bezier(.16,1,.3,1);
-    }
-    .row-item:hover .emoji{ transform:scale(1.08) rotate(-4deg); }
-    .row-item .name{ font-size:15px; letter-spacing:.1px; }
-    .row-item .actions{ opacity:.55; transition:opacity .2s; }
-    .row-item:hover .actions{ opacity:1; }
-
-    /* FAB + modal motion */
-    .fab{ transition:transform .35s cubic-bezier(.16,1,.3,1); }
-    .fab:hover{ transform:scale(1.08) rotate(90deg); }
-    .fab::after{
-      content:''; position:absolute; inset:0; border-radius:50%; pointer-events:none;
-      border:2px solid rgba(255,255,255,.55); animation:fabPing 2.8s ease-out infinite;
-    }
-    .modal-wrap.show .modal{ animation:ccPop .32s cubic-bezier(.16,1,.3,1); }
-
-    /* ---------- Deadlines corner panel ---------- */
-    .dl-panel{
-      position:fixed; top:16px; right:16px; z-index:60; width:min(340px, calc(100vw - 32px));
-      display:none; flex-direction:column; overflow:hidden; border-radius:22px;
-      background:rgba(16,16,16,.74); backdrop-filter:blur(18px) saturate(140%); -webkit-backdrop-filter:blur(18px) saturate(140%);
-      border:1px solid rgba(255,255,255,.14);
-      box-shadow:0 26px 60px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.07);
-    }
-    .dl-panel.has{ display:flex; animation:dlIn .65s cubic-bezier(.16,1,.3,1) both; }
-    .dl-head{ display:flex; align-items:center; gap:10px; padding:13px 16px; cursor:pointer; user-select:none; }
-    .dl-ico{ font-size:16px; }
-    .dl-title{ font-weight:600; font-size:14.5px; letter-spacing:.2px; }
-    .dl-count{
-      min-width:22px; height:22px; padding:0 7px; border-radius:999px; background:rgba(255,255,255,.14);
-      font-size:12px; font-weight:600; display:grid; place-items:center;
-    }
-    .dl-next{ margin-left:auto; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
-    .dl-panel[data-tone="warn"] .dl-next{ color:var(--gold); }
-    .dl-panel[data-tone="late"] .dl-next{ color:var(--err); }
-    .dl-chev{ font-size:14px; color:var(--muted); transition:transform .4s cubic-bezier(.16,1,.3,1); }
-    .dl-panel.open .dl-chev{ transform:rotate(180deg); }
-    .dl-body{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .45s cubic-bezier(.16,1,.3,1); }
-    .dl-panel.open .dl-body{ grid-template-rows:1fr; }
-    .dl-inner{ overflow:hidden; min-height:0; }
-    .dl-list{
-      max-height:min(56vh, 420px); overflow-y:auto; padding:2px 8px 10px;
-      scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.2) transparent;
-    }
-    .dl-item{
-      --tone:var(--ok); display:flex; align-items:center; gap:12px; padding:9px 10px; border-radius:14px; cursor:pointer;
-      transition:background .2s, transform .3s cubic-bezier(.16,1,.3,1);
-      animation:dlItemIn .55s cubic-bezier(.16,1,.3,1) backwards;
-      animation-delay:calc(var(--i,0) * 70ms + 200ms);
-    }
-    .dl-item.warn{ --tone:var(--gold); }
-    .dl-item.late{ --tone:var(--err); }
-    .dl-item:hover{ background:rgba(255,255,255,.07); transform:translateX(-3px); }
-    .dl-ring{
-      --p:0; flex:none; width:44px; height:44px; border-radius:50%; display:grid; place-items:center;
-      background:conic-gradient(var(--tone) calc(var(--p) * 1%), rgba(255,255,255,.12) 0);
-      transition:--p 1.2s cubic-bezier(.16,1,.3,1);
-    }
-    .dl-item.late .dl-ring{ animation:ringPing 1.8s ease-out infinite; }
-    .dl-ring span{ width:35px; height:35px; border-radius:50%; background:#121212; display:grid; place-items:center; font-size:17px; }
-    .dl-info{ flex:1; min-width:0; }
-    .dl-name{ font-size:14px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .dl-when{ margin-top:2px; font-size:11.5px; color:var(--muted2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .dl-time{ text-align:right; flex:none; }
-    .dl-time b{ display:block; font-size:13px; font-weight:600; color:var(--tone); font-variant-numeric:tabular-nums; }
-    .dl-time small{ font-size:10.5px; color:var(--muted2); text-transform:uppercase; letter-spacing:.8px; }
-
-    @media (max-width:1100px){
-      /* chhoti screen: bottom-left (FAB ke opposite), body upar ki taraf khulti hai */
-      .dl-panel{ top:auto; bottom:22px; left:14px; right:auto; width:min(340px, calc(100vw - 110px)); flex-direction:column-reverse; }
-    }
-    @media (prefers-reduced-motion: reduce){
-      *, *::before, *::after{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
     }
   </style>
 </head>
@@ -347,22 +202,10 @@
       <div class="empty">Loading your projects…</div>
     </div>
 
-    <footer>Command Center · v1.1 · Built by Sam</footer>
+    <footer>Command Center · v1.2 · Built by Sam</footer>
   </div>
 
   <button class="fab" id="fabAdd" title="Add project">+</button>
-
-  <!-- Deadlines corner panel (countdown wale projects) -->
-  <div class="dl-panel" id="dlPanel">
-    <div class="dl-head" id="dlHead" title="Deadlines — tap to open/close">
-      <span class="dl-ico">⏳</span>
-      <span class="dl-title">Deadlines</span>
-      <span class="dl-count" id="dlCount">0</span>
-      <span class="dl-next" id="dlNext"></span>
-      <span class="dl-chev">▾</span>
-    </div>
-    <div class="dl-body"><div class="dl-inner"><div class="dl-list" id="dlList"></div></div></div>
-  </div>
 
   <!-- Add / Edit modal -->
   <div class="modal-wrap" id="formWrap">
@@ -379,16 +222,6 @@
       <div class="field">
         <label>Web App (GAS) URL</label>
         <input id="fGas" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off">
-      </div>
-      <div class="field">
-        <label>⏳ Finish by (deadline) — optional</label>
-        <input id="fDeadline" type="datetime-local">
-        <div class="deadline-row" id="deadlineChips">
-          <button type="button" class="chip" data-days="1">+1 din</button>
-          <button type="button" class="chip" data-days="3">+3 din</button>
-          <button type="button" class="chip" data-days="7">+7 din</button>
-          <button type="button" class="chip" data-days="0">Clear</button>
-        </div>
       </div>
       <div class="field">
         <label>Emoji</label>
@@ -416,59 +249,46 @@
     </div>
   </div>
 
+  <div class="conn-banner" id="connBanner"></div>
+
+  <!-- Set backend URL modal (for when a redeploy changes the GAS URL) -->
+  <div class="modal-wrap confirm" id="urlWrap">
+    <div class="modal">
+      <h2>Set Backend URL</h2>
+      <div class="field">
+        <label>GAS Web App URL</label>
+        <input id="urlInput" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off">
+      </div>
+      <div class="form-actions" style="position:static;">
+        <button class="btn btn-ghost" id="urlCancel">Cancel</button>
+        <button class="btn btn-primary" id="urlSave">Save &amp; Reload</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toasts" id="toasts"></div>
 
   <script>
+    // Backend URL — hardcoded default + localStorage override, so a future
+    // redeploy (which changes the /exec URL) doesn't need a new GitHub push;
+    // just hit "Set URL" in the banner below.
+    var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbyyJ4_kadCHN2eCEMXAD3q1HJzkdz6wq2_5CwrmMbTc6W2UeHd9DdHbBLoL5KLLIQRs/exec';
+    var API = localStorage.getItem('cc_api') || API_DEFAULT;
+
+    function apiOk(u){
+      return /\/macros\/s\/[^/]+\/exec$/.test(u) || /\/a\/macros\/[^/]+\/s\/[^/]+\/exec$/.test(u);
+    }
+
+    function apiCall(action, payload){
+      var body = JSON.stringify(Object.assign({ action: action }, payload || {}));
+      return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: body })
+        .then(function(res){ return res.json(); });
+    }
+
     var projects = [];
     var editingId = null;
     var pendingDeleteId = null;
     var currentView = localStorage.getItem('cc_view') || 'grid';
-
-    // Hardcoded GAS web-app URL overrides — matched by project name (case-insensitive).
-    // Matching project ka card-click + edit form yahi URL use karega (Sheet ke GasURL se upar).
-    var GAS_URL_OVERRIDES = [
-      // DISABLED: ye URL Command Center ka backend (Code.gs) hai, Meko project ka link nahi. Neeche GAS_API_URL dekh.
-      // { match: /meko/i, url: 'https://script.google.com/macros/s/AKfycbwPkq2qpHRMe06IQwjMsMGZ-NUT4hbsG_9nthUoIWD-94JSMF9PcLHYxBgYtmuQoCSI/exec' }
-    ];
-    function applyGasOverrides(list){
-      list.forEach(function(p){
-        for (var i = 0; i < GAS_URL_OVERRIDES.length; i++){
-          if (GAS_URL_OVERRIDES[i].match.test(p.name || '')){ p.gasUrl = GAS_URL_OVERRIDES[i].url; break; }
-        }
-      });
-      return list;
-    }
-
-    // ---------- GAS backend link (GitHub Pages / non-GAS host ke liye) ----------
-    // Code.gs web app ka /exec URL. Real GAS iframe me google.script.run khud milta hai → shim skip.
-    var GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxwIIc9W5ioPnqsoHAcLumsl7r3vKjgVFwiZD_6vO969pSRCOei3Ty5ElJYVM1VyMbI/exec';
-    (function(){
-      if (typeof google !== 'undefined' && google.script && google.script.run) return; // real GAS: kuch mat chhedo
-      function makeRunner(ok, ko){
-        return new Proxy({}, { get: function(_, prop){
-          if (prop === 'withSuccessHandler') return function(fn){ return makeRunner(fn, ko); };
-          if (prop === 'withFailureHandler') return function(fn){ return makeRunner(ok, fn); };
-          if (typeof prop !== 'string') return undefined;
-          return function(){
-            var args = Array.prototype.slice.call(arguments);
-            var url = GAS_API_URL + (GAS_API_URL.indexOf('?') > -1 ? '&' : '?') +
-              'api=call&fn=' + encodeURIComponent(prop) +
-              '&args=' + encodeURIComponent(JSON.stringify(args)) +
-              '&_=' + Date.now();
-            fetch(url).then(function(r){ return r.text(); }).then(function(t){
-              var j;
-              try { j = JSON.parse(t); }
-              catch (e){ throw new Error('Backend ne JSON nahi diya — deploy access "Anyone" hai? naya version deploy kiya?'); }
-              if (j && j.__error) throw new Error(j.__error);
-              if (ok) ok(j);
-            }).catch(function(err){ if (ko) ko(err); else console.error(err); });
-          };
-        }});
-      }
-      window.google = window.google || {};
-      window.google.script = window.google.script || {};
-      window.google.script.run = makeRunner(null, null);
-    })();
 
     function esc(s){
       return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
@@ -509,53 +329,6 @@
       return arr;
     }
 
-    // ---------- Finish-by countdown ----------
-    function normDeadline(v){
-      if (v == null || v === '') return 0;
-      if (typeof v === 'number') return v > 0 ? v : 0;
-      var n = Number(v);
-      if (!isNaN(n) && n > 0) return n;
-      var t = Date.parse(v);
-      return isNaN(t) ? 0 : t;
-    }
-    function toLocalInput(ms){
-      var d = new Date(ms), z = function(n){ return (n < 10 ? '0' : '') + n; };
-      return d.getFullYear() + '-' + z(d.getMonth()+1) + '-' + z(d.getDate()) + 'T' + z(d.getHours()) + ':' + z(d.getMinutes());
-    }
-    function readDeadline(){
-      var v = document.getElementById('fDeadline').value;
-      if (!v) return '';
-      var t = new Date(v).getTime();
-      return isNaN(t) ? '' : t;
-    }
-    function fmtSpan(ms){
-      var s = Math.floor(ms / 1000), d = Math.floor(s / 86400); s -= d * 86400;
-      var h = Math.floor(s / 3600); s -= h * 3600;
-      var m = Math.floor(s / 60); s -= m * 60;
-      if (d > 0) return d + 'd ' + h + 'h ' + m + 'm';
-      if (h > 0) return h + 'h ' + m + 'm ' + s + 's';
-      return m + 'm ' + s + 's';
-    }
-    function cdState(dl){
-      var diff = dl - Date.now();
-      if (diff <= 0) return { cls: 'cd late', text: '⚠️ Overdue ' + fmtSpan(-diff) };
-      return { cls: 'cd' + (diff <= 172800000 ? ' warn' : ''), text: '⏳ ' + fmtSpan(diff) + ' left' };
-    }
-    function cdHTML(p){
-      var dl = normDeadline(p.deadline);
-      if (!dl) return '';
-      var st = cdState(dl);
-      return '<div class="' + st.cls + '" data-dl="' + dl + '" title="Finish by: ' + esc(new Date(dl).toLocaleString()) + '">' + st.text + '</div>';
-    }
-    function tickCountdowns(){
-      document.querySelectorAll('.cd[data-dl]').forEach(function(el){
-        var st = cdState(Number(el.dataset.dl));
-        if (el.className !== st.cls) el.className = st.cls;
-        if (el.textContent !== st.text) el.textContent = st.text;
-      });
-    }
-    setInterval(tickCountdowns, 1000);
-
     function actionIcons(p){
       return '' +
         '<div class="icon-btn star-btn' + (p.starred?' active':'') + '" data-act="star" data-id="'+esc(p.id)+'" title="Star">' + (p.starred?'⭐':'☆') + '</div>' +
@@ -571,7 +344,6 @@
           '<div class="emoji">'+esc(p.emoji||'🧩')+'</div>' +
           '<div class="name">'+esc(p.name)+'</div>' +
           (modern ? '<div class="meta">'+linkMeta+'</div>' : '') +
-          cdHTML(p) +
           '<div class="actions">' + actionIcons(p) + '</div>' +
         '</div>';
     }
@@ -581,7 +353,6 @@
         '<div class="row-item" data-id="'+esc(p.id)+'">' +
           '<div class="emoji">'+esc(p.emoji||'🧩')+'</div>' +
           '<div class="name">'+esc(p.name)+ (p.pinned?' 📌':'') +'</div>' +
-          cdHTML(p) +
           '<div class="actions">' + actionIcons(p) + '</div>' +
         '</div>';
     }
@@ -617,14 +388,36 @@
     }
 
     function loadProjects(){
-      google.script.run.withSuccessHandler(function(res){
+      apiCall('list').then(function(res){
         if (!res.ok){ toast(res.error || 'Could not load', 'err'); return; }
-        projects = applyGasOverrides(res.projects || []);
+        projects = res.projects || [];
         applyFilter();
-      }).withFailureHandler(function(err){
-        toast('Load failed: ' + (err && err.message || err), 'err');
-      }).listProjects();
+      }).catch(function(err){
+        toast('Load failed: ' + err.message, 'err');
+        showConnBanner();
+      });
     }
+
+    function showConnBanner(){
+      var b = document.getElementById('connBanner');
+      b.style.display = 'flex';
+      b.innerHTML = '⚠️ Can\'t reach backend — <a id="setUrlLink">Set URL</a>';
+      document.getElementById('setUrlLink').onclick = openUrlModal;
+    }
+
+    var urlWrap = document.getElementById('urlWrap');
+    function openUrlModal(){
+      document.getElementById('urlInput').value = API;
+      urlWrap.classList.add('show');
+    }
+    document.getElementById('urlCancel').onclick = function(){ urlWrap.classList.remove('show'); };
+    document.getElementById('urlSave').onclick = function(){
+      var v = document.getElementById('urlInput').value.trim();
+      if (!v || !apiOk(v)){ toast('Needs a valid …/exec URL', 'err'); return; }
+      localStorage.setItem('cc_api', v);
+      toast('Saved — reloading…');
+      setTimeout(function(){ location.reload(); }, 600);
+    };
 
     function openProject(p){
       var url = p.gasUrl || p.sheetUrl;
@@ -642,7 +435,6 @@
       document.getElementById('fGas').value = p ? (p.gasUrl || '') : '';
       document.getElementById('fEmoji').value = p ? (p.emoji || '') : '';
       document.getElementById('fEmoji').dataset.touched = p ? '1' : '';
-      document.getElementById('fDeadline').value = (p && normDeadline(p.deadline)) ? toLocalInput(normDeadline(p.deadline)) : '';
       formWrap.classList.add('show');
       setTimeout(function(){ document.getElementById('fName').focus(); }, 50);
     }
@@ -655,12 +447,6 @@
       if (!e.dataset.touched) e.value = guessEmoji(this.value);
     });
     document.getElementById('fEmoji').addEventListener('input', function(){ this.dataset.touched = '1'; });
-    document.getElementById('deadlineChips').addEventListener('click', function(e){
-      var b = e.target.closest('.chip');
-      if (!b) return;
-      var days = Number(b.dataset.days);
-      document.getElementById('fDeadline').value = days ? toLocalInput(Date.now() + days * 86400000) : '';
-    });
 
     document.getElementById('formSave').onclick = function(){
       var name = document.getElementById('fName').value.trim();
@@ -672,36 +458,18 @@
         gasUrl: document.getElementById('fGas').value.trim(),
         emoji: document.getElementById('fEmoji').value.trim()
       };
-      payload.deadline = readDeadline(); // '' = no deadline (edit me clear bhi isi se hota hai)
       var btn = document.getElementById('formSave');
-      // guard: google.script.run sirf GAS web app URL pe milta hai (local file / other host pe nahi)
-      if (typeof google === 'undefined' || !google.script || !google.script.run){
-        toast('Ye page GAS web app URL se kholo — yahan save nahi hoga', 'err'); return;
-      }
       btn.disabled = true; btn.textContent = 'Saving…';
-      // watchdog: 30s me reply nahi aaya to button unlock + error dikha
-      var saveWatchdog = setTimeout(function(){
-        btn.disabled = false; btn.textContent = 'Save Project 💾';
-        toast('30s+ ho gaye, server reply nahi aaya. Reload karke check kar', 'err');
-      }, 30000);
-      var done = function(res){
-        clearTimeout(saveWatchdog);
+      apiCall(editingId ? 'update' : 'add', payload).then(function(res){
         btn.disabled = false; btn.textContent = 'Save Project 💾';
         if (!res.ok){ toast(res.error || 'Save failed', 'err'); return; }
         closeForm();
         toast(editingId ? 'Project updated ✅' : 'Project added ✅');
         loadProjects();
-      };
-      var fail = function(err){
-        clearTimeout(saveWatchdog);
+      }).catch(function(err){
         btn.disabled = false; btn.textContent = 'Save Project 💾';
-        toast('Save failed: ' + (err && err.message || err), 'err');
-      };
-      if (editingId){
-        google.script.run.withSuccessHandler(done).withFailureHandler(fail).updateProject(payload);
-      } else {
-        google.script.run.withSuccessHandler(done).withFailureHandler(fail).addProject(payload);
-      }
+        toast('Save failed: ' + err.message, 'err');
+      });
     };
 
     // --- delete confirm ---
@@ -711,13 +479,13 @@
       if (!pendingDeleteId) return;
       var id = pendingDeleteId;
       confirmWrap.classList.remove('show');
-      google.script.run.withSuccessHandler(function(res){
+      apiCall('delete', { id: id }).then(function(res){
         if (!res.ok){ toast(res.error || 'Delete failed', 'err'); return; }
         toast('Removed 🗑️');
         loadProjects();
-      }).withFailureHandler(function(err){
-        toast('Delete failed: ' + (err && err.message || err), 'err');
-      }).deleteProject(id);
+      }).catch(function(err){
+        toast('Delete failed: ' + err.message, 'err');
+      });
     };
 
     // --- grid interactions: open / pin / star / delete / edit ---
@@ -746,13 +514,12 @@
           var prev = p[field];
           p[field] = !prev; // optimistic
           applyFilter();
-          var call = act === 'pin' ? 'togglePin' : 'toggleStar';
-          google.script.run.withSuccessHandler(function(res){
+          apiCall(act, { id: id }).then(function(res){
             if (!res.ok){ p[field] = prev; applyFilter(); toast(res.error || 'Update failed', 'err'); }
-          }).withFailureHandler(function(err){
+          }).catch(function(err){
             p[field] = prev; applyFilter();
-            toast('Update failed: ' + (err && err.message || err), 'err');
-          })[call](id);
+            toast('Update failed: ' + err.message, 'err');
+          });
           return;
         }
       }
@@ -777,105 +544,6 @@
     document.querySelectorAll('#viewToggle button').forEach(function(b){
       b.classList.toggle('active', b.dataset.view === currentView);
     });
-
-    // ---------- Deadlines corner panel (countdown wale projects) ----------
-    var DL_WINDOW = 7 * 86400000;   // ring 7 din ke window me "bacha hua time" dikhata hai
-    var dlSig = '';
-    function dlItems(){
-      return projects.map(function(p){ return { p: p, dl: normDeadline(p.deadline) }; })
-        .filter(function(x){ return x.dl; })
-        .sort(function(a, b){ return a.dl - b.dl; });          // overdue / sabse nazdeek pehle
-    }
-    function dlTone(diff){ return diff <= 0 ? 'late' : (diff <= 172800000 ? 'warn' : 'ok'); }
-    function dlPct(diff){ return diff <= 0 ? 100 : Math.max(4, Math.min(100, diff / DL_WINDOW * 100)); }
-    function dlWhen(dl){
-      return new Date(dl).toLocaleString([], { weekday:'short', day:'numeric', month:'short', hour:'numeric', minute:'2-digit' });
-    }
-    function dlItemHTML(x, i){
-      var diff = x.dl - Date.now();
-      return '<div class="dl-item ' + dlTone(diff) + '" data-id="' + esc(x.p.id) + '" data-dl="' + x.dl + '" style="--i:' + i + '"' +
-               ' title="' + esc(x.p.name) + ' — click: open · double-click: edit">' +
-          '<div class="dl-ring" data-pct="' + dlPct(diff).toFixed(1) + '"><span>' + esc(x.p.emoji || '🧩') + '</span></div>' +
-          '<div class="dl-info"><div class="dl-name">' + esc(x.p.name) + '</div><div class="dl-when">' + esc(dlWhen(x.dl)) + '</div></div>' +
-          '<div class="dl-time"><b>' + fmtSpan(Math.abs(diff)) + '</b><small>' + (diff <= 0 ? 'overdue' : 'left') + '</small></div>' +
-        '</div>';
-    }
-    function renderDeadlines(){
-      var items = dlItems();
-      var sig = items.map(function(x){ return [x.p.id, x.dl, x.p.name, x.p.emoji].join('|'); }).join('~');
-      if (sig === dlSig) return;                 // kuch nahi badla → re-render/animation skip
-      dlSig = sig;
-      document.getElementById('dlPanel').classList.toggle('has', items.length > 0);
-      document.getElementById('dlCount').textContent = items.length;
-      document.getElementById('dlList').innerHTML = items.map(dlItemHTML).join('');
-      requestAnimationFrame(function(){ requestAnimationFrame(function(){   // 0 → value ring animation
-        document.querySelectorAll('#dlList .dl-ring').forEach(function(r){
-          r.style.setProperty('--p', r.dataset.pct);
-          r.parentNode.dataset.p = r.dataset.pct;
-        });
-      }); });
-      tickDeadlines();
-    }
-    function tickDeadlines(){
-      var now = Date.now(), first = null;
-      document.querySelectorAll('#dlList .dl-item').forEach(function(el){
-        var diff = Number(el.dataset.dl) - now, tone = dlTone(diff), cls = 'dl-item ' + tone;
-        if (el.className !== cls) el.className = cls;
-        var b = el.querySelector('.dl-time b'), sm = el.querySelector('.dl-time small');
-        var t = fmtSpan(Math.abs(diff)), w = diff <= 0 ? 'overdue' : 'left';
-        if (b.textContent !== t) b.textContent = t;
-        if (sm.textContent !== w) sm.textContent = w;
-        var pct = dlPct(diff), old = Number(el.dataset.p);
-        if (!isNaN(old) && Math.abs(pct - old) >= 0.1){
-          el.querySelector('.dl-ring').style.setProperty('--p', pct.toFixed(1));
-          el.dataset.p = pct;
-        }
-        if (!first) first = { diff: diff, tone: tone };
-      });
-      var panel = document.getElementById('dlPanel'), nx = document.getElementById('dlNext');
-      if (first){
-        var nt = (first.diff <= 0 ? '⚠️ ' : '⏳ ') + fmtSpan(Math.abs(first.diff));
-        if (nx.textContent !== nt) nx.textContent = nt;
-        panel.dataset.tone = first.tone;
-      } else { nx.textContent = ''; }
-    }
-    setInterval(tickDeadlines, 1000);
-
-    var dlOpenPref = localStorage.getItem('cc_dl_open');
-    function setDlOpen(v){
-      document.getElementById('dlPanel').classList.toggle('open', v);
-      localStorage.setItem('cc_dl_open', v ? '1' : '0');
-    }
-    setDlOpen(dlOpenPref === null ? window.innerWidth >= 1700 : dlOpenPref === '1');   // 1700+ pe hi default open (warna cards ke upar aata hai)
-    document.getElementById('dlHead').onclick = function(){
-      setDlOpen(!document.getElementById('dlPanel').classList.contains('open'));
-    };
-    document.getElementById('dlList').addEventListener('click', function(e){
-      var it = e.target.closest('.dl-item'); if (!it) return;
-      var p = projects.find(function(x){ return x.id === it.dataset.id; });
-      if (p) openProject(p);
-    });
-    document.getElementById('dlList').addEventListener('dblclick', function(e){
-      var it = e.target.closest('.dl-item'); if (!it) return;
-      var p = projects.find(function(x){ return x.id === it.dataset.id; });
-      if (p) openForm(p);
-    });
-
-    // ---------- animation hooks: render()/setView() ko wrap (purana code untouched) ----------
-    var __ccAnim = true;                      // first load + view switch pe hi card entrance animation
-    var _renderBase = render;
-    render = function(list){
-      _renderBase(list);
-      var grid = document.getElementById('grid');
-      Array.prototype.forEach.call(grid.children, function(c, i){ c.style.setProperty('--i', Math.min(i, 14)); });
-      if (__ccAnim && projects.length){
-        grid.classList.add('enter'); __ccAnim = false;
-        setTimeout(function(){ grid.classList.remove('enter'); }, 1400);
-      }
-      renderDeadlines();
-    };
-    var _setViewBase = setView;
-    setView = function(v){ __ccAnim = true; _setViewBase(v); };
 
     loadProjects();
   </script>
