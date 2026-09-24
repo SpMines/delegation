@@ -12,7 +12,7 @@
       --txt:#f5f5f5; --muted:#9a9a9a; --muted2:#6d6d6d;
       --card:rgba(255,255,255,.055); --card-hi:rgba(255,255,255,.10);
       --brd:rgba(255,255,255,.13); --brd-hi:rgba(255,255,255,.32);
-      --err:#ff5d6c; --ok:#37d399; --gold:#ffd166; --timer-bg:rgba(55,211,153,.08);
+      --err:#ff5d6c; --ok:#37d399; --gold:#ffd166;
     }
     *{box-sizing:border-box;}
     html,body{margin:0;padding:0;min-height:100dvh;}
@@ -38,9 +38,19 @@
     }
     .sub{ margin-top:8px; color:var(--muted); font-size:15px; }
 
+    .quick-add{ width:100%; max-width:640px; margin-bottom:14px; }
+    .quick-add input{
+      width:100%; background:rgba(255,255,255,.07); border:1px solid var(--brd-hi); border-radius:13px;
+      padding:14px 18px; color:var(--txt); font-family:'Jost',sans-serif; font-size:15.5px;
+      outline:none; transition:border-color .15s, background .15s;
+    }
+    .quick-add input::placeholder{ color:var(--muted); }
+    .quick-add input:focus{ border-color:#fff; background:rgba(255,255,255,.1); }
+    .quick-add input:disabled{ opacity:.5; }
+
     .toolbar{
       width:100%; max-width:640px; display:flex; gap:10px; align-items:center;
-      margin-bottom:20px;
+      margin-bottom:34px;
     }
     .search{
       flex:1; background:var(--card); border:1px solid var(--brd); border-radius:12px;
@@ -62,28 +72,18 @@
     .view-toggle button.active{ background:rgba(255,255,255,.16); color:#fff; }
     .view-toggle button:hover{ color:#fff; }
 
-    /* Section Titles for Timers */
-    .section-title { width:100%; text-align:left; font-size:14px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin: 24px 0 12px; display:flex; align-items:center; gap:8px; }
-    .section-title.running { color:var(--ok); }
-    
-    .grid-wrap { width: 100%; display:flex; flex-direction:column; gap:10px; }
-    .grid{ width:100%; transition: all 0.3s ease; }
+    .grid{ width:100%; transition:opacity .16s ease, transform .16s ease; }
     .grid.view-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:18px; }
     .grid.view-card{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:20px; }
     .grid.view-list{ display:flex; flex-direction:column; gap:10px; }
 
-    /* Cards with Animations */
     .card{
       position:relative; background:var(--card); border:1px solid var(--brd);
       border-radius:18px; padding:26px 16px 16px; text-align:center; cursor:pointer;
-      transition: transform .25s cubic-bezier(.16,1,.3,1), border-color .25s, background .25s, box-shadow .25s;
-      animation: fadeIn 0.4s ease forwards;
+      transition:transform .18s cubic-bezier(.16,1,.3,1), border-color .18s, background .18s;
     }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
-
-    .card:hover{ transform:translateY(-4px); border-color:var(--brd-hi); background:var(--card-hi); box-shadow:0 8px 24px rgba(0,0,0,0.2); }
-    .card .emoji{ font-size:38px; line-height:1; transition: transform 0.2s; }
-    .card:hover .emoji { transform: scale(1.1); }
+    .card:hover{ transform:translateY(-4px); border-color:var(--brd-hi); background:var(--card-hi); }
+    .card .emoji{ font-size:38px; line-height:1; }
     .card .name{ margin-top:14px; font-size:15px; font-weight:500; word-break:break-word; }
     .card .meta{ margin-top:5px; font-size:11.5px; color:var(--muted2); }
     .card .actions{ margin-top:14px; display:flex; gap:6px; justify-content:center; }
@@ -91,22 +91,27 @@
     .card.card-modern .name{ margin-top:16px; font-size:16px; }
     .card.card-modern .actions{ justify-content:flex-start; }
     .pin-badge{ position:absolute; top:10px; left:12px; font-size:13px; }
-    
-    /* Timer specific styling */
-    .timer-badge { display:inline-block; font-family: monospace; font-size:13px; font-weight:600; background:rgba(0,0,0,0.3); padding:4px 8px; border-radius:6px; color:var(--ok); margin-top:8px; }
-    .card.timer-active { background: var(--timer-bg); border-color: rgba(55,211,153,.4); }
-    .card.timer-active:hover { background: rgba(55,211,153,.12); }
-    
+
+    @keyframes cardIn{
+      from{ opacity:0; transform:translateY(10px) scale(.95); }
+      to{ opacity:1; transform:translateY(0) scale(1); }
+    }
+    @keyframes cardOut{
+      from{ opacity:1; transform:scale(1); }
+      to{ opacity:0; transform:scale(.88); }
+    }
+    .card-enter{ animation:cardIn .32s cubic-bezier(.16,1,.3,1); }
+    .row-enter{ animation:cardIn .28s cubic-bezier(.16,1,.3,1); }
+    .card-exit{ animation:cardOut .2s ease forwards; pointer-events:none; }
+
     .row-item{
       display:flex; align-items:center; gap:14px; background:var(--card); border:1px solid var(--brd);
-      border-radius:14px; padding:11px 16px; cursor:pointer; transition:all .2s;
-      animation: fadeIn 0.3s ease forwards;
+      border-radius:14px; padding:11px 16px; cursor:pointer; transition:background .15s,border-color .15s;
     }
-    .row-item:hover{ background:var(--card-hi); border-color:var(--brd-hi); transform:translateX(4px); }
-    .row-item.timer-active { background: var(--timer-bg); border-color: rgba(55,211,153,.4); }
+    .row-item:hover{ background:var(--card-hi); border-color:var(--brd-hi); }
     .row-item .emoji{ font-size:22px; flex:none; }
     .row-item .name{ flex:1; font-size:14.5px; font-weight:500; text-align:left; }
-    .row-item .actions{ display:flex; gap:6px; flex:none; align-items:center; }
+    .row-item .actions{ display:flex; gap:6px; flex:none; }
 
     .icon-btn{
       width:29px; height:29px; border-radius:9px; border:1px solid var(--brd);
@@ -114,12 +119,10 @@
       align-items:center; justify-content:center; font-size:13.5px; cursor:pointer;
       transition:all .15s; flex:none;
     }
-    .icon-btn:hover{ border-color:var(--brd-hi); color:#fff; transform:scale(1.05); }
+    .icon-btn:hover{ border-color:var(--brd-hi); color:#fff; }
     .icon-btn.star-btn.active{ color:var(--gold); border-color:rgba(255,209,102,.45); background:rgba(255,209,102,.1); }
     .icon-btn.pin-btn.active{ color:#fff; background:rgba(255,255,255,.18); border-color:var(--brd-hi); }
     .icon-btn.del:hover{ color:var(--err); border-color:var(--err); }
-    .icon-btn.edit-btn:hover{ color:var(--ok); border-color:var(--ok); }
-    .icon-btn.timer-btn.active { color:var(--ok); border-color:var(--ok); background:rgba(55,211,153,.15); }
 
     .empty{
       grid-column:1/-1; text-align:center; color:var(--muted); padding:60px 20px;
@@ -137,23 +140,26 @@
     .fab:hover{ transform:scale(1.06); }
 
     .modal-wrap{
-      display:none; position:fixed; inset:0; background:rgba(0,0,0,.62); backdrop-filter:blur(4px);
+      display:flex; position:fixed; inset:0; background:rgba(0,0,0,.62); backdrop-filter:blur(4px);
       z-index:9998; align-items:flex-start; justify-content:center; overflow-y:auto; padding:6vh 16px;
-      animation: fadeIn 0.2s ease;
+      opacity:0; visibility:hidden; pointer-events:none;
+      transition:opacity .2s ease, visibility .2s ease;
     }
-    .modal-wrap.show{ display:flex; }
+    .modal-wrap.show{ opacity:1; visibility:visible; pointer-events:auto; }
     .modal{
       width:100%; max-width:420px; margin:auto; max-height:90dvh; overflow-y:auto;
       background:rgba(14,14,14,.97); border:1px solid var(--brd); border-radius:20px;
       padding:26px 24px 20px; box-shadow:0 30px 80px rgba(0,0,0,.7);
+      transform:translateY(10px) scale(.97);
+      transition:transform .22s cubic-bezier(.16,1,.3,1);
     }
+    .modal-wrap.show .modal{ transform:translateY(0) scale(1); }
     .modal h2{ margin:0 0 18px; font-size:19px; font-weight:600; text-align:center; }
     .field{ margin-bottom:14px; }
     .field label{ display:block; font-size:12.5px; color:var(--muted); margin-bottom:6px; }
     .field input{
       width:100%; background:rgba(255,255,255,.05); border:1px solid var(--brd); border-radius:10px;
       padding:11px 13px; color:var(--txt); font-family:'Jost',sans-serif; font-size:14.5px; outline:none;
-      transition: border-color 0.2s;
     }
     .field input:focus{ border-color:var(--brd-hi); }
     .emoji-row{ display:flex; align-items:center; gap:12px; }
@@ -180,13 +186,14 @@
     .toast{
       background:rgba(14,14,14,.96); border:1px solid var(--brd); border-radius:12px;
       padding:12px 16px; font-size:13.5px; min-width:200px; max-width:300px;
-      box-shadow:0 12px 30px rgba(0,0,0,.5); animation:slideIn .3s cubic-bezier(.16,1,.3,1);
+      box-shadow:0 12px 30px rgba(0,0,0,.5); animation:slideIn .2s cubic-bezier(.16,1,.3,1);
     }
     .toast.ok{ border-color:rgba(55,211,153,.4); }
     .toast.err{ border-color:rgba(255,93,108,.4); color:var(--err); }
-    @keyframes slideIn{ from{ opacity:0; transform:translateX(30px) scale(0.9);} to{ opacity:1; transform:translateX(0) scale(1);} }
+    @keyframes slideIn{ from{ opacity:0; transform:translateX(16px);} to{ opacity:1; transform:translateX(0);} }
 
     footer{ margin-top:44px; color:var(--muted2); font-size:12px; text-align:center; }
+
     .conn-banner{
       display:none; align-items:center; gap:8px; position:fixed; top:14px; left:50%;
       transform:translateX(-50%); z-index:9999; background:rgba(255,93,108,.14);
@@ -197,7 +204,7 @@
 
     @media (max-width:520px){
       body{ padding:34px 14px 110px; }
-      .grid.view-grid{ grid-template-columns:repeat(auto-fill,minmax(145px,1fr)); }
+      .grid.view-grid{ grid-template-columns:repeat(auto-fill,minmax(136px,1fr)); }
       .grid.view-card{ grid-template-columns:1fr; }
     }
   </style>
@@ -209,6 +216,10 @@
       <div class="sub">All your Sheets, one tap away ⚡</div>
     </header>
 
+    <div class="quick-add">
+      <input id="quickAddInput" placeholder="Type a project title, hit Enter to add ⚡" autocomplete="off">
+    </div>
+
     <div class="toolbar">
       <input class="search" id="search" placeholder="Search your projects…">
       <div class="view-toggle" id="viewToggle">
@@ -218,21 +229,11 @@
       </div>
     </div>
 
-    <div class="grid-wrap">
-      <!-- Active Timers Section -->
-      <div id="activeSection" style="display:none; width: 100%;">
-        <div class="section-title running">⏱️ Running Timers</div>
-        <div class="grid view-grid" id="activeGrid"></div>
-      </div>
-      
-      <!-- All Projects Section -->
-      <div class="section-title" id="allTitle" style="display:none;">📁 All Projects</div>
-      <div class="grid view-grid" id="grid">
-        <div class="empty">Loading your projects…</div>
-      </div>
+    <div class="grid view-grid" id="grid">
+      <div class="empty">Loading your projects…</div>
     </div>
 
-    <footer>Command Center · v1.3 · Built by Sam</footer>
+    <footer>Command Center · v1.4 · Built by Sam</footer>
   </div>
 
   <button class="fab" id="fabAdd" title="Add project">+</button>
@@ -281,7 +282,7 @@
 
   <div class="conn-banner" id="connBanner"></div>
 
-  <!-- Set backend URL modal -->
+  <!-- Set backend URL modal (for when a redeploy changes the GAS URL) -->
   <div class="modal-wrap confirm" id="urlWrap">
     <div class="modal">
       <h2>Set Backend URL</h2>
@@ -299,7 +300,10 @@
   <div class="toasts" id="toasts"></div>
 
   <script>
-    var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbzptlhQPw-vwPu9aOdMwKdkORv6onfHcnYCC92xWh8d5vEfGnj5ZXpaYfe4HqO6d664/exec';
+    // Backend URL — hardcoded default + localStorage override, so a future
+    // redeploy (which changes the /exec URL) doesn't need a new GitHub push;
+    // just hit "Set URL" in the banner below.
+    var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbzT0e1mbxVcOsKDVQa3ii_SoQ2acS4VI3pBaHxpDEP1GrRI6Wb8dOz2IWkSIknfLiJn/exec';
     var API = localStorage.getItem('cc_api') || API_DEFAULT;
 
     function apiOk(u){
@@ -316,7 +320,6 @@
     var editingId = null;
     var pendingDeleteId = null;
     var currentView = localStorage.getItem('cc_view') || 'grid';
-    var serverTimeOffset = 0; // Sync client timer with server time
 
     function esc(s){
       return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
@@ -332,6 +335,7 @@
       setTimeout(function(){ el.remove(); }, 3200);
     }
 
+    // lightweight client-side mirror of the server's auto-emoji picker (live preview only)
     function guessEmoji(name){
       var n = (name || '').toLowerCase();
       var rules = [
@@ -349,99 +353,60 @@
       return fb[h % fb.length];
     }
 
-    function formatTime(secs) {
-      if(!secs || secs < 0) secs = 0;
-      var h = Math.floor(secs / 3600);
-      var m = Math.floor((secs % 3600) / 60);
-      var s = Math.floor(secs % 60);
-      return (h>0?h+':':'') + (m<10?'0':'')+m + ':' + (s<10?'0':'')+s;
-    }
-
+    // ---------- render (grid / card / list) ----------
     function sortForDisplay(list){
       var arr = list.slice();
-      arr.sort(function(a,b){ return (b.pinned?1:0) - (a.pinned?1:0); }); 
+      arr.sort(function(a,b){ return (b.pinned?1:0) - (a.pinned?1:0); }); // pinned float to top, stable
       return arr;
     }
 
-    // Updated action icons to include Rename(Edit) and Timer
     function actionIcons(p){
-      var tClass = p.timerActive ? ' timer-btn active' : ' timer-btn';
-      var tIcon = p.timerActive ? '🛑' : '▶️';
       return '' +
-        '<div class="icon-btn' + tClass + '" data-act="timer" data-id="'+esc(p.id)+'" title="Timer">' + tIcon + '</div>' +
         '<div class="icon-btn star-btn' + (p.starred?' active':'') + '" data-act="star" data-id="'+esc(p.id)+'" title="Star">' + (p.starred?'⭐':'☆') + '</div>' +
         '<div class="icon-btn pin-btn' + (p.pinned?' active':'') + '" data-act="pin" data-id="'+esc(p.id)+'" title="Pin to top">📌</div>' +
-        '<div class="icon-btn edit-btn" data-act="edit" data-id="'+esc(p.id)+'" title="Rename / Edit">✏️</div>' +
+        '<div class="icon-btn edit-btn" data-act="edit" data-id="'+esc(p.id)+'" title="Rename / edit">✏️</div>' +
         '<div class="icon-btn del" data-act="delete" data-id="'+esc(p.id)+'" title="Remove">✕</div>';
     }
 
+    var justAddedId = null;
+
     function cardHTML(p, modern){
       var linkMeta = p.gasUrl ? 'Web app linked' : (p.sheetUrl ? 'Sheet linked' : 'No link yet');
-      var tClass = p.timerActive ? ' timer-active' : '';
-      var timerUI = p.timerActive ? '<div class="timer-badge live-timer" data-start="'+p.timerStart+'" data-elapsed="'+p.elapsedSecs+'">00:00</div>' : '';
-      
+      var enter = (p.id === justAddedId) ? ' card-enter' : '';
       return '' +
-        '<div class="card' + (modern?' card-modern':'') + tClass + '" data-id="'+esc(p.id)+'">' +
+        '<div class="card' + (modern?' card-modern':'') + enter + '" data-id="'+esc(p.id)+'">' +
           (p.pinned ? '<div class="pin-badge">📌</div>' : '') +
           '<div class="emoji">'+esc(p.emoji||'🧩')+'</div>' +
           '<div class="name">'+esc(p.name)+'</div>' +
           (modern ? '<div class="meta">'+linkMeta+'</div>' : '') +
-          timerUI +
           '<div class="actions">' + actionIcons(p) + '</div>' +
         '</div>';
     }
 
     function listRowHTML(p){
-      var tClass = p.timerActive ? ' timer-active' : '';
-      var timerUI = p.timerActive ? '<div class="timer-badge live-timer" data-start="'+p.timerStart+'" data-elapsed="'+p.elapsedSecs+'" style="margin-top:0; margin-right:10px;">00:00</div>' : '';
+      var enter = (p.id === justAddedId) ? ' row-enter' : '';
       return '' +
-        '<div class="row-item' + tClass + '" data-id="'+esc(p.id)+'">' +
+        '<div class="row-item' + enter + '" data-id="'+esc(p.id)+'">' +
           '<div class="emoji">'+esc(p.emoji||'🧩')+'</div>' +
           '<div class="name">'+esc(p.name)+ (p.pinned?' 📌':'') +'</div>' +
-          timerUI +
           '<div class="actions">' + actionIcons(p) + '</div>' +
         '</div>';
     }
 
-    function renderSection(list, containerId) {
-      var grid = document.getElementById(containerId);
+    function render(list){
+      var grid = document.getElementById('grid');
       grid.className = 'grid view-' + currentView;
+      if (!list.length){
+        grid.innerHTML = '<div class="empty">Nothing here yet. Tap + and add your first project. 🚀</div>';
+        return;
+      }
       var sorted = sortForDisplay(list);
-      if (currentView === 'list') {
+      if (currentView === 'list'){
         grid.innerHTML = sorted.map(listRowHTML).join('');
       } else {
         grid.innerHTML = sorted.map(function(p){ return cardHTML(p, currentView === 'card'); }).join('');
       }
-    }
-
-    function render(list){
-      var activeProjects = list.filter(function(p) { return p.timerActive; });
-      var idleProjects = list.filter(function(p) { return !p.timerActive; });
-
-      var activeSec = document.getElementById('activeSection');
-      var allTitle = document.getElementById('allTitle');
-      var grid = document.getElementById('grid');
-
-      if (!list.length){
-        activeSec.style.display = 'none';
-        allTitle.style.display = 'none';
-        grid.className = 'grid view-' + currentView;
-        grid.innerHTML = '<div class="empty">Nothing here yet. Tap + and add your first project. 🚀</div>';
-        return;
-      }
-
-      // Show/hide Timer Section
-      if (activeProjects.length > 0) {
-        activeSec.style.display = 'block';
-        allTitle.style.display = 'block';
-        renderSection(activeProjects, 'activeGrid');
-      } else {
-        activeSec.style.display = 'none';
-        allTitle.style.display = 'none';
-      }
-
-      renderSection(idleProjects, 'grid');
-      updateLiveTimers(); // instant update on render
+      justAddedId = null;
     }
 
     function currentFilteredList(){
@@ -456,39 +421,28 @@
       document.querySelectorAll('#viewToggle button').forEach(function(b){
         b.classList.toggle('active', b.dataset.view === v);
       });
-      applyFilter();
+      var grid = document.getElementById('grid');
+      grid.style.opacity = '0';
+      grid.style.transform = 'translateY(6px)';
+      setTimeout(function(){
+        applyFilter();
+        requestAnimationFrame(function(){
+          grid.style.opacity = '1';
+          grid.style.transform = 'translateY(0)';
+        });
+      }, 140);
     }
 
     function loadProjects(){
       apiCall('list').then(function(res){
         if (!res.ok){ toast(res.error || 'Could not load', 'err'); return; }
         projects = res.projects || [];
-        if (res.serverTime) {
-          serverTimeOffset = new Date().getTime() - new Date(res.serverTime).getTime();
-        }
         applyFilter();
       }).catch(function(err){
         toast('Load failed: ' + err.message, 'err');
         showConnBanner();
       });
     }
-
-    // --- Live Timer Tick ---
-    function updateLiveTimers() {
-      var now = new Date().getTime() - serverTimeOffset;
-      document.querySelectorAll('.live-timer').forEach(function(el) {
-        var startStr = el.dataset.start;
-        var elapsed = parseInt(el.dataset.elapsed) || 0;
-        if (startStr && startStr !== 'undefined') {
-          var startTime = new Date(startStr).getTime();
-          var currentDiff = Math.floor((now - startTime) / 1000);
-          el.textContent = formatTime(elapsed + currentDiff);
-        } else {
-          el.textContent = formatTime(elapsed);
-        }
-      });
-    }
-    setInterval(updateLiveTimers, 1000);
 
     function showConnBanner(){
       var b = document.getElementById('connBanner');
@@ -521,7 +475,7 @@
     var formWrap = document.getElementById('formWrap');
     function openForm(p){
       editingId = p ? p.id : null;
-      document.getElementById('formTitle').textContent = p ? 'Rename / Edit Project' : 'Add Project';
+      document.getElementById('formTitle').textContent = p ? 'Edit Project' : 'Add Project';
       document.getElementById('fName').value = p ? p.name : '';
       document.getElementById('fSheet').value = p ? (p.sheetUrl || '') : '';
       document.getElementById('fGas').value = p ? (p.gasUrl || '') : '';
@@ -556,8 +510,19 @@
         btn.disabled = false; btn.textContent = 'Save Project 💾';
         if (!res.ok){ toast(res.error || 'Save failed', 'err'); return; }
         closeForm();
-        toast(editingId ? 'Project updated ✅' : 'Project added ✅');
-        loadProjects();
+        if (editingId){
+          toast('Project updated ✅');
+          loadProjects();
+        } else {
+          toast('Project added ✅');
+          if (res.project){
+            projects.push(res.project);
+            justAddedId = res.project.id;
+            applyFilter();
+          } else {
+            loadProjects();
+          }
+        }
       }).catch(function(err){
         btn.disabled = false; btn.textContent = 'Save Project 💾';
         toast('Save failed: ' + err.message, 'err');
@@ -571,21 +536,26 @@
       if (!pendingDeleteId) return;
       var id = pendingDeleteId;
       confirmWrap.classList.remove('show');
+      var el = document.querySelector('[data-id="' + id + '"]');
+      if (el) el.classList.add('card-exit');
       apiCall('delete', { id: id }).then(function(res){
-        if (!res.ok){ toast(res.error || 'Delete failed', 'err'); return; }
+        if (!res.ok){ toast(res.error || 'Delete failed', 'err'); loadProjects(); return; }
         toast('Removed 🗑️');
-        loadProjects();
       }).catch(function(err){
         toast('Delete failed: ' + err.message, 'err');
+        loadProjects();
       });
+      setTimeout(function(){
+        projects = projects.filter(function(p){ return p.id !== id; });
+        applyFilter();
+      }, 200);
     };
 
-    // --- grid interactions: open / pin / star / delete / edit / timer ---
-    document.addEventListener('click', function(e){
+    // --- grid interactions: open / pin / star / delete / edit ---
+    document.getElementById('grid').addEventListener('click', function(e){
       var actBtn = e.target.closest('[data-act]');
       var item = e.target.closest('[data-id]');
       if (!item) return;
-      
       var id = item.dataset.id;
       var p = projects.find(function(x){ return x.id === id; });
       if (!p) return;
@@ -594,36 +564,16 @@
         e.stopPropagation();
         var act = actBtn.dataset.act;
 
-        if (act === 'delete'){
-          pendingDeleteId = id;
-          document.getElementById('confirmText').textContent = 'Remove "' + p.name + '" from Command Center? Your Sheet stays untouched.';
-          confirmWrap.classList.add('show');
-          return;
-        }
-
-        if (act === 'edit') {
+        if (act === 'edit'){
           openForm(p);
           return;
         }
 
-        if (act === 'timer') {
-          // Optimistic update
-          p.timerActive = !p.timerActive;
-          if(p.timerActive) p.timerStart = new Date(new Date().getTime() - serverTimeOffset).toISOString();
-          applyFilter(); 
-          
-          apiCall('timer', { id: id }).then(function(res){
-            if (!res.ok){ p.timerActive = !p.timerActive; applyFilter(); toast(res.error || 'Timer failed', 'err'); }
-            else {
-              p.timerActive = res.active;
-              p.timerStart = res.timerStart;
-              p.elapsedSecs = res.elapsedSecs;
-              applyFilter();
-            }
-          }).catch(function(err){
-            p.timerActive = !p.timerActive; applyFilter();
-            toast('Timer update failed: ' + err.message, 'err');
-          });
+        if (act === 'delete'){
+          pendingDeleteId = id;
+          document.getElementById('confirmText').textContent =
+            'Remove "' + p.name + '" from Command Center? Your Sheet stays untouched.';
+          confirmWrap.classList.add('show');
           return;
         }
 
@@ -640,12 +590,38 @@
           });
           return;
         }
-      } else {
-        openProject(p);
       }
+
+      openProject(p);
+    });
+
+    document.getElementById('quickAddInput').addEventListener('keydown', function(e){
+      if (e.key !== 'Enter') return;
+      var name = this.value.trim();
+      if (!name) return;
+      var input = this;
+      input.disabled = true;
+      apiCall('add', { name: name }).then(function(res){
+        input.disabled = false;
+        if (!res.ok){ toast(res.error || 'Add failed', 'err'); return; }
+        input.value = '';
+        input.focus();
+        toast((res.project && res.project.emoji || '✅') + ' ' + name + ' added');
+        if (res.project){
+          projects.push(res.project);
+          justAddedId = res.project.id;
+          applyFilter();
+        } else {
+          loadProjects();
+        }
+      }).catch(function(err){
+        input.disabled = false;
+        toast('Add failed: ' + err.message, 'err');
+      });
     });
 
     document.getElementById('search').addEventListener('input', applyFilter);
+
     document.getElementById('viewToggle').addEventListener('click', function(e){
       var b = e.target.closest('button');
       if (!b) return;
