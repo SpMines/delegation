@@ -72,10 +72,30 @@
     .view-toggle button.active{ background:rgba(255,255,255,.16); color:#fff; }
     .view-toggle button:hover{ color:#fff; }
 
-    .grid{ width:100%; transition:opacity .16s ease, transform .16s ease; }
+    .sections{ width:100%; transition:opacity .16s ease, transform .16s ease; }
+    .group-section{ width:100%; margin-bottom:30px; }
+    .group-section:last-child{ margin-bottom:0; }
+    .group-title{
+      font-size:12.5px; font-weight:600; letter-spacing:.5px; text-transform:uppercase;
+      color:var(--muted); margin:0 0 14px 2px; display:flex; align-items:center; gap:10px;
+    }
+    .group-title::after{ content:''; flex:1; height:1px; background:var(--brd); }
+
+    .grid{ width:100%; }
     .grid.view-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:18px; }
     .grid.view-card{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:20px; }
     .grid.view-list{ display:flex; flex-direction:column; gap:10px; }
+
+    .countdown{
+      margin-top:10px; display:inline-flex; align-items:center; font-size:11px; padding:3px 10px;
+      border-radius:999px; background:rgba(255,255,255,.08); border:1px solid var(--brd); color:var(--muted);
+    }
+    .countdown.overdue{
+      background:rgba(255,93,108,.14); border-color:rgba(255,93,108,.4); color:var(--err);
+      animation:pulseWarn 1.6s ease-in-out infinite;
+    }
+    .row-countdown{ margin-top:0; flex:none; }
+    @keyframes pulseWarn{ 0%,100%{ opacity:1; } 50%{ opacity:.55; } }
 
     .card{
       position:relative; background:var(--card); border:1px solid var(--brd);
@@ -122,6 +142,7 @@
     .icon-btn:hover{ border-color:var(--brd-hi); color:#fff; }
     .icon-btn.star-btn.active{ color:var(--gold); border-color:rgba(255,209,102,.45); background:rgba(255,209,102,.1); }
     .icon-btn.pin-btn.active{ color:#fff; background:rgba(255,255,255,.18); border-color:var(--brd-hi); }
+    .icon-btn.web-btn{ color:#e8e8e8; border-color:rgba(255,255,255,.22); }
     .icon-btn.del:hover{ color:var(--err); border-color:var(--err); }
 
     .empty{
@@ -217,7 +238,7 @@
     </header>
 
     <div class="quick-add">
-      <input id="quickAddInput" placeholder="Type a project title, hit Enter to add ⚡" autocomplete="off">
+      <input id="quickAddInput" placeholder="Title, or Group / Title, hit Enter to add ⚡" autocomplete="off">
     </div>
 
     <div class="toolbar">
@@ -229,11 +250,11 @@
       </div>
     </div>
 
-    <div class="grid view-grid" id="grid">
+    <div class="sections" id="grid">
       <div class="empty">Loading your projects…</div>
     </div>
 
-    <footer>Command Center · v1.4 · Built by Sam</footer>
+    <footer>Command Center · v1.5 · Built by Sam</footer>
   </div>
 
   <button class="fab" id="fabAdd" title="Add project">+</button>
@@ -247,12 +268,25 @@
         <input id="fName" placeholder="e.g. Meko Master" autocomplete="off">
       </div>
       <div class="field">
+        <label>Group (optional)</label>
+        <input id="fGroup" list="groupOptions" placeholder="e.g. SPMM" autocomplete="off">
+        <datalist id="groupOptions"></datalist>
+      </div>
+      <div class="field">
         <label>Google Sheet URL</label>
         <input id="fSheet" placeholder="https://docs.google.com/spreadsheets/…" autocomplete="off">
       </div>
       <div class="field">
         <label>Web App (GAS) URL</label>
         <input id="fGas" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Website / Webpage URL</label>
+        <input id="fWeb" placeholder="https://…" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Deadline (optional — shows a countdown)</label>
+        <input id="fDeadline" type="datetime-local">
       </div>
       <div class="field">
         <label>Emoji</label>
@@ -303,7 +337,7 @@
     // Backend URL — hardcoded default + localStorage override, so a future
     // redeploy (which changes the /exec URL) doesn't need a new GitHub push;
     // just hit "Set URL" in the banner below.
-    var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbzT0e1mbxVcOsKDVQa3ii_SoQ2acS4VI3pBaHxpDEP1GrRI6Wb8dOz2IWkSIknfLiJn/exec';
+    var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbwpJ9ffVAlmaFJGAIVD8Bbu4hDan_RDbUHFollwJ9DYkwpA4ykEpZ3Gzi57k3P39l8q/exec';
     var API = localStorage.getItem('cc_api') || API_DEFAULT;
 
     function apiOk(u){
@@ -360,8 +394,27 @@
       return arr;
     }
 
+    function formatCountdown(deadline){
+      if (!deadline) return null;
+      var target = new Date(deadline).getTime();
+      if (isNaN(target)) return null;
+      var diff = target - Date.now();
+      var overdue = diff < 0;
+      var abs = Math.abs(diff);
+      var mins = Math.floor(abs / 60000);
+      var days = Math.floor(mins / 1440); mins -= days * 1440;
+      var hrs = Math.floor(mins / 60); mins -= hrs * 60;
+      var parts = [];
+      if (days) parts.push(days + 'd');
+      if (hrs) parts.push(hrs + 'h');
+      if (!days && mins) parts.push(mins + 'm');
+      var txt = parts.length ? parts.join(' ') : '<1m';
+      return overdue ? { overdue: true, text: '⚠️ Overdue ' + txt } : { overdue: false, text: '⏳ ' + txt + ' left' };
+    }
+
     function actionIcons(p){
-      return '' +
+      var webBtn = p.webUrl ? '<div class="icon-btn web-btn" data-act="openweb" data-id="'+esc(p.id)+'" title="Open webpage">🌐</div>' : '';
+      return webBtn +
         '<div class="icon-btn star-btn' + (p.starred?' active':'') + '" data-act="star" data-id="'+esc(p.id)+'" title="Star">' + (p.starred?'⭐':'☆') + '</div>' +
         '<div class="icon-btn pin-btn' + (p.pinned?' active':'') + '" data-act="pin" data-id="'+esc(p.id)+'" title="Pin to top">📌</div>' +
         '<div class="icon-btn edit-btn" data-act="edit" data-id="'+esc(p.id)+'" title="Rename / edit">✏️</div>' +
@@ -373,45 +426,79 @@
     function cardHTML(p, modern){
       var linkMeta = p.gasUrl ? 'Web app linked' : (p.sheetUrl ? 'Sheet linked' : 'No link yet');
       var enter = (p.id === justAddedId) ? ' card-enter' : '';
+      var cd = formatCountdown(p.deadline);
+      var cdHtml = cd ? '<div class="countdown' + (cd.overdue?' overdue':'') + '">' + esc(cd.text) + '</div>' : '';
       return '' +
         '<div class="card' + (modern?' card-modern':'') + enter + '" data-id="'+esc(p.id)+'">' +
           (p.pinned ? '<div class="pin-badge">📌</div>' : '') +
           '<div class="emoji">'+esc(p.emoji||'🧩')+'</div>' +
           '<div class="name">'+esc(p.name)+'</div>' +
           (modern ? '<div class="meta">'+linkMeta+'</div>' : '') +
+          cdHtml +
           '<div class="actions">' + actionIcons(p) + '</div>' +
         '</div>';
     }
 
     function listRowHTML(p){
       var enter = (p.id === justAddedId) ? ' row-enter' : '';
+      var cd = formatCountdown(p.deadline);
+      var cdHtml = cd ? '<div class="countdown row-countdown' + (cd.overdue?' overdue':'') + '">' + esc(cd.text) + '</div>' : '';
       return '' +
         '<div class="row-item' + enter + '" data-id="'+esc(p.id)+'">' +
           '<div class="emoji">'+esc(p.emoji||'🧩')+'</div>' +
           '<div class="name">'+esc(p.name)+ (p.pinned?' 📌':'') +'</div>' +
+          cdHtml +
           '<div class="actions">' + actionIcons(p) + '</div>' +
         '</div>';
     }
 
+    function groupItemsHTML(items){
+      if (currentView === 'list') return items.map(listRowHTML).join('');
+      return items.map(function(p){ return cardHTML(p, currentView === 'card'); }).join('');
+    }
+
     function render(list){
-      var grid = document.getElementById('grid');
-      grid.className = 'grid view-' + currentView;
+      var wrap = document.getElementById('grid');
       if (!list.length){
-        grid.innerHTML = '<div class="empty">Nothing here yet. Tap + and add your first project. 🚀</div>';
+        wrap.innerHTML = '<div class="empty">Nothing here yet. Tap + and add your first project. 🚀</div>';
+        justAddedId = null;
         return;
       }
-      var sorted = sortForDisplay(list);
-      if (currentView === 'list'){
-        grid.innerHTML = sorted.map(listRowHTML).join('');
-      } else {
-        grid.innerHTML = sorted.map(function(p){ return cardHTML(p, currentView === 'card'); }).join('');
-      }
+      var buckets = {};
+      var order = [];
+      list.forEach(function(p){
+        var g = (p.group || '').trim();
+        if (!(g in buckets)){ buckets[g] = []; order.push(g); }
+        buckets[g].push(p);
+      });
+      order.sort(function(a,b){
+        if (a === '') return 1;
+        if (b === '') return -1;
+        return a.localeCompare(b);
+      });
+      var html = order.map(function(g){
+        var items = sortForDisplay(buckets[g]);
+        var titleHtml = g ? '<div class="group-title">' + esc(g) + '</div>' : '';
+        return '<div class="group-section">' + titleHtml +
+          '<div class="grid view-' + currentView + '">' + groupItemsHTML(items) + '</div>' +
+        '</div>';
+      }).join('');
+      wrap.innerHTML = html;
       justAddedId = null;
+    }
+
+    function refreshGroupOptions(){
+      var dl = document.getElementById('groupOptions');
+      var names = Array.from(new Set(projects.map(function(p){ return (p.group || '').trim(); }).filter(Boolean))).sort();
+      dl.innerHTML = names.map(function(n){ return '<option value="' + esc(n) + '">'; }).join('');
     }
 
     function currentFilteredList(){
       var q = document.getElementById('search').value.trim().toLowerCase();
-      return !q ? projects : projects.filter(function(p){ return p.name.toLowerCase().indexOf(q) > -1; });
+      if (!q) return projects;
+      return projects.filter(function(p){
+        return p.name.toLowerCase().indexOf(q) > -1 || (p.group || '').toLowerCase().indexOf(q) > -1;
+      });
     }
     function applyFilter(){ render(currentFilteredList()); }
 
@@ -421,28 +508,45 @@
       document.querySelectorAll('#viewToggle button').forEach(function(b){
         b.classList.toggle('active', b.dataset.view === v);
       });
-      var grid = document.getElementById('grid');
-      grid.style.opacity = '0';
-      grid.style.transform = 'translateY(6px)';
+      var wrap = document.getElementById('grid');
+      wrap.style.opacity = '0';
+      wrap.style.transform = 'translateY(6px)';
       setTimeout(function(){
         applyFilter();
         requestAnimationFrame(function(){
-          grid.style.opacity = '1';
-          grid.style.transform = 'translateY(0)';
+          wrap.style.opacity = '1';
+          wrap.style.transform = 'translateY(0)';
         });
       }, 140);
+    }
+
+    var firstLoadDone = false;
+    function checkOverdueAlert(){
+      var overdue = projects.filter(function(p){
+        if (!p.deadline) return false;
+        var t = new Date(p.deadline).getTime();
+        return !isNaN(t) && t < Date.now();
+      });
+      if (overdue.length){
+        toast('⚠️ ' + overdue.length + ' project' + (overdue.length > 1 ? 's' : '') + ' overdue', 'err');
+      }
     }
 
     function loadProjects(){
       apiCall('list').then(function(res){
         if (!res.ok){ toast(res.error || 'Could not load', 'err'); return; }
         projects = res.projects || [];
+        refreshGroupOptions();
         applyFilter();
+        if (!firstLoadDone){ firstLoadDone = true; checkOverdueAlert(); }
       }).catch(function(err){
         toast('Load failed: ' + err.message, 'err');
         showConnBanner();
       });
     }
+
+    // ticks countdown text every 30s without a full reload
+    setInterval(function(){ if (projects.length) applyFilter(); }, 30000);
 
     function showConnBanner(){
       var b = document.getElementById('connBanner');
@@ -471,14 +575,27 @@
       window.open(url, '_blank');
     }
 
+    function toLocalInputValue(d){
+      if (!d) return '';
+      var m = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})/.exec(d);
+      if (m) return m[1];
+      var dt = new Date(d);
+      if (isNaN(dt.getTime())) return '';
+      var pad = function(n){ return (n < 10 ? '0' : '') + n; };
+      return dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()) + 'T' + pad(dt.getHours()) + ':' + pad(dt.getMinutes());
+    }
+
     // --- add/edit modal ---
     var formWrap = document.getElementById('formWrap');
     function openForm(p){
       editingId = p ? p.id : null;
       document.getElementById('formTitle').textContent = p ? 'Edit Project' : 'Add Project';
       document.getElementById('fName').value = p ? p.name : '';
+      document.getElementById('fGroup').value = p ? (p.group || '') : '';
       document.getElementById('fSheet').value = p ? (p.sheetUrl || '') : '';
       document.getElementById('fGas').value = p ? (p.gasUrl || '') : '';
+      document.getElementById('fWeb').value = p ? (p.webUrl || '') : '';
+      document.getElementById('fDeadline').value = p ? toLocalInputValue(p.deadline) : '';
       document.getElementById('fEmoji').value = p ? (p.emoji || '') : '';
       document.getElementById('fEmoji').dataset.touched = p ? '1' : '';
       formWrap.classList.add('show');
@@ -500,8 +617,11 @@
       var payload = {
         id: editingId,
         name: name,
+        group: document.getElementById('fGroup').value.trim(),
         sheetUrl: document.getElementById('fSheet').value.trim(),
         gasUrl: document.getElementById('fGas').value.trim(),
+        webUrl: document.getElementById('fWeb').value.trim(),
+        deadline: document.getElementById('fDeadline').value,
         emoji: document.getElementById('fEmoji').value.trim()
       };
       var btn = document.getElementById('formSave');
@@ -518,6 +638,7 @@
           if (res.project){
             projects.push(res.project);
             justAddedId = res.project.id;
+            refreshGroupOptions();
             applyFilter();
           } else {
             loadProjects();
@@ -569,6 +690,11 @@
           return;
         }
 
+        if (act === 'openweb'){
+          if (p.webUrl) window.open(p.webUrl, '_blank');
+          return;
+        }
+
         if (act === 'delete'){
           pendingDeleteId = id;
           document.getElementById('confirmText').textContent =
@@ -597,11 +723,18 @@
 
     document.getElementById('quickAddInput').addEventListener('keydown', function(e){
       if (e.key !== 'Enter') return;
-      var name = this.value.trim();
+      var raw = this.value.trim();
+      if (!raw) return;
+      var group = '', name = raw;
+      var slash = raw.indexOf('/');
+      if (slash > -1){
+        group = raw.slice(0, slash).trim();
+        name = raw.slice(slash + 1).trim();
+      }
       if (!name) return;
       var input = this;
       input.disabled = true;
-      apiCall('add', { name: name }).then(function(res){
+      apiCall('add', { name: name, group: group }).then(function(res){
         input.disabled = false;
         if (!res.ok){ toast(res.error || 'Add failed', 'err'); return; }
         input.value = '';
@@ -610,6 +743,7 @@
         if (res.project){
           projects.push(res.project);
           justAddedId = res.project.id;
+          refreshGroupOptions();
           applyFilter();
         } else {
           loadProjects();
