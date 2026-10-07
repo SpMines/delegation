@@ -37,7 +37,7 @@
     .rail{ position:sticky; top:0; height:100dvh; overflow-y:auto; border-left:1px solid var(--brd); padding:var(--s6) var(--s5); background:var(--side); }
 
     /* ---------- sidebar ---------- */
-    .brand{ display:flex; align-items:center; gap:var(--s3); padding:var(--s2) var(--s2) var(--s5); font-weight:700; letter-spacing:.6px; font-size:12.5px; }
+    .brand{ display:flex; align-items:center; gap:var(--s3); padding:var(--s2) var(--s2) var(--s5); font-weight:700; letter-spacing:.2px; font-size:14px; }
     .logo{ width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg,var(--accent),#a78bfa); color:#fff; display:grid; place-items:center; }
     .nav{ display:flex; flex-direction:column; gap:2px; }
     .nav-item{ display:flex; align-items:center; gap:var(--s3); width:100%; padding:8px 10px; border:none; background:transparent; border-radius:8px; color:var(--muted); font-size:13.5px; font-weight:500; cursor:pointer; text-align:left; transition:background .15s,color .15s; }
@@ -45,7 +45,7 @@
     .nav-item.active{ background:var(--accent-soft); color:var(--txt); }
     .nav-item.active .ic{ color:var(--accent); }
     .nav-item .cnt{ margin-left:auto; font-size:11.5px; color:var(--muted2); font-variant-numeric:tabular-nums; }
-    .side-sec{ display:flex; align-items:center; justify-content:space-between; margin:var(--s6) 10px var(--s2); font-size:11px; font-weight:600; letter-spacing:.8px; color:var(--muted2); }
+    .side-sec{ display:flex; align-items:center; justify-content:space-between; margin:var(--s6) 10px var(--s2); font-size:12px; font-weight:600; letter-spacing:.2px; text-transform:capitalize; color:var(--muted2); }
     .side-sec button{ background:transparent; border:none; color:var(--muted); width:22px; height:22px; border-radius:6px; cursor:pointer; display:grid; place-items:center; }
     .side-sec button:hover{ background:var(--hov); color:var(--txt); }
     .gdot{ width:8px; height:8px; border-radius:50%; flex:none; margin:0 4px; }
@@ -74,7 +74,7 @@
     .pop-wrap{ position:relative; }
     .pop{ position:absolute; top:calc(100% + 8px); right:0; width:min(380px,calc(100vw - 24px)); max-height:min(72dvh,540px); overflow-y:auto; background:var(--pop); border:1px solid var(--brd); border-radius:14px; padding:var(--s4); box-shadow:var(--shadow); opacity:0; visibility:hidden; transform:translateY(-6px) scale(.98); transform-origin:top right; transition:opacity .16s,transform .18s cubic-bezier(.16,1,.3,1),visibility .16s; z-index:60; }
     .pop-wrap.open > .pop{ opacity:1; visibility:visible; transform:none; }
-    .pop-head{ display:flex; justify-content:space-between; font-size:11.5px; font-weight:600; letter-spacing:.7px; text-transform:uppercase; color:var(--muted); margin-bottom:var(--s3); }
+    .pop-head{ display:flex; justify-content:space-between; font-size:12px; font-weight:600; letter-spacing:.2px; text-transform:capitalize; color:var(--muted); margin-bottom:var(--s3); }
 
     .pw-pill{ display:flex; align-items:center; gap:var(--s2); height:36px; padding:0 var(--s4); border-radius:10px; cursor:pointer; font-size:13px; font-weight:600; color:var(--muted); background:var(--surface); border:1px solid var(--brd); transition:border-color .15s,background .15s,color .15s; }
     .pw-pill:hover{ border-color:var(--brd-hi); }
@@ -152,7 +152,7 @@
     .gsec{ margin-bottom:var(--s8); }
     .ghead{ display:flex; align-items:center; gap:var(--s3); padding-bottom:var(--s4); }
     .gico{ width:34px; height:34px; border-radius:10px; display:grid; place-items:center; color:var(--gc); background:color-mix(in srgb, var(--gc) 14%, transparent); flex:none; }
-    .gname{ font-size:13px; font-weight:700; letter-spacing:.7px; text-transform:uppercase; }
+    .gname{ font-size:14px; font-weight:700; letter-spacing:.2px; text-transform:capitalize; }
     .gsub{ font-size:12.5px; color:var(--muted); margin-top:1px; }
     .ghead > div:nth-child(2){ flex:1; min-width:0; }
     .glink{ background:transparent; border:none; color:var(--muted); font-size:12.5px; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:6px; padding:6px 8px; border-radius:8px; }
@@ -230,7 +230,7 @@
     /* ---------- right rail ---------- */
     .rsec{ margin-bottom:var(--s8); }
     .rsec:last-child{ margin-bottom:0; }
-    .rtitle{ font-size:11px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; color:var(--muted2); margin-bottom:var(--s3); display:flex; justify-content:space-between; }
+    .rtitle{ font-size:12px; font-weight:600; letter-spacing:.2px; text-transform:capitalize; color:var(--muted2); margin-bottom:var(--s3); display:flex; justify-content:space-between; }
     .qa{ width:100%; display:flex; align-items:center; gap:var(--s3); height:40px; padding:0 var(--s3); margin-bottom:6px; background:var(--surface); border:1px solid var(--brd); border-radius:10px; color:var(--txt); font-size:13px; font-weight:500; cursor:pointer; text-align:left; transition:border-color .15s,background .15s; }
     .qa:hover{ border-color:var(--brd-hi); background:var(--surface2); }
     .qa .ic{ color:var(--muted); } .qa .go{ margin-left:auto; color:var(--muted2); }
@@ -268,7 +268,7 @@
     .pal-in{ display:flex; align-items:center; gap:var(--s3); padding:0 var(--s4); border-bottom:1px solid var(--brd); color:var(--muted2); }
     .pal-in input{ flex:1; height:52px; border:none; outline:none; background:transparent; color:var(--txt); font-family:inherit; font-size:15px; }
     .pal-list{ max-height:min(52dvh,420px); overflow-y:auto; padding:var(--s2); }
-    .pal-sec{ font-size:11px; font-weight:600; letter-spacing:.7px; text-transform:uppercase; color:var(--muted2); padding:var(--s3) var(--s3) 6px; }
+    .pal-sec{ font-size:12px; font-weight:600; letter-spacing:.2px; text-transform:capitalize; color:var(--muted2); padding:var(--s3) var(--s3) 6px; }
     .pal-item{ display:flex; align-items:center; gap:var(--s3); padding:9px var(--s3); border-radius:9px; cursor:pointer; font-size:13.5px; }
     .pal-item .ic{ color:var(--muted); }
     .pal-item .sub{ margin-left:auto; font-size:12px; color:var(--muted2); }
@@ -308,6 +308,61 @@
     footer{ margin-top:var(--s8); color:var(--muted2); font-size:12px; }
     .scrim{ display:none; }
 
+
+    /* ---------- daily notes ---------- */
+    :root{ color-scheme:dark; } [data-theme="light"]{ color-scheme:light; }
+    .daily-mode .searchrow, .daily-mode .chips{ display:none; }
+    .daily-mode .hero{ padding-bottom:var(--s4); }
+    .dn-head{ display:flex; align-items:center; justify-content:space-between; gap:var(--s3); flex-wrap:wrap; margin-bottom:var(--s4); }
+    .dn-nav{ display:flex; align-items:center; gap:var(--s2); flex-wrap:wrap; }
+    .dn-date{ font-size:18px; font-weight:600; min-width:230px; text-align:center; }
+    .dn-nav input[type=date], .dn-row input, .dn-row select{ height:40px; border-radius:10px; border:1px solid var(--brd); background:var(--field); color:var(--txt); font-family:inherit; font-size:14px; padding:0 12px; outline:none; transition:border-color .15s; min-width:0; }
+    .dn-nav input[type=date]{ height:34px; background:var(--surface); }
+    .dn-row input:focus, .dn-row select:focus{ border-color:var(--accent); }
+    .dn-stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:var(--s3); margin-bottom:var(--s4); }
+    .dn-stat{ background:var(--surface); border:1px solid var(--brd); border-radius:12px; padding:var(--s3) var(--s4); }
+    .dn-stat b{ display:block; font-size:24px; font-weight:650; line-height:1.2; } .dn-stat span{ font-size:12.5px; color:var(--muted); }
+    .dn-form{ background:var(--surface); border:1px solid var(--brd); border-radius:14px; padding:var(--s4); margin-bottom:var(--s6); }
+    .dn-seg{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:var(--s3); }
+    .dn-seg button{ height:32px; padding:0 var(--s3); border-radius:8px; border:1px solid var(--brd); background:transparent; color:var(--muted); font-size:13px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all .15s; }
+    .dn-seg button:hover{ color:var(--txt); border-color:var(--brd-hi); }
+    .dn-seg button.active{ color:var(--txt); border-color:var(--tc); background:color-mix(in srgb, var(--tc) 16%, transparent); }
+    .dn-seg button.active .ic{ color:var(--tc); }
+    .dn-row{ display:flex; gap:var(--s2); flex-wrap:wrap; }
+    .dn-row #dnText{ flex:2 1 280px; } .dn-row #dnWith{ flex:1 1 170px; } .dn-row #dnTime{ flex:0 0 118px; } .dn-row #dnProj{ flex:1 1 170px; }
+    .dn-row .btn-open{ flex:0 0 auto; height:40px; padding:0 var(--s5); } .dn-row .btn-s{ height:40px; }
+    .dn-sec{ font-size:12px; font-weight:600; letter-spacing:.2px; text-transform:capitalize; color:var(--muted2); margin:var(--s6) 2px var(--s3); display:flex; justify-content:space-between; }
+    .dn-sec.warn{ color:var(--gold); }
+    .dn-item{ display:flex; align-items:center; gap:var(--s3); padding:var(--s3) var(--s4); margin-bottom:var(--s2); background:var(--surface); border:1px solid var(--brd); border-left:3px solid var(--tc,var(--accent)); border-radius:12px; transition:background .15s,border-color .15s; }
+    .dn-item:hover{ background:var(--surface2); }
+    .dn-chk{ width:26px; height:26px; border-radius:8px; border:1.5px solid var(--brd-hi); background:transparent; color:transparent; display:grid; place-items:center; cursor:pointer; flex:none; transition:all .15s; padding:0; }
+    .dn-chk:hover{ border-color:var(--ok); }
+    .dn-item.done .dn-chk, .dnmini.done .dn-chk{ background:var(--ok); border-color:var(--ok); color:#fff; }
+    .dn-chk.sm{ width:20px; height:20px; border-radius:6px; }
+    .dn-time{ width:58px; flex:none; font-size:13px; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums; }
+    .dn-type{ flex:none; display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600; color:var(--tc); background:color-mix(in srgb, var(--tc) 14%, transparent); border-radius:6px; padding:3px 8px; }
+    .dn-body{ flex:1; min-width:0; }
+    .dn-text{ font-size:15px; line-height:1.4; white-space:pre-line; word-break:break-word; }
+    .dn-item.done .dn-text{ color:var(--muted2); text-decoration:line-through; }
+    .dn-sub{ display:flex; gap:var(--s3); flex-wrap:wrap; margin-top:3px; font-size:12.5px; color:var(--muted); }
+    .dn-sub span{ display:inline-flex; align-items:center; gap:5px; }
+    .dn-proj{ border:none; background:var(--hov); color:var(--muted); font-family:inherit; font-size:12px; border-radius:6px; padding:1px 8px; cursor:pointer; }
+    .dn-proj:hover{ color:var(--accent); }
+    .dn-btns{ display:flex; gap:6px; flex:none; align-items:center; }
+    .today-strip{ background:linear-gradient(135deg, var(--accent-soft), transparent); border:1px solid color-mix(in srgb, var(--accent) 40%, var(--brd)); border-radius:14px; padding:var(--s4) var(--s5); margin-bottom:var(--s8); }
+    .today-strip.empty{ display:flex; align-items:center; justify-content:space-between; gap:var(--s3); color:var(--muted); font-size:14px; background:transparent; border-style:dashed; }
+    .ts-head{ display:flex; align-items:center; gap:var(--s3); flex-wrap:wrap; font-size:13px; font-weight:600; margin-bottom:var(--s3); }
+    .ts-head .ic{ color:var(--accent); } .ts-head .glink{ margin-left:auto; }
+    .ts-head small{ color:var(--muted); font-weight:500; font-size:12.5px; }
+    .ts-item{ display:flex; align-items:center; gap:var(--s3); padding:7px 0; cursor:pointer; font-size:14.5px; border-top:1px solid var(--brd); }
+    .ts-item:first-of-type{ border-top:none; }
+    .ts-item .tm{ width:50px; flex:none; font-size:12.5px; color:var(--muted); font-weight:600; font-variant-numeric:tabular-nums; }
+    .ts-item .tx{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .ts-item .tw{ font-size:12px; color:var(--muted); flex:none; }
+    .dnmini .mn{ white-space:normal; font-size:13px; } .dnmini.done .mn{ color:var(--muted2); text-decoration:line-through; }
+    .dnmini .tm{ font-size:11.5px; color:var(--muted2); flex:none; font-variant-numeric:tabular-nums; }
+    @media (max-width:900px){ .dn-date{ min-width:0; flex:1; } .dn-item{ flex-wrap:wrap; } .dn-type{ order:3; } .dn-body{ flex:1 1 100%; order:4; } .dn-btns{ margin-left:auto; } }
+
     /* ============ responsive ============ */
     @media (max-width:1280px){
       .app{ grid-template-columns:248px minmax(0,1fr); }
@@ -339,17 +394,18 @@
 
   <!-- ================= SIDEBAR ================= -->
   <aside class="side" id="side">
-    <div class="brand"><span class="logo"><i data-ic="command" data-s="16"></i></span>COMMAND CENTER</div>
+    <div class="brand"><span class="logo"><i data-ic="command" data-s="16"></i></span>Command Center</div>
     <nav class="nav" id="nav">
       <button class="nav-item active" data-nav="home"><i data-ic="home"></i>Home</button>
+      <button class="nav-item" data-nav="daily"><i data-ic="calendar"></i>Daily Notes<span class="cnt" id="cntDaily"></span></button>
       <button class="nav-item" data-nav="all"><i data-ic="grid"></i>All Projects<span class="cnt" id="cntAll"></span></button>
       <button class="nav-item" data-nav="fav"><i data-ic="star"></i>Favorites<span class="cnt" id="cntFav"></span></button>
       <button class="nav-item" data-nav="recent"><i data-ic="clock"></i>Recent</button>
       <button class="nav-item" data-nav="done"><i data-ic="check"></i>Completed<span class="cnt" id="cntDone"></span></button>
     </nav>
-    <div class="side-sec"><span>GROUPS</span><button id="addGroup" title="Add group"><i data-ic="plus" data-s="15"></i></button></div>
+    <div class="side-sec"><span>Groups</span><button id="addGroup" title="Add group"><i data-ic="plus" data-s="15"></i></button></div>
     <div id="sideGroups"></div>
-    <div class="side-sec"><span>FAVORITES</span></div>
+    <div class="side-sec"><span>Favorites</span></div>
     <div id="sideFavs"></div>
     <div class="side-foot">
       <div class="avatar">S</div>
@@ -419,7 +475,7 @@
 
     <div class="sections" id="grid"><div class="empty">Loading your projects…</div></div>
 
-    <footer>Command Center · v2.0 · Built by Sam</footer>
+    <footer>Command Center · v2.2 · Built by Sam</footer>
   </main>
 
   <!-- ================= RIGHT RAIL ================= -->
@@ -485,6 +541,21 @@
   </div>
 </div>
 
+<!-- PDF report -->
+<div class="modal-wrap confirm" id="rpWrap">
+  <div class="modal" style="max-width:420px;">
+    <h2>Export report (PDF)</h2>
+    <div class="dn-seg" id="rpPre" style="--tc:var(--accent);">
+      <button data-rp="day">Selected day</button><button data-rp="week">Week</button><button data-rp="month">Month</button>
+    </div>
+    <div class="field"><label>From</label><input id="rpFrom" type="date"></div>
+    <div class="field"><label>To</label><input id="rpTo" type="date"></div>
+    <div class="field"><label>Report title (optional)</label><input id="rpTitle" placeholder="Daily Report" autocomplete="off"></div>
+    <p class="hint" style="margin:0 0 var(--s4);text-align:left;">Print window khulega → Destination me <b>Save as PDF</b> chuno. Report Jost font me banegi.</p>
+    <div class="form-actions"><button class="btn btn-ghost" id="rpCancel">Cancel</button><button class="btn btn-primary" id="rpGo">Generate PDF</button></div>
+  </div>
+</div>
+
 <div class="conn-banner" id="connBanner"></div>
 
 <div class="modal-wrap confirm" id="urlWrap">
@@ -505,7 +576,7 @@
   // ============================================================
   //  BACKEND — hardcoded default + localStorage override ("Set URL")
   // ============================================================
-  var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbz2wEAPi6w8_iFzR3ofKfaj-jA-CtIWd87qRJi9TvNLs3dyl61dvq04JFP9ujWeXaLm/exec';
+  var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbz05d_StJ46-KHcukxBERoqzUzGIEbUhsrU_2-7dlQXOUNaJFpaTDqZz4Fx2JF8k0c/exec';
   var API = localStorage.getItem('cc_api') || API_DEFAULT;
   function apiOk(u){ return /\/macros\/s\/[^/]+\/exec$/.test(u) || /\/a\/macros\/[^/]+\/s\/[^/]+\/exec$/.test(u); }
   function apiCall(action, payload){
@@ -563,6 +634,12 @@
     layers:'<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
     list:'<line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>',
     alert:'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+    users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+    phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+    calendar:'<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>',
+    filetext:'<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/>',
+    left:'<path d="m15 18-6-6 6-6"/>', right:'<path d="m9 18 6-6-6-6"/>',
     undo:'<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>'
   };
   function ic(n, s){
@@ -695,6 +772,8 @@
   var TITLES = { all: 'All Projects', fav: 'Favorites', recent: 'Recently opened', done: 'Completed' };
 
   function renderMain(){
+    $('main').classList.toggle('daily-mode', nav === 'daily');
+    if (nav === 'daily'){ renderDaily(); return; }
     var list = visible(), wrap = $('grid');
     if (!list.length){
       var e = EMPTY[nav];
@@ -706,7 +785,7 @@
       var buckets = {}, order = [];
       list.forEach(function(p){ var g = gkey(p); if (!(g in buckets)){ buckets[g] = []; order.push(g); } buckets[g].push(p); });
       order.sort(function(a, b){ if (a === '') return 1; if (b === '') return -1; return a.localeCompare(b); });
-      html = order.map(function(g){
+      html = todayStrip() + order.map(function(g){
         var items = sortForDisplay(buckets[g]);
         var pend = items.filter(function(p){ return !p.done && !isNaN(deadlineTs(p.deadline)); }).length;
         var label = g || 'Others', n = items.length;
@@ -727,6 +806,8 @@
     $('cntAll').textContent = projects.length || '';
     $('cntFav').textContent = projects.filter(function(p){ return p.starred; }).length || '';
     $('cntDone').textContent = projects.filter(function(p){ return p.done; }).length || '';
+    var tp = dn.filter(function(d){ return d.date === todayStr() && !d.done && d.type !== 'note'; }).length;
+    $('cntDaily').textContent = tp || '';
     document.querySelectorAll('#nav .nav-item').forEach(function(b){ b.classList.toggle('active', b.dataset.nav === nav); });
 
     var gs = groupNames(); if (hasUngrouped() && gs.length) gs.push('');
@@ -787,6 +868,7 @@
     }).join('') : '<div class="rempty">Projects you open will show up here.</div>';
 
     $('rail').innerHTML =
+      todayRail() +
       '<div class="rsec"><div class="rtitle">Quick actions</div>' +
         '<button class="qa" data-qa="new">' + ic('plus') + 'Create new project<span class="go">' + ic('arrow', 14) + '</span></button>' +
         '<button class="qa" data-qa="all">' + ic('grid') + 'View all projects<span class="go">' + ic('arrow', 14) + '</span></button>' +
@@ -1203,6 +1285,9 @@
     var acts = [
       ['Create new project', 'plus', function(){ openForm(null); }],
       ['Go to Home', 'home', function(){ setNav('home'); }],
+      ['Go to Daily Notes', 'calendar', function(){ setNav('daily'); }],
+      ['Add daily note', 'plus', function(){ setNav('daily'); setTimeout(function(){ if ($('dnText')) $('dnText').focus(); }, 80); }],
+      ['Export daily report (PDF)', 'filetext', function(){ setNav('daily'); openReport(); }],
       ['Go to All Projects', 'grid', function(){ setNav('all'); }],
       ['Go to Favorites', 'star', function(){ setNav('fav'); }],
       ['Go to Recent', 'clock', function(){ setNav('recent'); }],
@@ -1249,7 +1334,7 @@
   // ---------- global keys + outside-click ----------
   document.addEventListener('keydown', function(e){
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k'){ e.preventDefault(); palWrap.classList.contains('show') ? closePalette() : openPalette(); return; }
-    if (e.key === 'Escape'){ closePalette(); hideCtx(); pw.classList.remove('open'); $('alertBox').classList.remove('open'); closeNote(); $('app').classList.remove('nav-open'); return; }
+    if (e.key === 'Escape'){ closePalette(); hideCtx(); pw.classList.remove('open'); $('alertBox').classList.remove('open'); closeNote(); $('rpWrap').classList.remove('show'); $('app').classList.remove('nav-open'); return; }
     var tag = (document.activeElement && document.activeElement.tagName) || '';
     if (e.key === '/' && !/INPUT|TEXTAREA/.test(tag)){ e.preventDefault(); $('search').focus(); }
   });
@@ -1263,6 +1348,353 @@
   });
   window.addEventListener('scroll', hideCtx, { passive: true });
 
+
+  // ============================================================
+  //  DAILY NOTES — tasks / meetings / people to meet / calls / notes per day
+  // ============================================================
+  var DN_ORDER = ['task', 'meeting', 'meet', 'call', 'note'];
+  var DN_TYPES = {
+    task:    { l: 'Task',    i: 'check', c: '#7c83ff', ph: 'Aaj kya karna hai…',            w: false },
+    meeting: { l: 'Meeting', i: 'users', c: '#a78bfa', ph: 'Meeting ka topic / agenda…',    w: true, wl: 'Kiske saath meeting' },
+    meet:    { l: 'Meet',    i: 'user',  c: '#37d399', ph: 'Kisse milna hai — purpose…',    w: true, wl: 'Kisse milna hai (naam)' },
+    call:    { l: 'Call',    i: 'phone', c: '#38bdf8', ph: 'Call ka purpose…',              w: true, wl: 'Kisko call karna hai' },
+    note:    { l: 'Note',    i: 'note',  c: '#ffd166', ph: 'Koi note likh lo…',             w: false }
+  };
+  var dn = [], dnLoaded = false, dnErr = '', dnDate = '', dnType = 'task', dnEditId = null;
+
+  function dstr(d){ return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+  function todayStr(){ return dstr(new Date()); }
+  function parseD(s){ var a = String(s).split('-'); return new Date(+a[0], +a[1] - 1, +a[2]); }
+  function fmtDay(s){ return parseD(s).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' }); }
+  function fmtShort(s){ return parseD(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); }
+  function shiftDay(s, n){ var d = parseD(s); d.setDate(d.getDate() + n); return dstr(d); }
+  dnDate = todayStr();
+
+  function dnSort(a, b){
+    var ta = a.time || '99:99', tb = b.time || '99:99';
+    return ta < tb ? -1 : ta > tb ? 1 : String(a.createdOn).localeCompare(String(b.createdOn));
+  }
+  function dnById(id){ return dn.find(function(x){ return x.id === id; }); }
+  function dnCarry(){ var t = todayStr(); return dn.filter(function(d){ return d.date < t && !d.done && d.type !== 'note'; }).sort(function(a, b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : dnSort(a, b); }); }
+
+  function loadNotes(){
+    apiCall('dnlist').then(function(res){
+      if (!res.ok){
+        dnErr = /Unknown action/i.test(res.error || '') ? 'Backend purana hai — naya Code.gs paste karke New version deploy karo.' : (res.error || 'Notes load nahi hue');
+      } else { dnErr = ''; dn = res.notes || []; }
+      dnLoaded = true; dnChanged();
+    }).catch(function(err){ dnErr = 'Notes load failed: ' + err.message; dnLoaded = true; dnChanged(); });
+  }
+  function dnChanged(){
+    renderSide(); renderRail();
+    if (nav === 'daily') renderDaily(); else if (nav === 'home') renderMain();
+  }
+
+  // ---------- daily page ----------
+  function dnBuild(){
+    $('grid').innerHTML =
+      '<div class="dn-head"><div class="dn-nav">' +
+        '<button class="icon-btn" data-dnnav="-1" title="Previous day">' + ic('left', 16) + '</button>' +
+        '<div class="dn-date" id="dnDateLbl"></div>' +
+        '<button class="icon-btn" data-dnnav="1" title="Next day">' + ic('right', 16) + '</button>' +
+        '<button class="btn-s" data-dnnav="today" style="opacity:1;">Today</button>' +
+        '<input type="date" id="dnDateIn"></div>' +
+        '<button class="btn-s" id="dnExport" style="opacity:1;">' + ic('filetext', 15) + 'Export PDF report</button></div>' +
+      '<div class="dn-stats" id="dnStats"></div>' +
+      '<div class="dn-form" id="dnForm"><div class="dn-seg" id="dnSeg">' +
+        DN_ORDER.map(function(t){ return '<button data-dt="' + t + '" style="--tc:' + DN_TYPES[t].c + '">' + ic(DN_TYPES[t].i, 14) + DN_TYPES[t].l + '</button>'; }).join('') +
+      '</div><div class="dn-row">' +
+        '<input id="dnText" autocomplete="off" maxlength="1000">' +
+        '<input id="dnWith" autocomplete="off" maxlength="200">' +
+        '<input id="dnTime" type="time" title="Time (optional)">' +
+        '<select id="dnProj" title="Project (optional)"></select>' +
+        '<button class="btn-open" id="dnAdd">Add</button><button class="btn-s" id="dnCancel" style="display:none;opacity:1;">Cancel</button>' +
+      '</div></div>' +
+      '<div id="dnCarry"></div><div id="dnList"></div>';
+    dnSetType(dnType);
+  }
+  function dnSetType(t){
+    dnType = t; var T = DN_TYPES[t];
+    document.querySelectorAll('#dnSeg button').forEach(function(b){ b.classList.toggle('active', b.dataset.dt === t); });
+    $('dnText').placeholder = T.ph;
+    $('dnWith').style.display = T.w ? '' : 'none';
+    if (T.w) $('dnWith').placeholder = T.wl;
+  }
+  function dnItemHTML(d, carry){
+    var T = DN_TYPES[d.type] || DN_TYPES.task, pr = d.projectId ? byId(d.projectId) : null;
+    var sub = (d['with'] ? '<span>' + ic('user', 12) + esc(d['with']) + '</span>' : '') +
+              (pr ? '<button class="dn-proj" data-dnact="proj">' + esc((pr.emoji || '') + ' ' + pr.name) + '</button>' : '');
+    return '<div class="dn-item' + (d.done ? ' done' : '') + '" data-dn="' + esc(d.id) + '" style="--tc:' + T.c + '">' +
+      '<button class="dn-chk" data-dnact="toggle" title="' + (d.done ? 'Reopen' : 'Mark done') + '">' + ic('check', 15) + '</button>' +
+      '<div class="dn-time">' + (carry ? esc(fmtShort(d.date)) : (d.time ? esc(d.time) : '—')) + '</div>' +
+      '<span class="dn-type">' + ic(T.i, 13) + T.l + '</span>' +
+      '<div class="dn-body"><div class="dn-text">' + esc(d.text) + '</div>' + (sub ? '<div class="dn-sub">' + sub + '</div>' : '') + '</div>' +
+      '<div class="dn-btns">' + (carry ? '<button class="btn-s" data-dnact="move" style="opacity:1;">Aaj karo</button>' : '') +
+        '<button class="icon-btn" data-dnact="edit" title="Edit">' + ic('pencil', 14) + '</button>' +
+        '<button class="icon-btn" data-dnact="del" title="Delete">' + ic('trash', 14) + '</button></div></div>';
+  }
+  function renderDaily(){ if (!$('dnList')) dnBuild(); dnRefresh(); }
+  function dnRefresh(){
+    if (!$('dnList')) return;
+    var today = todayStr();
+    $('dnDateLbl').textContent = (dnDate === today ? 'Today · ' : '') + fmtDay(dnDate);
+    $('dnDateIn').value = dnDate;
+    var sel = $('dnProj'), cur = sel.value;
+    sel.innerHTML = '<option value="">No project</option>' + projects.slice().sort(function(a, b){ return a.name.localeCompare(b.name); })
+      .map(function(p){ return '<option value="' + esc(p.id) + '">' + esc((p.emoji || '') + ' ' + p.name) + '</option>'; }).join('');
+    sel.value = cur;
+    if (dnErr){
+      $('dnStats').innerHTML = ''; $('dnCarry').innerHTML = '';
+      $('dnList').innerHTML = '<div class="empty">' + ic('alert', 30) + '<b>Daily Notes load nahi hue</b>' + esc(dnErr) + '</div>'; return;
+    }
+    if (!dnLoaded){ $('dnList').innerHTML = '<div class="empty">Loading daily notes…</div>'; return; }
+    var items = dn.filter(function(d){ return d.date === dnDate; }).sort(dnSort);
+    var act = items.filter(function(d){ return d.type !== 'note'; });
+    var done = act.filter(function(d){ return d.done; }).length;
+    var mt = items.filter(function(d){ return d.type === 'meeting' || d.type === 'meet' || d.type === 'call'; }).length;
+    $('dnStats').innerHTML =
+      '<div class="dn-stat"><b>' + act.length + '</b><span>Planned</span></div>' +
+      '<div class="dn-stat"><b style="color:var(--ok)">' + done + '</b><span>Done</span></div>' +
+      '<div class="dn-stat"><b style="color:' + (act.length - done ? 'var(--gold)' : 'var(--muted2)') + '">' + (act.length - done) + '</b><span>Pending</span></div>' +
+      '<div class="dn-stat"><b>' + mt + '</b><span>Meetings / Meets / Calls</span></div>';
+    var carry = dnDate === today ? dnCarry() : [];
+    $('dnCarry').innerHTML = carry.length ? '<div class="dn-sec warn"><span>Pending from earlier days (' + carry.length + ')</span></div>' + carry.map(function(d){ return dnItemHTML(d, true); }).join('') : '';
+    $('dnList').innerHTML = '<div class="dn-sec"><span>' + (dnDate === today ? 'Aaj ka plan' : 'Plan') + ' (' + items.length + ')</span></div>' +
+      (items.length ? items.map(function(d){ return dnItemHTML(d, false); }).join('')
+        : '<div class="empty">' + ic('calendar', 30) + '<b>Is din ka plan khaali hai</b>Upar se task, meeting, meet ya call add karo.</div>');
+  }
+
+  // ---------- mutations ----------
+  function dnResetForm(keepProj){
+    $('dnText').value = ''; $('dnWith').value = ''; $('dnTime').value = ''; if (!keepProj) $('dnProj').value = '';
+    dnEditId = null; $('dnAdd').textContent = 'Add'; $('dnCancel').style.display = 'none';
+  }
+  function dnSubmit(){
+    var text = $('dnText').value.trim();
+    if (!text){ toast('Pehle kuch likho', 'err'); $('dnText').focus(); return; }
+    var o = { date: dnDate, time: $('dnTime').value, type: dnType, text: text, 'with': DN_TYPES[dnType].w ? $('dnWith').value.trim() : '', projectId: $('dnProj').value };
+    var btn = $('dnAdd');
+    if (dnEditId){
+      var d = dnById(dnEditId); if (!d){ dnResetForm(); return; }
+      var prev = Object.assign({}, d);
+      o.id = d.id; o.date = d.date;
+      Object.assign(d, { time: o.time, type: o.type, text: o.text, 'with': o['with'], projectId: o.projectId });
+      dnResetForm(); dnChanged(); toast('Updated');
+      apiCall('dnupdate', o).then(function(res){ if (!res.ok){ Object.assign(d, prev); dnChanged(); toast(res.error || 'Update failed', 'err'); } })
+        .catch(function(err){ Object.assign(d, prev); dnChanged(); toast('Update failed: ' + err.message, 'err'); });
+      return;
+    }
+    btn.disabled = true; btn.textContent = 'Adding…';
+    apiCall('dnadd', o).then(function(res){
+      btn.disabled = false; btn.textContent = 'Add';
+      if (!res.ok){ toast(res.error || 'Add failed', 'err'); return; }
+      dn.push(res.note); dnResetForm(true); dnChanged(); $('dnText').focus();
+    }).catch(function(err){ btn.disabled = false; btn.textContent = 'Add'; toast('Add failed: ' + err.message, 'err'); });
+  }
+  function dnToggle(id){
+    var d = dnById(id); if (!d) return;
+    d.done = !d.done; dnChanged();
+    apiCall('dntoggle', { id: id }).then(function(res){ if (!res.ok){ d.done = !d.done; dnChanged(); toast(res.error || 'Update failed', 'err'); } })
+      .catch(function(err){ d.done = !d.done; dnChanged(); toast('Update failed: ' + err.message, 'err'); });
+  }
+  function dnMove(id){
+    var d = dnById(id); if (!d) return;
+    var prev = d.date; d.date = todayStr(); dnChanged(); toast('Aaj ke plan me aa gaya');
+    apiCall('dnupdate', { id: d.id, date: d.date, time: d.time, type: d.type, text: d.text, 'with': d['with'], projectId: d.projectId }).then(function(res){
+      if (!res.ok){ d.date = prev; dnChanged(); toast(res.error || 'Move failed', 'err'); }
+    }).catch(function(err){ d.date = prev; dnChanged(); toast('Move failed: ' + err.message, 'err'); });
+  }
+  function dnDelete(id){
+    var d = dnById(id); if (!d) return;
+    var idx = dn.indexOf(d); dn.splice(idx, 1); dnChanged(); toast('Deleted');
+    apiCall('dndelete', { id: id }).then(function(res){ if (!res.ok){ dn.splice(idx, 0, d); dnChanged(); toast(res.error || 'Delete failed', 'err'); } })
+      .catch(function(err){ dn.splice(idx, 0, d); dnChanged(); toast('Delete failed: ' + err.message, 'err'); });
+  }
+  function dnEdit(id){
+    var d = dnById(id); if (!d || !$('dnForm')) return;
+    dnEditId = id; dnSetType(d.type);
+    $('dnText').value = d.text; $('dnWith').value = d['with'] || ''; $('dnTime').value = d.time || ''; $('dnProj').value = d.projectId || '';
+    $('dnAdd').textContent = 'Update'; $('dnCancel').style.display = '';
+    $('dnForm').scrollIntoView({ behavior: 'smooth', block: 'center' }); $('dnText').focus();
+  }
+
+  // ---------- events ----------
+  $('grid').addEventListener('click', function(e){
+    var nv = e.target.closest('[data-dnnav]');
+    if (nv){ var v = nv.dataset.dnnav; dnDate = v === 'today' ? todayStr() : shiftDay(dnDate, +v); dnRefresh(); return; }
+    var dt = e.target.closest('[data-dt]'); if (dt){ dnSetType(dt.dataset.dt); $('dnText').focus(); return; }
+    if (e.target.closest('#dnAdd')){ dnSubmit(); return; }
+    if (e.target.closest('#dnCancel')){ dnResetForm(); dnSetType(dnType); return; }
+    if (e.target.closest('#dnExport')){ openReport(); return; }
+    var a = e.target.closest('[data-dnact]'); if (!a) return;
+    var row = a.closest('[data-dn]'); if (!row) return;
+    var id = row.dataset.dn, act = a.dataset.dnact;
+    if (act === 'toggle') dnToggle(id); else if (act === 'edit') dnEdit(id); else if (act === 'del') dnDelete(id);
+    else if (act === 'move') dnMove(id);
+    else if (act === 'proj'){ var d = dnById(id), pr = d && byId(d.projectId); if (pr) openProject(pr); }
+  });
+  $('grid').addEventListener('change', function(e){
+    if (e.target.id === 'dnDateIn' && e.target.value){ dnDate = e.target.value; dnRefresh(); }
+  });
+  $('grid').addEventListener('keydown', function(e){
+    if (e.key === 'Enter' && (e.target.id === 'dnText' || e.target.id === 'dnWith' || e.target.id === 'dnTime')){ e.preventDefault(); dnSubmit(); }
+  });
+  document.addEventListener('click', function(e){
+    var m = e.target.closest('[data-dnrail]');
+    if (m){ if (e.target.closest('.dn-chk')) dnToggle(m.dataset.dnrail); else setNav('daily'); return; }
+    var g = e.target.closest('[data-go]'); if (g) setNav(g.dataset.go);
+  });
+
+  // ---------- today: right rail + home strip (always visible) ----------
+  function dnMini(d){
+    return '<div class="mini dnmini' + (d.done ? ' done' : '') + '" data-dnrail="' + esc(d.id) + '" style="--tc:' + (DN_TYPES[d.type] || DN_TYPES.task).c + '">' +
+      '<button class="dn-chk sm" title="Toggle done">' + ic('check', 12) + '</button>' +
+      '<span class="mn">' + esc(d.text) + (d['with'] ? ' · ' + esc(d['with']) : '') + '</span><span class="tm">' + (d.time ? esc(d.time) : (DN_TYPES[d.type] || {}).l) + '</span></div>';
+  }
+  function todayItems(){ var t = todayStr(); return dn.filter(function(d){ return d.date === t; }).sort(function(a, b){ return (a.done - b.done) || dnSort(a, b); }); }
+  function todayRail(){
+    var body;
+    if (dnErr) body = '<div class="rempty">' + esc(dnErr) + '</div>';
+    else if (!dnLoaded) body = '<div class="rempty">Loading…</div>';
+    else {
+      var items = todayItems(), carry = dnCarry().length;
+      body = (items.length ? items.slice(0, 7).map(dnMini).join('') + (items.length > 7 ? '<div class="rempty">+ ' + (items.length - 7) + ' more</div>' : '')
+        : '<div class="rempty">Aaj ka plan khaali hai.</div>') +
+        (carry ? '<div class="rempty" style="color:var(--gold);">' + carry + ' pending from earlier days</div>' : '');
+    }
+    return '<div class="rsec"><div class="rtitle"><span>Today</span><button class="glink" data-go="daily" style="padding:0 4px;">Open ' + ic('arrow', 12) + '</button></div>' + body + '</div>';
+  }
+  function todayStrip(){
+    if (!dnLoaded || dnErr) return '';
+    var items = todayItems(), carry = dnCarry(), pend = items.filter(function(d){ return !d.done && d.type !== 'note'; });
+    if (!items.length && !carry.length)
+      return '<div class="today-strip empty"><span>Aaj ka plan khaali hai — meetings, tasks aur calls yahan dikhenge.</span><button class="glink" data-go="daily">Add daily note ' + ic('arrow', 14) + '</button></div>';
+    var rows = items.filter(function(d){ return !d.done; }).slice(0, 6).map(function(d){
+      var T = DN_TYPES[d.type] || DN_TYPES.task;
+      return '<div class="ts-item" data-dnrail="' + esc(d.id) + '" style="--tc:' + T.c + '"><button class="dn-chk sm">' + ic('check', 12) + '</button><span class="tm">' + (d.time ? esc(d.time) : '—') + '</span>' +
+        '<span class="dn-type">' + ic(T.i, 12) + T.l + '</span><span class="tx">' + esc(d.text) + '</span>' + (d['with'] ? '<span class="tw">' + esc(d['with']) + '</span>' : '') + '</div>';
+    }).join('');
+    var crow = carry.slice(0, 2).map(function(d){
+      var T = DN_TYPES[d.type] || DN_TYPES.task;
+      return '<div class="ts-item" data-dnrail="' + esc(d.id) + '" style="--tc:' + T.c + '"><button class="dn-chk sm">' + ic('check', 12) + '</button><span class="tm" style="color:var(--gold)">' + esc(fmtShort(d.date)) + '</span>' +
+        '<span class="dn-type">' + ic(T.i, 12) + T.l + '</span><span class="tx">' + esc(d.text) + '</span></div>';
+    }).join('');
+    return '<div class="today-strip"><div class="ts-head">' + ic('calendar', 16) + 'Today · ' + esc(fmtDay(todayStr())) +
+      '<small>' + pend.length + ' pending' + (carry.length ? ' · ' + carry.length + ' carried over' : '') + '</small>' +
+      '<button class="glink" data-go="daily">Open Daily Notes ' + ic('arrow', 14) + '</button></div>' +
+      (rows || '<div class="rempty">Aaj ka sab kaam ho gaya.</div>') + crow + '</div>';
+  }
+
+  // ============================================================
+  //  PDF REPORT (print-to-PDF, Jost font)
+  // ============================================================
+  function openReport(){
+    $('rpFrom').value = dnDate; $('rpTo').value = dnDate; $('rpTitle').value = '';
+    $('rpWrap').classList.add('show');
+  }
+  $('rpCancel').onclick = function(){ $('rpWrap').classList.remove('show'); };
+  $('rpPre').addEventListener('click', function(e){
+    var b = e.target.closest('[data-rp]'); if (!b) return;
+    var d = parseD(dnDate), from = dnDate, to = dnDate;
+    if (b.dataset.rp === 'week'){ var off = (d.getDay() + 6) % 7; from = shiftDay(dnDate, -off); to = shiftDay(from, 6); }
+    if (b.dataset.rp === 'month'){ from = dstr(new Date(d.getFullYear(), d.getMonth(), 1)); to = dstr(new Date(d.getFullYear(), d.getMonth() + 1, 0)); }
+    $('rpFrom').value = from; $('rpTo').value = to;
+  });
+  $('rpGo').onclick = function(){
+    var from = $('rpFrom').value, to = $('rpTo').value;
+    if (!from || !to){ toast('From aur To date chuno', 'err'); return; }
+    if (from > to){ var t = from; from = to; to = t; }
+    var html = buildReport(from, to, $('rpTitle').value.trim() || 'Daily Report');
+    if (!html){ toast('Is range me koi entry nahi mili', 'err'); return; }
+    $('rpWrap').classList.remove('show');
+    printHTML(html, 'Daily_Report_' + from + (to !== from ? '_to_' + to : ''));
+  };
+
+  function buildReport(from, to, title){
+    var items = dn.filter(function(d){ return d.date >= from && d.date <= to; })
+      .sort(function(a, b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : dnSort(a, b); });
+    if (!items.length) return '';
+    var days = [], map = {};
+    items.forEach(function(d){ if (!map[d.date]){ map[d.date] = []; days.push(d.date); } map[d.date].push(d); });
+    var act = items.filter(function(d){ return d.type !== 'note'; });
+    var done = act.filter(function(d){ return d.done; }).length, pend = act.length - done;
+    var mt = items.filter(function(d){ return d.type === 'meeting' || d.type === 'meet' || d.type === 'call'; }).length;
+    var pct = act.length ? Math.round(done * 100 / act.length) : 0;
+    function proj(d){ var p = d.projectId && byId(d.projectId); return p ? esc(p.name) : '—'; }
+    function row(d, n, showDate){
+      var T = DN_TYPES[d.type] || DN_TYPES.task;
+      var st = d.type === 'note' ? '<span class="st">—</span>' : (d.done ? '<span class="st ok"><i></i>Done</span>' : '<span class="st no"><i></i>Pending</span>');
+      return '<tr><td class="n">' + n + '</td><td class="tm">' + (showDate ? esc(fmtShort(d.date)) + '<br>' : '') + (d.time ? esc(d.time) : '') + '</td>' +
+        '<td><span class="ty" style="color:' + T.c + ';border-color:' + T.c + '">' + T.l + '</span></td>' +
+        '<td class="tx">' + esc(d.text).replace(/\n/g, '<br>') + (d['with'] ? '<div class="wt">With: ' + esc(d['with']) + '</div>' : '') + '</td>' +
+        '<td>' + proj(d) + '</td><td>' + st + '</td></tr>';
+    }
+    var head = '<thead><tr><th>#</th><th>Time</th><th>Type</th><th>Details</th><th>Project</th><th>Status</th></tr></thead>';
+    var body = days.map(function(day){
+      var arr = map[day], dd = arr.filter(function(x){ return x.type !== 'note' && x.done; }).length, aa = arr.filter(function(x){ return x.type !== 'note'; }).length;
+      return '<section class="day"><h2>' + esc(fmtDay(day)) + '<small>' + (aa ? dd + ' / ' + aa + ' done' : arr.length + ' note' + (arr.length > 1 ? 's' : '')) + '</small></h2>' +
+        '<table>' + head + '<tbody>' + arr.map(function(d, i){ return row(d, i + 1, false); }).join('') + '</tbody></table></section>';
+    }).join('');
+    var open = act.filter(function(d){ return !d.done; });
+    var openSec = open.length ? '<section class="day"><h2>Still pending<small>' + open.length + ' item' + (open.length > 1 ? 's' : '') + '</small></h2><table>' + head +
+      '<tbody>' + open.map(function(d, i){ return row(d, i + 1, true); }).join('') + '</tbody></table></section>' : '';
+    var range = from === to ? fmtDay(from) : fmtShort(from) + ' ' + parseD(from).getFullYear() + '  –  ' + fmtShort(to) + ' ' + parseD(to).getFullYear();
+    var now = new Date().toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    var css = '@page{size:A4;margin:16mm 14mm 18mm;}' +
+      '*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
+      'body{font-family:"Jost",Arial,sans-serif;color:#16161a;font-size:10.5pt;line-height:1.4;margin:0;}' +
+      '.hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5px solid #16161a;padding-bottom:10px;}' +
+      '.hd h1{font-size:25pt;font-weight:700;margin:0;letter-spacing:-.3px;line-height:1.1;}.hd .rg{font-size:11.5pt;color:#55565e;margin-top:4px;}' +
+      '.hd .meta{text-align:right;font-size:9pt;color:#6b6b74;line-height:1.5;}.hd .meta b{color:#16161a;font-size:10.5pt;font-weight:600;}' +
+      '.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0 6px;}' +
+      '.tile{border:1px solid #d8d8de;border-radius:8px;padding:8px 10px;}.tile b{display:block;font-size:19pt;font-weight:700;line-height:1.15;}.tile span{font-size:8.5pt;color:#6b6b74;text-transform:uppercase;letter-spacing:.6px;}' +
+      '.day{margin-top:18px;}.day h2{font-size:13pt;font-weight:600;margin:0 0 6px;padding-bottom:4px;border-bottom:1px solid #d8d8de;display:flex;justify-content:space-between;align-items:baseline;break-after:avoid;}' +
+      '.day h2 small{font-size:9pt;color:#6b6b74;font-weight:500;}' +
+      'table{width:100%;border-collapse:collapse;}th{text-align:left;font-size:8pt;text-transform:uppercase;letter-spacing:.7px;color:#6b6b74;font-weight:600;border-bottom:1px solid #d8d8de;padding:5px 6px;}' +
+      'td{padding:7px 6px;border-bottom:1px solid #ececf0;vertical-align:top;font-size:10pt;}tr{break-inside:avoid;}' +
+      'td.n{width:22px;color:#9a9aa3;}td.tm{width:62px;font-weight:600;color:#55565e;font-size:9.5pt;white-space:nowrap;}td.tx{width:42%;font-weight:500;}' +
+      '.wt{font-weight:400;color:#55565e;font-size:9pt;margin-top:2px;}' +
+      '.ty{font-size:8pt;font-weight:600;border:1px solid;border-radius:4px;padding:1px 6px;white-space:nowrap;}' +
+      '.st{font-size:9pt;font-weight:600;white-space:nowrap;}.st i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;background:#9a9aa3;}' +
+      '.st.ok{color:#0f7a55;}.st.ok i{background:#0f9d6c;}.st.no{color:#b4231f;}.st.no i{background:#e5384b;}' +
+      '.ft{position:fixed;bottom:0;left:0;right:0;font-size:8pt;color:#9a9aa3;display:flex;justify-content:space-between;border-top:1px solid #ececf0;padding-top:4px;}';
+    return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + esc(title) + '</title>' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+      '<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">' +
+      '<style>' + css + '</style></head><body>' +
+      '<div class="hd"><div><h1>' + esc(title) + '</h1><div class="rg">' + esc(range) + '</div></div>' +
+      '<div class="meta"><b>Sam</b><br>Generated ' + esc(now) + '</div></div>' +
+      '<div class="tiles"><div class="tile"><b>' + act.length + '</b><span>Planned</span></div><div class="tile"><b style="color:#0f7a55">' + done + '</b><span>Completed</span></div>' +
+      '<div class="tile"><b style="color:#b4231f">' + pend + '</b><span>Pending</span></div><div class="tile"><b>' + mt + '</b><span>Meetings / Calls</span></div>' +
+      '<div class="tile"><b>' + pct + '%</b><span>Completion</span></div></div>' +
+      body + openSec + '<div class="ft"><span>Command Center · Daily Report</span><span>' + esc(range) + '</span></div></body></html>';
+  }
+
+  function printHTML(html, filename){
+    var fr = document.createElement('iframe');
+    fr.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;';
+    document.body.appendChild(fr);
+    var doc = fr.contentWindow.document, oldTitle = document.title, printed = false;
+    doc.open(); doc.write(html); doc.close();
+    function go(){
+      if (printed) return; printed = true;
+      document.title = filename; try { doc.title = filename; } catch(e){}
+      try { fr.contentWindow.focus(); fr.contentWindow.print(); } catch(e){ toast('Print open nahi hua', 'err'); }
+      setTimeout(function(){ document.title = oldTitle; }, 1500);
+      setTimeout(function(){ fr.remove(); }, 120000);
+    }
+    // wait for Jost to be ready (or give up after 4s and print with fallback font)
+    var link = doc.querySelector('link[rel=stylesheet]');
+    var fontsReady = new Promise(function(res){
+      var fin = function(){
+        if (!doc.fonts || !doc.fonts.load) return res();
+        Promise.all(['400', '500', '600', '700'].map(function(w){ return doc.fonts.load(w + ' 12px "Jost"'); })).then(res, res);
+      };
+      if (link){ link.addEventListener('load', fin); link.addEventListener('error', res); } else fin();
+    });
+    Promise.race([fontsReady, new Promise(function(res){ setTimeout(res, 4000); })]).then(function(){ setTimeout(go, 150); });
+  }
+
   // ============================================================
   //  BOOT
   // ============================================================
@@ -1274,6 +1706,7 @@
   renderRail();
   tick();
   loadProjects();
+  loadNotes();
 </script>
 </body>
 </html>
