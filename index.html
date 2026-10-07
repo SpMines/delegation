@@ -7,7 +7,7 @@
   <title>Command Center</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root{
       --bg:#0b0b0d; --side:#0e0e11; --surface:#141418; --surface2:#1a1a20; --pop:#16161b;
@@ -25,7 +25,7 @@
     }
     *{ box-sizing:border-box; }
     html,body{ margin:0; padding:0; }
-    body{ font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif; font-size:14px; line-height:1.45; color:var(--txt); background:var(--bg); -webkit-font-smoothing:antialiased; }
+    body{ font-family:'Jost',system-ui,-apple-system,'Segoe UI',sans-serif; font-size:15px; line-height:1.45; color:var(--txt); background:var(--bg); -webkit-font-smoothing:antialiased; }
     button{ font-family:inherit; color:inherit; }
     .ic{ flex:none; display:block; }
     i[data-ic]{ display:inline-flex; }
@@ -60,7 +60,11 @@
 
     /* ---------- topbar ---------- */
     .topbar{ position:sticky; top:0; z-index:40; display:flex; align-items:center; justify-content:flex-end; gap:var(--s2); padding:var(--s3) 0; margin:0 calc(var(--s8) * -1); padding-left:var(--s8); padding-right:var(--s8); background:color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
-    .tb-btn.menu-btn{ display:none; margin-right:auto; }
+    .tb-btn.menu-btn{ margin-right:auto; }
+    @media (min-width:901px){
+      .app.side-collapsed{ grid-template-columns:minmax(0,1fr) 320px; }
+      .app.side-collapsed .side{ display:none; }
+    }
     .tb-btn{ position:relative; width:36px; height:36px; border-radius:10px; border:1px solid var(--brd); background:var(--surface); color:var(--muted); display:grid; place-items:center; cursor:pointer; transition:border-color .15s,color .15s; }
     .tb-btn:hover{ border-color:var(--brd-hi); color:var(--txt); }
     .badge{ position:absolute; top:-5px; right:-5px; min-width:17px; height:17px; padding:0 4px; border-radius:9px; background:var(--err); color:#fff; font-size:10.5px; font-weight:700; display:none; align-items:center; justify-content:center; }
@@ -307,6 +311,8 @@
     /* ============ responsive ============ */
     @media (max-width:1280px){
       .app{ grid-template-columns:248px minmax(0,1fr); }
+      .app.side-collapsed{ grid-template-columns:minmax(0,1fr); }
+      .app.side-collapsed .rail{ grid-column:1; }
       .rail{ grid-column:2; position:static; height:auto; border-left:none; border-top:1px solid var(--brd); background:transparent; padding:var(--s6) var(--s8) 96px; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:var(--s6) var(--s8); }
       .rsec{ margin:0; }
       .main{ padding-bottom:var(--s8); }
@@ -319,7 +325,6 @@
       .rail{ grid-column:1; padding:var(--s5) var(--s4) 96px; }
       .main{ padding:0 var(--s4) var(--s6); }
       .topbar{ margin:0 calc(var(--s4) * -1); padding-left:var(--s4); padding-right:var(--s4); }
-      .tb-btn.menu-btn{ display:grid; }
       .hero .tag{ display:none; } .hero h1{ font-size:24px; }
       .quick{ flex:1 1 100%; } .grid.view-card,.grid.view-grid{ grid-template-columns:1fr; }
       .row-item{ flex-wrap:wrap; } .row-item .c-actions{ width:100%; } .row-item .btn-open{ flex:1; }
@@ -387,7 +392,7 @@
     <section class="hero">
       <div>
         <small id="greet">Good Morning,</small>
-        <h1>Sunflower ☀️</h1>
+        <h1>Sam ☀️</h1>
         <p>Here’s what’s happening with your projects today.</p>
       </div>
       <div class="tag">Small steps. Big results.</div>
@@ -924,7 +929,12 @@
   });
   $('addGroup').onclick = function(){ openForm(null); setTimeout(function(){ $('fGroup').focus(); }, 80); };
   $('sideSettings').onclick = $('setBtn').onclick = openUrlModal;
-  $('menuBtn').onclick = function(){ $('app').classList.add('nav-open'); };
+  $('menuBtn').onclick = function(){
+    if (window.innerWidth > 900){                       // desktop: collapse / expand sidebar
+      var c = $('app').classList.toggle('side-collapsed'); lsSet('cc_side', c);
+    } else $('app').classList.add('nav-open');          // mobile: slide-in drawer
+  };
+  if (lsGet('cc_side', false)) $('app').classList.add('side-collapsed');
   $('scrim').onclick = function(){ $('app').classList.remove('nav-open'); };
 
   $('search').addEventListener('input', function(){ renderMain(); });
