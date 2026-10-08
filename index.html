@@ -492,7 +492,7 @@
 
     <div class="sections" id="grid"><div class="empty">Loading your projects…</div></div>
 
-    <footer>Command Center · v2.3 · Built by Sam</footer>
+    <footer>Command Center · v2.3.1 · Built by Sam</footer>
   </main>
 
   <!-- ================= RIGHT RAIL ================= -->
@@ -593,7 +593,7 @@
   // ============================================================
   //  BACKEND — hardcoded default + localStorage override ("Set URL")
   // ============================================================
-  var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbw01OSP0j7e2ebvRYtmti_G7B9DL_EeZUGSLS4IxlKo_AavpG30V6L1-lQYtu1IESeO/exec';
+  var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbyN6pYOfw9HvHuSZE3DT14rN3EHBAHy9DzPxjph1uth_bKNSgpKR6gXvgTZYNIOvC0/exec';
   var API = localStorage.getItem('cc_api') || API_DEFAULT;
   function apiOk(u){ return /\/macros\/s\/[^/]+\/exec$/.test(u) || /\/a\/macros\/[^/]+\/s\/[^/]+\/exec$/.test(u); }
   function apiCall(action, payload){
@@ -1258,6 +1258,7 @@
   //  SHEET UPDATE WATCH — poll backend, show changed sheets in bell
   // ============================================================
   function updCount(){ return Object.keys(updatedIds).length; }
+  var scanMeta = { err: '', checked: 0, skipped: 0, at: '', busy: false };
   function timeAgo(iso){
     var s = (Date.now() - new Date(iso).getTime()) / 1000;
     if (s < 60) return 'just now';
@@ -1268,20 +1269,49 @@
   function renderUpdates(){
     var w = $('updWrap'); if (!w) return;
     var ids = Object.keys(updatedIds);
-    w.innerHTML = '<div class="pop-head"><span>Sheet updates</span>' +
-      (ids.length ? '<button class="btn-s" id="updSeenAll" style="opacity:1;height:26px;">Mark all seen</button>' : '') + '</div>' +
-      (ids.length ? ids.map(function(id){
+    var head = '<div class="pop-head"><span>Sheet updates</span>' +
+      '<div style="display:flex;gap:6px;">' +
+        (ids.length ? '<button class="btn-s" id="updSeenAll" style="opacity:1;height:26px;">Mark all seen</button>' : '') +
+        '<button class="btn-s" id="updScanNow" style="opacity:1;height:26px;"' + (scanMeta.busy ? ' disabled' : '') + '>' + ic('undo', 13) + (scanMeta.busy ? 'Checking…' : 'Check now') + '</button>' +
+      '</div></div>';
+    var list;
+    if (scanMeta.err){
+      list = '<div class="pop-empty" style="padding:var(--s4) var(--s3);color:var(--err);">' + ic('alert', 22) + '<br>' + esc(scanMeta.err) + '</div>';
+    } else if (ids.length){
+      list = ids.map(function(id){
         var p = byId(id); if (!p) return '';
         return '<div class="pw-row ok" data-upd="' + esc(id) + '" title="Open sheet · marks seen">' +
           '<div class="pw-emoji">' + esc(p.emoji || '📊') + '</div>' +
           '<div class="pw-main"><div class="pw-name">' + esc(p.name) + '</div><div class="pw-note">Updated ' + esc(timeAgo(updatedIds[id])) + '</div></div>' +
           '<div class="pw-side"><div class="pw-btns"><div class="icon-btn" data-upd-seen="' + esc(id) + '" title="Mark seen">' + ic('check', 13) + '</div></div></div></div>';
-      }).join('') : '<div class="pop-empty" style="padding:var(--s4) var(--s3);">No sheet changes.<br>Jab kisi project ki Google Sheet me update hoga, yahan dikhega.</div>');
+      }).join('');
+    } else {
+      list = '<div class="pop-empty" style="padding:var(--s4) var(--s3);">No sheet changes right now.<br>Google Sheet me row add/edit karo → "Check now" dabao.</div>';
+    }
+    var foot = scanMeta.err ? '' :
+      '<div class="steps" style="padding-top:var(--s3);">' +
+        (scanMeta.at ? 'Last checked ' + esc(timeAgo(scanMeta.at)) + ' · ' : '') +
+        esc(scanMeta.checked) + ' sheet' + (scanMeta.checked === 1 ? '' : 's') + ' watched' +
+        (scanMeta.skipped ? ' · ' + esc(scanMeta.skipped) + ' no-access (Drive permission?)' : '') +
+      '</div>';
+    w.innerHTML = head + list + foot;
   }
-  function scanSheets(){
-    if (!loaded) return;
+  function scanSheets(manual){
+    if (!loaded && !manual) return;
+    if (scanMeta.busy) return;
+    scanMeta.busy = true; renderUpdates();
+    if (manual) toast('Checking sheets…');
     apiCall('sheetscan').then(function(res){
-      if (!res.ok) return;
+      scanMeta.busy = false;
+      if (!res.ok){
+        scanMeta.err = /Unknown action/i.test(res.error || '')
+          ? 'Backend purana hai — naya Code.gs paste karke "New version" deploy karo.'
+          : (res.error || 'Scan failed');
+        renderUpdates();
+        if (manual) toast(scanMeta.err, 'err');
+        return;
+      }
+      scanMeta.err = ''; scanMeta.checked = res.checked || 0; scanMeta.skipped = res.skipped || 0; scanMeta.at = res.scannedAt || new Date().toISOString();
       var before = updCount();
       updatedIds = {};
       (res.updates || []).forEach(function(u){ updatedIds[u.id] = u.modifiedAt; });
@@ -1293,8 +1323,13 @@
         if (opt.ntf && 'Notification' in window && Notification.permission === 'granted'){
           try { new Notification('Google Sheet updated', { body: now + ' project sheet' + (now > 1 ? 's' : '') + ' changed' }); } catch(e){}
         }
+      } else if (manual){
+        toast(now ? now + ' pending in 🔔' : 'No new changes' + (scanMeta.skipped ? ' · ' + scanMeta.skipped + ' no-access' : ''), 'ok');
       }
-    }).catch(function(){});
+    }).catch(function(err){
+      scanMeta.busy = false;
+      if (manual) toast('Scan failed: ' + err.message, 'err');
+    });
   }
   function markSeen(id){
     if (id) delete updatedIds[id]; else updatedIds = {};
@@ -1302,6 +1337,7 @@
     apiCall('sheetseen', id ? { id: id } : {}).catch(function(){});
   }
   document.addEventListener('click', function(e){
+    if (e.target.closest('#updScanNow')){ e.stopPropagation(); scanSheets(true); return; }
     if (e.target.closest('#updSeenAll')){ markSeen(''); return; }
     var sb = e.target.closest('[data-upd-seen]'); if (sb){ e.stopPropagation(); markSeen(sb.dataset.updSeen); return; }
     var row = e.target.closest('[data-upd]'); if (row){ var p = byId(row.dataset.upd); markSeen(row.dataset.upd); if (p && p.sheetUrl){ openUrl(p.sheetUrl); safeRecent(p); } }
@@ -1769,9 +1805,9 @@
   tick();
   loadProjects();
   loadNotes();
-  // sheet-update watch: first scan shortly after load, then every 3 min
-  setTimeout(scanSheets, 4000);
-  setInterval(scanSheets, 180000);
+  // sheet-update watch: first scan shortly after load, then every 60 s
+  setTimeout(scanSheets, 3000);
+  setInterval(scanSheets, 60000);
 </script>
 </body>
 </html>
