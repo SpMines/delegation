@@ -492,7 +492,7 @@
 
     <div class="sections" id="grid"><div class="empty">Loading your projects…</div></div>
 
-    <footer>Command Center · v2.3.1 · Built by Sam</footer>
+    <footer>Command Center · v2.4 · Built by Sam</footer>
   </main>
 
   <!-- ================= RIGHT RAIL ================= -->
@@ -521,7 +521,7 @@
     <div class="field"><label>Web app link (Apps Script /exec)</label><input id="fGas" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off"></div>
     <div class="field"><label>Webpage link (optional)</label><input id="fWeb" placeholder="https://…" autocomplete="off"></div>
     <div class="field"><label>Deadline (optional)</label><input id="fDeadline" type="datetime-local"></div>
-    <div class="field"><label>Special note (optional)</label><textarea id="fNote" maxlength="2000" rows="3" placeholder="Koi bhi special note likho…"></textarea></div>
+    <div class="field"><label>Special note (optional)</label><textarea id="fNote" maxlength="2000" rows="3" placeholder="Any special note…"></textarea></div>
     <div class="field"><label>Icon</label>
       <div class="emoji-row"><input id="fEmoji" maxlength="4" placeholder="🧩"><span class="hint">Auto-picked from the name — change it if you like</span></div>
     </div>
@@ -547,7 +547,7 @@
   <div class="modal" style="max-width:440px;">
     <h2 id="noteTitle">Special note</h2>
     <div class="field" style="margin-bottom:0;">
-      <textarea id="noteInput" maxlength="2000" rows="6" placeholder="Is project ke liye special note…  (Ctrl+Enter = save)"></textarea>
+      <textarea id="noteInput" maxlength="2000" rows="6" placeholder="Special note for this project…  (Ctrl+Enter = save)"></textarea>
       <div class="note-count" id="noteCount">0 / 2000</div>
     </div>
     <div class="form-actions" style="margin-top:var(--s4);">
@@ -568,7 +568,7 @@
     <div class="field"><label>From</label><input id="rpFrom" type="date"></div>
     <div class="field"><label>To</label><input id="rpTo" type="date"></div>
     <div class="field"><label>Report title (optional)</label><input id="rpTitle" placeholder="Daily Report" autocomplete="off"></div>
-    <p class="hint" style="margin:0 0 var(--s4);text-align:left;">Print window khulega → Destination me <b>Save as PDF</b> chuno. Report Jost font me banegi.</p>
+    <p class="hint" style="margin:0 0 var(--s4);text-align:left;">A print window opens → choose <b>Save as PDF</b> as the destination. The report uses the Jost font.</p>
     <div class="form-actions"><button class="btn btn-ghost" id="rpCancel">Cancel</button><button class="btn btn-primary" id="rpGo">Generate PDF</button></div>
   </div>
 </div>
@@ -593,7 +593,7 @@
   // ============================================================
   //  BACKEND — hardcoded default + localStorage override ("Set URL")
   // ============================================================
-  var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbyN6pYOfw9HvHuSZE3DT14rN3EHBAHy9DzPxjph1uth_bKNSgpKR6gXvgTZYNIOvC0/exec';
+  var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbyzyCr26FqqxVyqrSZw5bp35AjfWxMML9LtyrOND10lpBZt0mYN9GjpuCNmzs5l-LNH/exec';
   var API = localStorage.getItem('cc_api') || API_DEFAULT;
   function apiOk(u){ return /\/macros\/s\/[^/]+\/exec$/.test(u) || /\/a\/macros\/[^/]+\/s\/[^/]+\/exec$/.test(u); }
   function apiCall(action, payload){
@@ -1258,7 +1258,7 @@
   //  SHEET UPDATE WATCH — poll backend, show changed sheets in bell
   // ============================================================
   function updCount(){ return Object.keys(updatedIds).length; }
-  var scanMeta = { err: '', checked: 0, skipped: 0, at: '', busy: false };
+  var scanMeta = { err: '', checked: 0, skipped: 0, noId: 0, noAccess: 0, firstErr: '', at: '', busy: false };
   function timeAgo(iso){
     var s = (Date.now() - new Date(iso).getTime()) / 1000;
     if (s < 60) return 'just now';
@@ -1286,14 +1286,20 @@
           '<div class="pw-side"><div class="pw-btns"><div class="icon-btn" data-upd-seen="' + esc(id) + '" title="Mark seen">' + ic('check', 13) + '</div></div></div></div>';
       }).join('');
     } else {
-      list = '<div class="pop-empty" style="padding:var(--s4) var(--s3);">No sheet changes right now.<br>Google Sheet me row add/edit karo → "Check now" dabao.</div>';
+      list = '<div class="pop-empty" style="padding:var(--s4) var(--s3);">No sheet changes right now.<br>Add or edit a row in a Google Sheet → hit "Check now".</div>';
     }
     var foot = scanMeta.err ? '' :
       '<div class="steps" style="padding-top:var(--s3);">' +
         (scanMeta.at ? 'Last checked ' + esc(timeAgo(scanMeta.at)) + ' · ' : '') +
         esc(scanMeta.checked) + ' sheet' + (scanMeta.checked === 1 ? '' : 's') + ' watched' +
-        (scanMeta.skipped ? ' · ' + esc(scanMeta.skipped) + ' no-access (Drive permission?)' : '') +
-      '</div>';
+        (scanMeta.noId ? ' · ' + esc(scanMeta.noId) + ' bad link' : '') +
+        (scanMeta.noAccess ? ' · ' + esc(scanMeta.noAccess) + ' no access' : '') +
+      '</div>' +
+      (scanMeta.noAccess ? '<div class="steps" style="color:var(--err);padding-top:4px;">' +
+        'Backend can\'t open these sheets. Fix: in Apps Script open <b>Deploy → Manage deployments</b>, set <b>Execute as: Me</b>; then <b>Run → sheetScan</b> once and <b>Allow</b> Drive access. Re-deploy a new version.' +
+        (scanMeta.firstErr ? '<br><span style="color:var(--muted2);">' + esc(scanMeta.firstErr.slice(0, 120)) + '</span>' : '') +
+      '</div>' : '') +
+      (scanMeta.noId ? '<div class="steps" style="color:var(--gold);padding-top:4px;">Some projects\' "Google Sheet link" isn\'t a real spreadsheet URL (docs.google.com/spreadsheets/d/…). Fix the link in Edit project.</div>' : '');
     w.innerHTML = head + list + foot;
   }
   function scanSheets(manual){
@@ -1305,13 +1311,15 @@
       scanMeta.busy = false;
       if (!res.ok){
         scanMeta.err = /Unknown action/i.test(res.error || '')
-          ? 'Backend purana hai — naya Code.gs paste karke "New version" deploy karo.'
+          ? 'Backend is outdated — paste the new Code.gs and deploy a "New version".'
           : (res.error || 'Scan failed');
         renderUpdates();
         if (manual) toast(scanMeta.err, 'err');
         return;
       }
-      scanMeta.err = ''; scanMeta.checked = res.checked || 0; scanMeta.skipped = res.skipped || 0; scanMeta.at = res.scannedAt || new Date().toISOString();
+      scanMeta.err = ''; scanMeta.checked = res.checked || 0; scanMeta.skipped = res.skipped || 0;
+      scanMeta.noId = res.noId || 0; scanMeta.noAccess = res.noAccess || 0; scanMeta.firstErr = res.firstErr || '';
+      scanMeta.at = res.scannedAt || new Date().toISOString();
       var before = updCount();
       updatedIds = {};
       (res.updates || []).forEach(function(u){ updatedIds[u.id] = u.modifiedAt; });
@@ -1452,11 +1460,11 @@
   // ============================================================
   var DN_ORDER = ['task', 'meeting', 'meet', 'call', 'note'];
   var DN_TYPES = {
-    task:    { l: 'Task',    i: 'check', c: '#7c83ff', ph: 'Aaj kya karna hai…',            w: false },
-    meeting: { l: 'Meeting', i: 'users', c: '#a78bfa', ph: 'Meeting ka topic / agenda…',    w: true, wl: 'Kiske saath meeting' },
-    meet:    { l: 'Meet',    i: 'user',  c: '#37d399', ph: 'Kisse milna hai — purpose…',    w: true, wl: 'Kisse milna hai (naam)' },
-    call:    { l: 'Call',    i: 'phone', c: '#38bdf8', ph: 'Call ka purpose…',              w: true, wl: 'Kisko call karna hai' },
-    note:    { l: 'Note',    i: 'note',  c: '#ffd166', ph: 'Koi note likh lo…',             w: false }
+    task:    { l: 'Task',    i: 'check', c: '#7c83ff', ph: 'What to do today…',              w: false },
+    meeting: { l: 'Meeting', i: 'users', c: '#a78bfa', ph: 'Meeting topic / agenda…',       w: true, wl: 'Meeting with whom' },
+    meet:    { l: 'Meet',    i: 'user',  c: '#37d399', ph: 'Who to meet — purpose…',         w: true, wl: 'Who to meet (name)' },
+    call:    { l: 'Call',    i: 'phone', c: '#38bdf8', ph: 'Call purpose…',                  w: true, wl: 'Who to call' },
+    note:    { l: 'Note',    i: 'note',  c: '#ffd166', ph: 'Write a note…',                  w: false }
   };
   var dn = [], dnLoaded = false, dnErr = '', dnDate = '', dnType = 'task', dnEditId = null;
 
@@ -1478,7 +1486,7 @@
   function loadNotes(){
     apiCall('dnlist').then(function(res){
       if (!res.ok){
-        dnErr = /Unknown action/i.test(res.error || '') ? 'Backend purana hai — naya Code.gs paste karke New version deploy karo.' : (res.error || 'Notes load nahi hue');
+        dnErr = /Unknown action/i.test(res.error || '') ? 'Backend is outdated — paste the new Code.gs and deploy a New version.' : (res.error || 'Could not load notes');
       } else { dnErr = ''; dn = res.notes || []; }
       dnLoaded = true; dnChanged();
     }).catch(function(err){ dnErr = 'Notes load failed: ' + err.message; dnLoaded = true; dnChanged(); });
@@ -1527,7 +1535,7 @@
       '<div class="dn-time">' + (carry ? esc(fmtShort(d.date)) : (d.time ? esc(d.time) : '—')) + '</div>' +
       '<span class="dn-type">' + ic(T.i, 13) + T.l + '</span>' +
       '<div class="dn-body"><div class="dn-text">' + esc(d.text) + '</div>' + (sub ? '<div class="dn-sub">' + sub + '</div>' : '') + '</div>' +
-      '<div class="dn-btns">' + (carry ? '<button class="btn-s" data-dnact="move" style="opacity:1;">Aaj karo</button>' : '') +
+      '<div class="dn-btns">' + (carry ? '<button class="btn-s" data-dnact="move" style="opacity:1;">Do today</button>' : '') +
         '<button class="icon-btn" data-dnact="edit" title="Edit">' + ic('pencil', 14) + '</button>' +
         '<button class="icon-btn" data-dnact="del" title="Delete">' + ic('trash', 14) + '</button></div></div>';
   }
@@ -1543,7 +1551,7 @@
     sel.value = cur;
     if (dnErr){
       $('dnStats').innerHTML = ''; $('dnCarry').innerHTML = '';
-      $('dnList').innerHTML = '<div class="empty">' + ic('alert', 30) + '<b>Daily Notes load nahi hue</b>' + esc(dnErr) + '</div>'; return;
+      $('dnList').innerHTML = '<div class="empty">' + ic('alert', 30) + '<b>Could not load Daily Notes</b>' + esc(dnErr) + '</div>'; return;
     }
     if (!dnLoaded){ $('dnList').innerHTML = '<div class="empty">Loading daily notes…</div>'; return; }
     var items = dn.filter(function(d){ return d.date === dnDate; }).sort(dnSort);
@@ -1557,9 +1565,9 @@
       '<div class="dn-stat"><b>' + mt + '</b><span>Meetings / Meets / Calls</span></div>';
     var carry = dnDate === today ? dnCarry() : [];
     $('dnCarry').innerHTML = carry.length ? '<div class="dn-sec warn"><span>Pending from earlier days (' + carry.length + ')</span></div>' + carry.map(function(d){ return dnItemHTML(d, true); }).join('') : '';
-    $('dnList').innerHTML = '<div class="dn-sec"><span>' + (dnDate === today ? 'Aaj ka plan' : 'Plan') + ' (' + items.length + ')</span></div>' +
+    $('dnList').innerHTML = '<div class="dn-sec"><span>' + (dnDate === today ? "Today's plan" : 'Plan') + ' (' + items.length + ')</span></div>' +
       (items.length ? items.map(function(d){ return dnItemHTML(d, false); }).join('')
-        : '<div class="empty">' + ic('calendar', 30) + '<b>Is din ka plan khaali hai</b>Upar se task, meeting, meet ya call add karo.</div>');
+        : '<div class="empty">' + ic('calendar', 30) + "<b>This day's plan is empty</b>Add a task, meeting, meet or call above.</div>");
   }
 
   // ---------- mutations ----------
@@ -1569,7 +1577,7 @@
   }
   function dnSubmit(){
     var text = $('dnText').value.trim();
-    if (!text){ toast('Pehle kuch likho', 'err'); $('dnText').focus(); return; }
+    if (!text){ toast('Write something first', 'err'); $('dnText').focus(); return; }
     var o = { date: dnDate, time: $('dnTime').value, type: dnType, text: text, 'with': DN_TYPES[dnType].w ? $('dnWith').value.trim() : '', projectId: $('dnProj').value };
     var btn = $('dnAdd');
     if (dnEditId){
@@ -1597,7 +1605,7 @@
   }
   function dnMove(id){
     var d = dnById(id); if (!d) return;
-    var prev = d.date; d.date = todayStr(); dnChanged(); toast('Aaj ke plan me aa gaya');
+    var prev = d.date; d.date = todayStr(); dnChanged(); toast("Moved to today's plan");
     apiCall('dnupdate', { id: d.id, date: d.date, time: d.time, type: d.type, text: d.text, 'with': d['with'], projectId: d.projectId }).then(function(res){
       if (!res.ok){ d.date = prev; dnChanged(); toast(res.error || 'Move failed', 'err'); }
     }).catch(function(err){ d.date = prev; dnChanged(); toast('Move failed: ' + err.message, 'err'); });
@@ -1657,7 +1665,7 @@
     else {
       var items = todayItems(), carry = dnCarry().length;
       body = (items.length ? items.slice(0, 7).map(dnMini).join('') + (items.length > 7 ? '<div class="rempty">+ ' + (items.length - 7) + ' more</div>' : '')
-        : '<div class="rempty">Aaj ka plan khaali hai.</div>') +
+        : '<div class="rempty">Today\'s plan is empty.</div>') +
         (carry ? '<div class="rempty" style="color:var(--gold);">' + carry + ' pending from earlier days</div>' : '');
     }
     return '<div class="rsec"><div class="rtitle"><span>Today</span><button class="glink" data-go="daily" style="padding:0 4px;">Open ' + ic('arrow', 12) + '</button></div>' + body + '</div>';
@@ -1666,7 +1674,7 @@
     if (!dnLoaded || dnErr) return '';
     var items = todayItems(), carry = dnCarry(), pend = items.filter(function(d){ return !d.done && d.type !== 'note'; });
     if (!items.length && !carry.length)
-      return '<div class="today-strip empty"><span>Aaj ka plan khaali hai — meetings, tasks aur calls yahan dikhenge.</span><button class="glink" data-go="daily">Add daily note ' + ic('arrow', 14) + '</button></div>';
+      return '<div class="today-strip empty"><span>Today\'s plan is empty — meetings, tasks and calls show here.</span><button class="glink" data-go="daily">Add daily note ' + ic('arrow', 14) + '</button></div>';
     var rows = items.filter(function(d){ return !d.done; }).slice(0, 6).map(function(d){
       var T = DN_TYPES[d.type] || DN_TYPES.task;
       return '<div class="ts-item" data-dnrail="' + esc(d.id) + '" style="--tc:' + T.c + '"><button class="dn-chk sm">' + ic('check', 12) + '</button><span class="tm">' + (d.time ? esc(d.time) : '—') + '</span>' +
@@ -1680,7 +1688,7 @@
     return '<div class="today-strip"><div class="ts-head">' + ic('calendar', 16) + 'Today · ' + esc(fmtDay(todayStr())) +
       '<small>' + pend.length + ' pending' + (carry.length ? ' · ' + carry.length + ' carried over' : '') + '</small>' +
       '<button class="glink" data-go="daily">Open Daily Notes ' + ic('arrow', 14) + '</button></div>' +
-      (rows || '<div class="rempty">Aaj ka sab kaam ho gaya.</div>') + crow + '</div>';
+      (rows || '<div class="rempty">All done for today.</div>') + crow + '</div>';
   }
 
   // ============================================================
@@ -1700,10 +1708,10 @@
   });
   $('rpGo').onclick = function(){
     var from = $('rpFrom').value, to = $('rpTo').value;
-    if (!from || !to){ toast('From aur To date chuno', 'err'); return; }
+    if (!from || !to){ toast('Choose From and To dates', 'err'); return; }
     if (from > to){ var t = from; from = to; to = t; }
     var html = buildReport(from, to, $('rpTitle').value.trim() || 'Daily Report');
-    if (!html){ toast('Is range me koi entry nahi mili', 'err'); return; }
+    if (!html){ toast('No entries found in this range', 'err'); return; }
     $('rpWrap').classList.remove('show');
     printHTML(html, 'Daily_Report_' + from + (to !== from ? '_to_' + to : ''));
   };
@@ -1777,7 +1785,7 @@
     function go(){
       if (printed) return; printed = true;
       document.title = filename; try { doc.title = filename; } catch(e){}
-      try { fr.contentWindow.focus(); fr.contentWindow.print(); } catch(e){ toast('Print open nahi hua', 'err'); }
+      try { fr.contentWindow.focus(); fr.contentWindow.print(); } catch(e){ toast('Could not open print', 'err'); }
       setTimeout(function(){ document.title = oldTitle; }, 1500);
       setTimeout(function(){ fr.remove(); }, 120000);
     }
