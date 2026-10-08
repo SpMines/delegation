@@ -25,6 +25,14 @@
     }
     *{ box-sizing:border-box; }
     html,body{ margin:0; padding:0; }
+
+    /* ---------- modern scrollbars ---------- */
+    *{ scrollbar-width:thin; scrollbar-color:var(--brd-hi) transparent; }
+    ::-webkit-scrollbar{ width:10px; height:10px; }
+    ::-webkit-scrollbar-track{ background:transparent; }
+    ::-webkit-scrollbar-thumb{ background:var(--brd-hi); border-radius:10px; border:2px solid transparent; background-clip:content-box; transition:background .15s; }
+    ::-webkit-scrollbar-thumb:hover{ background:var(--muted); background-clip:content-box; }
+    ::-webkit-scrollbar-corner{ background:transparent; }
     body{ font-family:'Jost',system-ui,-apple-system,'Segoe UI',sans-serif; font-size:15px; line-height:1.45; color:var(--txt); background:var(--bg); -webkit-font-smoothing:antialiased; }
     button{ font-family:inherit; color:inherit; }
     .ic{ flex:none; display:block; }
@@ -62,8 +70,8 @@
     .topbar{ position:sticky; top:0; z-index:40; display:flex; align-items:center; justify-content:flex-end; gap:var(--s2); padding:var(--s3) 0; margin:0 calc(var(--s8) * -1); padding-left:var(--s8); padding-right:var(--s8); background:color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
     .tb-btn.menu-btn{ margin-right:auto; }
     @media (min-width:901px){
-      .app.side-collapsed{ grid-template-columns:minmax(0,1fr) 320px; }
-      .app.side-collapsed .side{ display:none; }
+      .app.side-collapsed{ grid-template-columns:minmax(0,1fr); }
+      .app.side-collapsed .side, .app.side-collapsed .rail{ display:none; }
     }
     .tb-btn{ position:relative; width:36px; height:36px; border-radius:10px; border:1px solid var(--brd); background:var(--surface); color:var(--muted); display:grid; place-items:center; cursor:pointer; transition:border-color .15s,color .15s; }
     .tb-btn:hover{ border-color:var(--brd-hi); color:var(--txt); }
@@ -169,6 +177,15 @@
     /* ---------- project cards ---------- */
     .card{ position:relative; display:flex; flex-direction:column; gap:var(--s3); padding:var(--s5); background:var(--surface); border:1px solid var(--brd); border-radius:14px; cursor:pointer; transition:transform .18s cubic-bezier(.16,1,.3,1),border-color .18s,background .18s,box-shadow .18s; }
     .card:hover{ transform:translateY(-2px); border-color:var(--brd-hi); background:var(--surface2); box-shadow:0 14px 34px rgba(0,0,0,.28); }
+    /* group-colour accent + faint top sheen = livelier cards */
+    .card{ border-left:3px solid var(--gc,var(--brd)); overflow:hidden; }
+    .card::before{ content:''; position:absolute; inset:0 0 auto 0; height:40px; background:linear-gradient(180deg, color-mix(in srgb, var(--gc,var(--accent)) 10%, transparent), transparent); pointer-events:none; }
+    .row-item{ border-left:3px solid var(--gc,var(--brd)); }
+    /* "sheet updated" pill */
+    .c-upd{ display:inline-flex; align-items:center; gap:6px; align-self:flex-start; font-size:11.5px; font-weight:600; color:var(--accent); background:var(--accent-soft); border:1px solid color-mix(in srgb,var(--accent) 35%,transparent); border-radius:999px; padding:3px 10px; }
+    .c-upd .ic{ color:var(--accent); }
+    .c-upd::after{ content:''; width:7px; height:7px; border-radius:50%; background:var(--accent); animation:blink 1.4s ease-in-out infinite; }
+    .card.has-upd{ border-color:color-mix(in srgb,var(--accent) 45%,var(--brd)); }
     .c-top{ display:flex; align-items:center; gap:var(--s3); }
     .c-ico{ width:44px; height:44px; border-radius:12px; background:var(--hov); display:grid; place-items:center; font-size:24px; flex:none; }
     .c-title{ flex:1; min-width:0; }
@@ -367,7 +384,7 @@
     @media (max-width:1280px){
       .app{ grid-template-columns:248px minmax(0,1fr); }
       .app.side-collapsed{ grid-template-columns:minmax(0,1fr); }
-      .app.side-collapsed .rail{ grid-column:1; }
+      .app.side-collapsed .rail{ display:none; }
       .rail{ grid-column:2; position:static; height:auto; border-left:none; border-top:1px solid var(--brd); background:transparent; padding:var(--s6) var(--s8) 96px; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:var(--s6) var(--s8); }
       .rsec{ margin:0; }
       .main{ padding-bottom:var(--s8); }
@@ -433,6 +450,7 @@
       <div class="pop-wrap" id="alertBox">
         <button class="tb-btn" id="bellBtn" title="Alerts"><i data-ic="bell"></i><span class="badge" id="bellBadge">0</span></button>
         <div class="pop">
+          <div id="updWrap"></div>
           <div class="pop-head"><span>Alert settings</span></div>
           <div class="opt"><div>Sound<small>Beep when a deadline needs attention</small></div><div class="sw" id="swSnd"></div></div>
           <div class="opt"><div>Desktop notifications<small>Works even when this tab is in background</small></div><div class="sw" id="swNtf"></div></div>
@@ -442,7 +460,6 @@
       </div>
 
       <button class="tb-btn" id="themeBtn" title="Toggle theme"><i data-ic="sun"></i></button>
-      <button class="tb-btn" id="setBtn" title="Settings — backend URL"><i data-ic="settings"></i></button>
     </div>
 
     <section class="hero">
@@ -475,7 +492,7 @@
 
     <div class="sections" id="grid"><div class="empty">Loading your projects…</div></div>
 
-    <footer>Command Center · v2.2 · Built by Sam</footer>
+    <footer>Command Center · v2.3 · Built by Sam</footer>
   </main>
 
   <!-- ================= RIGHT RAIL ================= -->
@@ -576,7 +593,7 @@
   // ============================================================
   //  BACKEND — hardcoded default + localStorage override ("Set URL")
   // ============================================================
-  var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbz05d_StJ46-KHcukxBERoqzUzGIEbUhsrU_2-7dlQXOUNaJFpaTDqZz4Fx2JF8k0c/exec';
+  var API_DEFAULT = 'https://script.google.com/macros/s/AKfycbw01OSP0j7e2ebvRYtmti_G7B9DL_EeZUGSLS4IxlKo_AavpG30V6L1-lQYtu1IESeO/exec';
   var API = localStorage.getItem('cc_api') || API_DEFAULT;
   function apiOk(u){ return /\/macros\/s\/[^/]+\/exec$/.test(u) || /\/a\/macros\/[^/]+\/s\/[^/]+\/exec$/.test(u); }
   function apiCall(action, payload){
@@ -589,6 +606,7 @@
   //  STATE + HELPERS
   // ============================================================
   var projects = [], editingId = null, pendingDeleteId = null, justAddedId = null, loaded = false;
+  var updatedIds = {};   // id -> modifiedAt ISO, for sheets changed since last seen
   var currentView = localStorage.getItem('cc_view') || 'card';
   var nav = 'home', grp = null;               // grp: null = all groups, '' = ungrouped, else group name
   function $(id){ return document.getElementById(id); }
@@ -724,21 +742,23 @@
   function starBtn(p){
     return '<button class="star-btn' + (p.starred ? ' active' : '') + '" data-act="star" data-id="' + esc(p.id) + '" title="' + (p.starred ? 'Remove from favorites' : 'Add to favorites') + '">' + ic('star', 17) + '</button>';
   }
+  function isUpd(p){ return !!(updatedIds[p.id] || p.hasUpdate); }
+  function updHTML(p){ return isUpd(p) ? '<div class="c-upd">' + ic('bell', 12) + 'Sheet updated</div>' : ''; }
   function cardHTML(p){
     var g = gkey(p);
-    return '<div class="card' + (p.id === justAddedId ? ' card-enter' : '') + '" data-id="' + esc(p.id) + '">' +
+    return '<div class="card' + (p.id === justAddedId ? ' card-enter' : '') + (isUpd(p) ? ' has-upd' : '') + '" data-id="' + esc(p.id) + '" style="--gc:' + gcol(g || 'Others') + '">' +
       '<div class="c-top"><div class="c-ico">' + esc(p.emoji || '🧩') + '</div>' +
         '<div class="c-title"><div class="c-name">' + esc(p.name) + (p.pinned ? ic('pin', 13) : '') + '</div>' +
         '<div class="c-grp">' + (g ? esc(g) : 'No group') + '</div></div>' + starBtn(p) + '</div>' +
-      noteHTML(p) + tagsHTML(p) +
+      updHTML(p) + noteHTML(p) + tagsHTML(p) +
       '<div class="c-status">' + statusHTML(p) + '</div>' +
       '<div class="c-actions">' + actionsHTML(p) + '</div></div>';
   }
   function rowHTML(p){
     var g = gkey(p);
-    return '<div class="row-item' + (p.id === justAddedId ? ' card-enter' : '') + '" data-id="' + esc(p.id) + '">' +
+    return '<div class="row-item' + (p.id === justAddedId ? ' card-enter' : '') + (isUpd(p) ? ' has-upd' : '') + '" data-id="' + esc(p.id) + '" style="--gc:' + gcol(g || 'Others') + '">' +
       '<div class="c-ico">' + esc(p.emoji || '🧩') + '</div>' +
-      '<div class="c-title"><div class="c-name">' + esc(p.name) + (p.pinned ? ic('pin', 13) : '') + '</div>' +
+      '<div class="c-title"><div class="c-name">' + esc(p.name) + (p.pinned ? ic('pin', 13) : '') + (isUpd(p) ? ' ' + ic('bell', 13) : '') + '</div>' +
         '<div class="c-grp">' + (g ? esc(g) : 'No group') + '</div>' + noteHTML(p) + '</div>' +
       '<div class="c-status">' + statusHTML(p) + '</div>' + starBtn(p) +
       '<div class="c-actions">' + actionsHTML(p) + '</div></div>';
@@ -821,15 +841,8 @@
       return '<button class="nav-item fav-item" data-open="' + esc(p.id) + '"><span style="font-size:15px;width:16px;text-align:center;">' + esc(p.emoji || '🧩') + '</span><span class="nm">' + esc(p.name) + '</span></button>';
     }).join('') : '<div class="side-empty">Star a project to pin it here</div>';
   }
-  function renderChips(){
-    var gs = groupNames();
-    var h = '<button class="chip' + (grp === null ? ' active' : '') + '" data-chip="__all">All <em>' + projects.length + '</em></button>';
-    gs.forEach(function(g){
-      h += '<button class="chip' + (grp === g ? ' active' : '') + '" data-chip="' + esc(g) + '">' + esc(g) + ' <em>' + projects.filter(function(p){ return gkey(p) === g; }).length + '</em></button>';
-    });
-    if (hasUngrouped() && gs.length) h += '<button class="chip' + (grp === '' ? ' active' : '') + '" data-chip="">Others <em>' + projects.filter(function(p){ return !gkey(p); }).length + '</em></button>';
-    $('chips').innerHTML = h;
-  }
+  // chips removed for a cleaner home — group filtering lives in the sidebar
+  function renderChips(){ var c = $('chips'); if (c){ c.innerHTML = ''; c.style.display = 'none'; } }
 
   // ---------- right rail ----------
   function counts(){
@@ -869,14 +882,8 @@
 
     $('rail').innerHTML =
       todayRail() +
-      '<div class="rsec"><div class="rtitle">Quick actions</div>' +
-        '<button class="qa" data-qa="new">' + ic('plus') + 'Create new project<span class="go">' + ic('arrow', 14) + '</span></button>' +
-        '<button class="qa" data-qa="all">' + ic('grid') + 'View all projects<span class="go">' + ic('arrow', 14) + '</span></button>' +
-        '<button class="qa" data-qa="search">' + ic('search') + 'Search everything<span class="go">' + ic('arrow', 14) + '</span></button>' +
-        '<button class="qa" data-qa="settings">' + ic('settings') + 'Backend settings<span class="go">' + ic('arrow', 14) + '</span></button></div>' +
       '<div class="rsec"><div class="rtitle">Project status</div>' + (total ? donut : '<div class="rempty">No projects yet.</div>') + '</div>' +
-      '<div class="rsec"><div class="rtitle">Upcoming deadlines</div>' + upHtml + '</div>' +
-      '<div class="rsec"><div class="rtitle">Recent</div>' + recHtml + '</div>';
+      '<div class="rsec"><div class="rtitle">Upcoming deadlines</div>' + upHtml + '</div>';
   }
 
   function applyFilter(){ renderSide(); renderChips(); renderMain(); renderRail(); renderPending(); }
@@ -1010,7 +1017,8 @@
     }
   });
   $('addGroup').onclick = function(){ openForm(null); setTimeout(function(){ $('fGroup').focus(); }, 80); };
-  $('sideSettings').onclick = $('setBtn').onclick = openUrlModal;
+  $('sideSettings').onclick = openUrlModal;
+  var _setBtn = $('setBtn'); if (_setBtn) _setBtn.onclick = openUrlModal;
   $('menuBtn').onclick = function(){
     if (window.innerWidth > 900){                       // desktop: collapse / expand sidebar
       var c = $('app').classList.toggle('side-collapsed'); lsSet('cc_side', c);
@@ -1247,6 +1255,60 @@
   $('testAlert').onclick = function(){ raiseAlert('Test project', '🔔', null, 0, 'test' + Date.now()); };
 
   // ============================================================
+  //  SHEET UPDATE WATCH — poll backend, show changed sheets in bell
+  // ============================================================
+  function updCount(){ return Object.keys(updatedIds).length; }
+  function timeAgo(iso){
+    var s = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (s < 60) return 'just now';
+    var m = Math.floor(s / 60); if (m < 60) return m + ' min ago';
+    var h = Math.floor(m / 60); if (h < 24) return h + ' hr ago';
+    return Math.floor(h / 24) + ' day ago';
+  }
+  function renderUpdates(){
+    var w = $('updWrap'); if (!w) return;
+    var ids = Object.keys(updatedIds);
+    w.innerHTML = '<div class="pop-head"><span>Sheet updates</span>' +
+      (ids.length ? '<button class="btn-s" id="updSeenAll" style="opacity:1;height:26px;">Mark all seen</button>' : '') + '</div>' +
+      (ids.length ? ids.map(function(id){
+        var p = byId(id); if (!p) return '';
+        return '<div class="pw-row ok" data-upd="' + esc(id) + '" title="Open sheet · marks seen">' +
+          '<div class="pw-emoji">' + esc(p.emoji || '📊') + '</div>' +
+          '<div class="pw-main"><div class="pw-name">' + esc(p.name) + '</div><div class="pw-note">Updated ' + esc(timeAgo(updatedIds[id])) + '</div></div>' +
+          '<div class="pw-side"><div class="pw-btns"><div class="icon-btn" data-upd-seen="' + esc(id) + '" title="Mark seen">' + ic('check', 13) + '</div></div></div></div>';
+      }).join('') : '<div class="pop-empty" style="padding:var(--s4) var(--s3);">No sheet changes.<br>Jab kisi project ki Google Sheet me update hoga, yahan dikhega.</div>');
+  }
+  function scanSheets(){
+    if (!loaded) return;
+    apiCall('sheetscan').then(function(res){
+      if (!res.ok) return;
+      var before = updCount();
+      updatedIds = {};
+      (res.updates || []).forEach(function(u){ updatedIds[u.id] = u.modifiedAt; });
+      renderUpdates(); applyFilter();
+      var now = updCount();
+      if (now > before){
+        beep(1, 660);
+        toast(now + ' sheet' + (now > 1 ? 's' : '') + ' updated — check 🔔', 'ok');
+        if (opt.ntf && 'Notification' in window && Notification.permission === 'granted'){
+          try { new Notification('Google Sheet updated', { body: now + ' project sheet' + (now > 1 ? 's' : '') + ' changed' }); } catch(e){}
+        }
+      }
+    }).catch(function(){});
+  }
+  function markSeen(id){
+    if (id) delete updatedIds[id]; else updatedIds = {};
+    renderUpdates(); applyFilter();
+    apiCall('sheetseen', id ? { id: id } : {}).catch(function(){});
+  }
+  document.addEventListener('click', function(e){
+    if (e.target.closest('#updSeenAll')){ markSeen(''); return; }
+    var sb = e.target.closest('[data-upd-seen]'); if (sb){ e.stopPropagation(); markSeen(sb.dataset.updSeen); return; }
+    var row = e.target.closest('[data-upd]'); if (row){ var p = byId(row.dataset.upd); markSeen(row.dataset.upd); if (p && p.sheetUrl){ openUrl(p.sheetUrl); safeRecent(p); } }
+  });
+  renderUpdates();
+
+  // ============================================================
   //  1-SECOND HEARTBEAT: chips, pending rows, pill, bell, alerts
   // ============================================================
   var baseTitle = 'Command Center';
@@ -1266,7 +1328,7 @@
     pw.classList.toggle('ok', list.length > 0 && late === 0); pw.classList.toggle('late', late > 0);
     $('pwLabel').textContent = list.length ? list.length + ' Pending' : 'All clear';
     $('pwTime').textContent = late > 0 ? '· ' + late + ' Over' : (nearest !== null ? '· ' + fmtDur(nearest - now) : '');
-    var bb = $('bellBadge'); bb.textContent = late; bb.classList.toggle('on', late > 0);
+    var bb = $('bellBadge'), bn = late + updCount(); bb.textContent = bn; bb.classList.toggle('on', bn > 0);
     document.title = (late > 0 && document.hidden && Math.floor(now / 1000) % 2) ? '(' + late + ') Time over!' : baseTitle;
     if (loaded && late !== lastOver) renderRail();
     checkAlerts();
@@ -1707,6 +1769,9 @@
   tick();
   loadProjects();
   loadNotes();
+  // sheet-update watch: first scan shortly after load, then every 3 min
+  setTimeout(scanSheets, 4000);
+  setInterval(scanSheets, 180000);
 </script>
 </body>
 </html>
